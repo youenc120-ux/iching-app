@@ -252,6 +252,18 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 4px var(--accent-soft);
 }
 textarea { margin-top: 12px; resize: vertical; }
+/* 手機（尤其 iPhone）的日期、時間欄位有自己的最小寬度，會撐出外框；
+   這裡取消瀏覽器的原生外觀，讓它乖乖照欄位寬度排 */
+input[type="date"], input[type="time"] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  min-height: 46px;
+  text-align: left;
+}
+input::-webkit-date-and-time-value { text-align: left; }
 
 button {
   font: inherit;
@@ -284,7 +296,7 @@ button.link:hover { color: var(--accent); transform: none; }
 .numbers { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
 .numbers input { flex: 1; min-width: 110px; }
 .fields { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
-.field { flex: 1 1 150px; margin: 0; }
+.field { flex: 1 1 150px; min-width: 0; margin: 0; }
 .field span { display: block; margin-bottom: 4px; }
 
 /* 分段切換（起卦方式） */
