@@ -5,3 +5,10 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
     navigator.serviceWorker.register("sw.js").catch(() => { /* 註冊失敗不影響使用 */ });
   });
 }
+
+// 手機上導覽列比螢幕寬，要左右滑。載入時把目前這一頁的頁籤捲到中間，才看得出自己在哪一頁。
+(() => {
+  const nav = document.querySelector(".nav");
+  const current = nav && nav.querySelector(".current");
+  if (current) nav.scrollLeft = current.offsetLeft - (nav.clientWidth - current.offsetWidth) / 2;
+})();

@@ -312,8 +312,11 @@ function renderBazi(birth) {
     ]);
   }));
   // 往後五年的流年
+  // 還沒過立春的話，今年的干支仍是去年的
+  const calendarIndex = (((now.getFullYear() - 4) % 60) + 60) % 60;
+  const firstYear = ganzhiDate(now).yearIndex === calendarIndex ? now.getFullYear() : now.getFullYear() - 1;
   const years = Array.from({ length: 5 }, (_, i) => {
-    const year = now.getFullYear() + i;
+    const year = firstYear + i;
     const index = (((year - 4) % 60) + 60) % 60;
     const element = STEM_ELEMENTS[index % 10];
     const lean = chart.favorable.length ? (chart.favorable.includes(element) ? "順" : "守") : "平";

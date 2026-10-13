@@ -182,7 +182,9 @@ function renderZiwei(birth) {
 
   // 傳統命盤：四乘四的方格，外圈十二宮，中間寫基本資料
   const layout = [5, 6, 7, 8, 4, null, null, 9, 3, null, null, 10, 2, 1, 0, 11];
-  const now = new Date().getFullYear();
+  // 紫微以農曆年為準：還沒過農曆新年，就仍算去年
+  const today = new Date();
+  const now = lunarOf(today.getFullYear(), today.getMonth() + 1, today.getDate()).year;
   const age = now - chart.lunar.year + 1; // 虛歲
   const board = el("div", "ziwei-board");
   let centerPlaced = false;

@@ -470,6 +470,7 @@ button.corner { position: absolute; top: 20px; right: 24px; font-size: 0.78rem; 
 .najia-mark, .najia-change, .najia-row.moving .najia-rel { color: var(--accent); }
 .najia-mark { font-weight: 700; }
 .najia-verdict { font-weight: 700; }
+.najia-change:empty { display: none; }
 
 /* 紀錄 */
 .history-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
@@ -726,8 +727,9 @@ button.corner { position: absolute; top: 20px; right: 24px; font-size: 0.78rem; 
   .ziwei-center { font-size: 0.7rem; }
   .ziwei-title { font-size: 1.05rem; }
   .astro-row { grid-template-columns: 2em 5.5em 1fr 4em; font-size: 0.82rem; }
-  .najia-row { grid-template-columns: 2.6em 6.8em 60px 3em 1fr; gap: 6px; font-size: 0.8rem; }
+  .najia-row { grid-template-columns: 2.6em 1fr 78px 3.4em; gap: 2px 6px; font-size: 0.82rem; }
   .najia-row .bar { width: 52px; }
+  .najia-change { grid-column: 2 / -1; }
   button.corner { position: static; display: block; margin-top: 16px; }
   .share { flex-direction: column; text-align: center; }
   .share .actions { justify-content: center; }
