@@ -74,61 +74,38 @@ function castYarrowLine() {
 
 // ── 梅花易數 ──
 // ── 農曆換算 ──
-// 靠瀏覽器內建的農曆曆法（Intl），但各家瀏覽器回傳的格式不一樣：
-// Chrome 給阿拉伯數字和對應的西元年；Safari 可能給「臘月」「廿四」這類中文，也可能不給年份。
-// 所以月、日兩種寫法都認，年份則不依賴瀏覽器，改由月份自己推算。
+// 用 lunar-data.js 的資料表自己算，不依賴瀏覽器的曆法功能（各家瀏覽器的行為不一致）。
 
-// 中文數字轉數值：初一、十五、二十、廿四、三十、卅 …
-function chineseNumber(text) {
-  const digits = "〇一二三四五六七八九";
-  let total = 0;
-  let current = 0;
-  for (const char of text) {
-    if (char === "十") { total += (current || 1) * 10; current = 0; }
-    else if (char === "廿") { total += 20; current = 0; }
-    else if (char === "卅") { total += 30; current = 0; }
-    else if (digits.includes(char)) current = digits.indexOf(char);
-  }
-  return total + current;
-}
-
-// 從瀏覽器回傳的文字讀出月或日的數值
-function lunarNumber(text) {
-  const digits = text.match(/\d+/);
-  if (digits) return Number(digits[0]);
-  return chineseNumber(text.replace("正", "一").replace("冬", "十一").replace("臘", "十二").replace("腊", "十二"));
-}
-
-// 把瀏覽器回傳的片段整理成 { month, day, leap }；讀不出來回傳 null
-function parseLunarParts(parts) {
-  const get = (type) => (parts.find((p) => p.type === type) || {}).value || "";
-  const monthText = get("month");
-  const month = lunarNumber(monthText);
-  const day = lunarNumber(get("day"));
-  if (!(month >= 1 && month <= 12 && day >= 1 && day <= 30)) return null;
-  return { month, day, leap: /閏|闰|bis|leap/i.test(monthText) };
+// 取出某個農曆年的資料：正月初一是國曆該年的第幾天、閏哪個月、各月大小
+function lunarYearInfo(year) {
+  const code = LUNAR_TABLE[year - LUNAR_FIRST_YEAR];
+  if (code === undefined) throw new Error("農曆換算只支援 1900 到 2100 年。");
+  return { start: code >> 17, leap: (code >> 13) & 15, mask: code & 8191 };
 }
 
 // 西曆年月日換農曆。回傳 { year: 農曆年對應的西元年, month, day, leap }
 function lunarOf(y, m, d) {
-  const instant = new Date(Date.UTC(y, m - 1, d, 12));
-  let lunar = null;
-  for (const locale of ["en-US-u-ca-chinese-nu-latn", "zh-TW-u-ca-chinese-nu-latn", "zh-TW-u-ca-chinese"]) {
-    try {
-      const format = new Intl.DateTimeFormat(locale, { month: "numeric", day: "numeric", timeZone: "UTC" });
-      if (!format.resolvedOptions().calendar.includes("chinese")) continue;
-      lunar = parseLunarParts(format.formatToParts(instant));
-    } catch {
-      lunar = null;
-    }
-    if (lunar) break;
+  const daysSince = (year) => Math.round((Date.UTC(y, m - 1, d) - Date.UTC(year, 0, 1)) / 86400000);
+  // 還沒到正月初一，就屬於前一個農曆年
+  let year = y;
+  let info = lunarYearInfo(year);
+  if (daysSince(year) < info.start) {
+    year -= 1;
+    info = lunarYearInfo(year);
   }
-  if (!lunar) throw new Error("這個瀏覽器無法換算農曆，請更新瀏覽器後再試。");
-  // 國曆一、二月遇到農曆十一、十二月，表示還沒過年，農曆年是前一年
-  lunar.year = m <= 2 && lunar.month >= 11 ? y - 1 : y;
-  return lunar;
+  // 從正月開始一個月一個月往後扣，扣到剩下的天數落在某個月裡
+  let rest = daysSince(year) - info.start;
+  let month = 1;
+  let leap = false;
+  for (let i = 0; i < 13; i++) {
+    const length = (info.mask >> i) & 1 ? 30 : 29;
+    if (rest < length) break;
+    rest -= length;
+    if (info.leap === month && !leap) leap = true; // 接下來是這個月的閏月
+    else { month += 1; leap = false; }
+  }
+  return { year, month, day: rest + 1, leap };
 }
-
 // 以這台裝置當地的日期換農曆，並附上年支數與干支年名（梅花易數用）
 function lunarDate(date) {
   const lunar = lunarOf(date.getFullYear(), date.getMonth() + 1, date.getDate());
