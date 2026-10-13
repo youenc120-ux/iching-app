@@ -226,7 +226,7 @@ function drawWheel(chart) {
     const [x2, y2] = point(sign * 30, 190);
     add("line", { x1, y1, x2, y2, class: "wheel-line" });
     const [tx, ty] = point(sign * 30 + 15, 172);
-    add("text", { x: tx, y: ty, class: "wheel-sign" }, SIGN_GLYPHS[sign]);
+    add("text", { x: tx, y: ty, class: `wheel-sign s${sign % 4}` }, SIGN_GLYPHS[sign]);
     // 整宮制：每個星座就是一宮
     const [hx, hy] = point(sign * 30 + 15, 75);
     add("text", { x: hx, y: hy, class: "wheel-house" }, String(((sign - chart.ascSign + 12) % 12) + 1));
@@ -270,7 +270,7 @@ function renderAstro(birth) {
   const rows = [...chart.planets, ...chart.points].map((body) => el("div", "astro-row", [
     el("span", "astro-glyph", PLANET_GLYPHS[body.name]),
     el("span", null, body.name + (body.retrograde ? "（逆行）" : "")),
-    el("span", null, `${SIGN_GLYPHS[body.sign]} ${formatPosition(body)}`),
+    el("span", null, [el("span", `s${body.sign % 4}`, SIGN_GLYPHS[body.sign]), ` ${formatPosition(body)}`]),
     el("span", "astro-house", body.name === "上升" || body.name === "天頂" ? "" : `第 ${body.house} 宮`),
   ]));
   root.append(el("section", "card", [

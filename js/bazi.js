@@ -128,8 +128,8 @@ function renderBazi(birth) {
     table.append(el("div", `pillar${pillar.name === "日柱" ? " self" : ""}`, [
       el("div", "pillar-name", pillar.name),
       el("div", "pillar-god", pillar.stemGod),
-      el("div", "pillar-char", STEMS[pillar.stem]),
-      el("div", "pillar-char", BRANCHES[pillar.branch]),
+      el("div", `pillar-char e-${STEM_ELEMENTS[pillar.stem]}`, STEMS[pillar.stem]),
+      el("div", `pillar-char e-${BRANCH_ELEMENTS[pillar.branch]}`, BRANCHES[pillar.branch]),
       el("div", "pillar-hidden", pillar.hidden.map((h) => el("span", null, `${STEMS[h.stem]} ${h.god}`))),
     ]));
   }
@@ -138,7 +138,7 @@ function renderBazi(birth) {
     const share = chart.weights[element] / chart.total;
     const fill = el("i");
     fill.style.width = `${Math.round(share * 100)}%`;
-    return el("div", `element-bar${element === chart.me ? " self" : ""}`, [
+    return el("div", `element-bar e-${element}${element === chart.me ? " self" : ""}`, [
       el("span", null, element), el("div", "track", [fill]), el("span", null, `${Math.round(share * 100)}%`),
     ]);
   }));
