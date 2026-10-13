@@ -15,13 +15,20 @@
     <div class="taiji" aria-hidden="true"></div>
     <h1>易經卜卦</h1>
     <p class="subtitle">心誠則靈 · 一事一占</p>
-    <nav class="nav"><a href="index.html" class="current">卜卦</a><a href="catalog.html">六十四卦</a></nav>
+    <nav class="nav">
+      <a href="index.html" class="current">卜卦</a>
+      <a href="catalog.html">六十四卦</a>
+      <a href="about.html">依據與來源</a>
+    </nav>
   </header>
 
   <main>
     <section class="card" id="ask">
       <label for="question">所問之事</label>
       <input id="question" type="text" maxlength="60" placeholder="靜心默想，寫下你想問的事（可留空）">
+
+      <label class="spaced">問的是哪一類</label>
+      <div class="choices" id="topics"></div>
 
       <div class="tabs" role="tablist">
         <button class="tab active" data-method="coin" role="tab">金錢卦</button>
@@ -35,7 +42,7 @@
         <div class="stage" id="stage"></div>
         <ol class="progress" id="progress"></ol>
         <div class="actions">
-          <button class="primary" id="btn-step">起第一爻</button>
+          <button class="primary" id="btn-step">起初爻</button>
           <button id="btn-all">一次起完</button>
         </div>
       </div>
@@ -54,25 +61,37 @@
         <p class="error" id="meihua-error" hidden></p>
         <div class="stage" id="meihua-stage" hidden><div class="taiji big"></div></div>
       </div>
+
+      <button class="link corner" id="btn-sound"></button>
     </section>
 
     <section id="result" hidden></section>
 
-    <section class="card" id="history-card" hidden>
+    <section class="card" id="history-card">
       <div class="history-head">
         <h2>占卜紀錄</h2>
-        <button id="btn-clear" class="link">清除</button>
+        <div class="history-tools">
+          <button id="btn-export" class="link">匯出備份</button>
+          <button id="btn-import" class="link">匯入</button>
+          <button id="btn-clear" class="link">清除</button>
+          <input id="import-file" type="file" accept="application/json,.json" hidden>
+        </div>
       </div>
-      <ul id="history"></ul>
+      <p class="hint" id="history-stats"></p>
+      <p class="hint" id="history-status"></p>
+      <div id="history-list-wrap"><ul id="history"></ul></div>
+      <p class="hint">紀錄只存在這台裝置的瀏覽器裡。換手機或清除瀏覽資料前，請先匯出備份。</p>
     </section>
   </main>
 
-  <footer>卦辭、爻辭、大象傳為《周易》原文；白話為意譯；「卦象解讀」由程式依卦象自動組成，僅供參考。</footer>
+  <footer>卦辭、爻辭、大象傳為《周易》原文；白話為意譯；「卦象解讀」與「六爻納甲」由程式依規則自動產生，僅供參考。</footer>
 
   <script src="js/hexagrams-1.js"></script>
   <script src="js/hexagrams-2.js"></script>
   <script src="js/divination.js"></script>
+  <script src="js/texts.js"></script>
   <script src="js/reading.js"></script>
+  <script src="js/najia.js"></script>
   <script src="js/app.js"></script>
   <script src="js/pwa.js"></script>
 </body>

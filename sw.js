@@ -1,10 +1,10 @@
 // Service worker：有網路時永遠拿最新的檔案並更新快取，沒網路時才用快取。
 // 這樣開發時改了檔案重新整理就看得到，不會被舊快取卡住。
-const CACHE = "iching-v1";
+const CACHE = "iching-v2";
 const FILES = [
-  "./", "index.html", "catalog.html", "style.css", "manifest.webmanifest",
-  "js/hexagrams-1.js", "js/hexagrams-2.js", "js/divination.js", "js/reading.js",
-  "js/app.js", "js/catalog.js", "js/pwa.js",
+  "./", "index.html", "catalog.html", "about.html", "style.css", "manifest.webmanifest",
+  "js/hexagrams-1.js", "js/hexagrams-2.js", "js/divination.js", "js/texts.js", "js/reading.js",
+  "js/najia.js", "js/app.js", "js/catalog.js", "js/pwa.js",
   "icons/icon-192.png", "icons/icon-512.png",
 ];
 

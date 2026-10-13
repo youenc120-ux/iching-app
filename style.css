@@ -291,6 +291,62 @@ button:disabled { opacity: 0.5; cursor: default; }
 .reveal .reading-head { animation: fade 0.6s both; animation-delay: 1.5s; }
 .reveal .reading-part { animation: rise 0.6s both; animation-delay: calc(1.7s + var(--n) * 0.35s); }
 
+/* ── 選項按鈕（問題類別、準不準）── */
+label.spaced { margin-top: 14px; }
+.choices { display: flex; flex-wrap: wrap; gap: 6px; }
+.choices button { padding: 5px 12px; font-size: 0.9rem; border-radius: 999px; }
+.choices button.active { border-color: var(--accent); color: var(--accent); background: var(--accent-soft); }
+#ask { position: relative; }
+button.corner { position: absolute; top: 18px; right: 20px; font-size: 0.8rem; }
+.summary-actions { margin-top: 16px; }
+
+/* ── 六爻納甲 ── */
+.najia-table { margin: 14px 0; overflow-x: auto; }
+.najia-row {
+  display: grid;
+  grid-template-columns: 3em 7.5em 96px 3.5em 1fr;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 0;
+  border-top: 1px solid var(--line);
+  font-size: 0.92rem;
+  white-space: nowrap;
+}
+.najia-row .bar { width: 76px; height: 9px; }
+.najia-spirit { color: var(--muted); }
+.najia-mark { color: var(--accent); font-weight: 700; }
+.najia-change { color: var(--accent); }
+.najia-row.moving .najia-rel { color: var(--accent); }
+.najia-verdict { font-weight: 700; }
+.najia .guide p { margin-top: 6px; }
+
+/* ── 事後紀錄 ── */
+textarea {
+  width: 100%;
+  margin-top: 12px;
+  padding: 10px 12px;
+  font: inherit;
+  color: inherit;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  resize: vertical;
+}
+.history-tools { display: flex; gap: 14px; }
+#history-status:empty { display: none; }
+
+/* ── 依據與來源、總覽補充 ── */
+.about p, .about li { margin: 6px 0; }
+.about ul { padding-left: 1.3em; margin: 6px 0; }
+.about h3 { margin: 16px 0 4px; font-size: 1.05rem; }
+.about a, .hint a { color: var(--accent); }
+.trust { width: 100%; border-collapse: collapse; margin: 8px 0 12px; font-size: 0.92rem; }
+.trust th, .trust td { text-align: left; padding: 8px 6px; border-top: 1px solid var(--line); vertical-align: top; }
+.trust th { color: var(--muted); font-weight: 400; border-top: none; }
+.trust .tone { white-space: nowrap; }
+.hex-note { margin: 0 0 12px; }
+.condition { margin: 4px 0 0; font-size: 0.9rem; color: var(--accent); }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
@@ -301,4 +357,7 @@ button:disabled { opacity: 0.5; cursor: default; }
   .arrow { display: none; }
   .progress .detail { display: none; }
   .hex-grid { grid-template-columns: repeat(6, 1fr); }
+  .najia-row { grid-template-columns: 2.6em 6.8em 60px 3em 1fr; gap: 6px; font-size: 0.82rem; }
+  .najia-row .bar { width: 52px; }
+  button.corner { position: static; display: block; margin-top: 14px; }
 }

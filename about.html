@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#2b2620">
+  <title>依據與來源 · 易經卜卦</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="taiji" aria-hidden="true"></div>
+    <h1>依據與來源</h1>
+    <p class="subtitle">這個 app 的內容從哪裡來、可信到什麼程度</p>
+    <nav class="nav">
+      <a href="index.html">卜卦</a>
+      <a href="catalog.html">六十四卦</a>
+      <a href="about.html" class="current">依據與來源</a>
+    </nav>
+  </header>
+
+  <main class="about">
+    <section class="card">
+      <h2>先說結論</h2>
+      <table class="trust">
+        <tr><th>內容</th><th>來源</th><th>可信度</th></tr>
+        <tr><td>卦辭、爻辭、大象傳原文</td><td>《周易》通行本，已與兩個古籍版本逐句比對</td><td><span class="tone good">高</span></td></tr>
+        <tr><td>起卦方法、變爻占法、納甲排盤規則</td><td>古籍明文，出處列於下方</td><td><span class="tone good">高</span></td></tr>
+        <tr><td>白話翻譯</td><td>本 app 自行意譯，未採用特定注本</td><td><span class="tone neutral">中</span></td></tr>
+        <tr><td>吉凶評等、卦象解讀、用神判讀的結論</td><td>本 app 依辭意與規則自行判定</td><td><span class="tone caution">僅供參考</span></td></tr>
+      </table>
+      <p>簡單說：<strong>原文和排盤是查得到出處的，解讀和吉凶是這個 app 自己的判斷。</strong>《周易》歷代注家對同一句話常有不同解釋，沒有哪一種解讀能稱為標準答案。</p>
+    </section>
+
+    <section class="card">
+      <h2>原文的校對</h2>
+      <p>六十四卦的卦辭、三百八十四爻的爻辭、乾坤兩卦的用九用六、六十四條大象傳，共 514 句，逐句用程式和以下兩個版本比對（去除標點後比較文字）：</p>
+      <ul>
+        <li><a href="https://zh.wikisource.org/wiki/周易" target="_blank" rel="noopener">維基文庫《周易》</a>（分卦頁面）</li>
+        <li><a href="https://zh.wikisource.org/wiki/周易本義_(四庫全書本)" target="_blank" rel="noopener">維基文庫《周易本義》四庫全書本</a>（宋・朱熹撰，卷一、卷二為經文）</li>
+      </ul>
+      <p>比對結果：</p>
+      <ul>
+        <li>發現並修正一個錯字：豐卦九三「日中見沬」，原先誤作「沫」。</li>
+        <li>困卦九二「利用亨祀」，原作「享祀」，兩個來源皆作「亨」，已依來源改正（「亨」在此讀作「享」，意思不變）。</li>
+        <li>其餘不一致之處都是古今異體字或版本異文，例如「无／無」「于／於」「彊／強」「輿／車」，本 app 採通行本的寫法。</li>
+        <li>萃卦卦辭開頭的「亨」字，程頤、朱熹認為是衍文，通行本仍保留，本 app 從通行本。</li>
+      </ul>
+      <p class="hint">四庫全書本是未加標點的掃描轉錄，夾有少量辨識錯字和避諱缺筆字；維基文庫的分卦頁面則收了一些古本異文。兩者互相參照之後，才確定通行本的文字。</p>
+    </section>
+
+    <section class="card">
+      <h2>起卦方法</h2>
+      <h3>蓍草法（大衍筮法）</h3>
+      <p>依《繫辭上傳》：「大衍之數五十，其用四十有九。分而為二以象兩，掛一以象三，揲之以四以象四時，歸奇於扐以象閏。」三變成一爻，十八變成一卦。程式照這個步驟模擬，得到的機率是老陽 3/16、少陰 7/16、少陽 5/16、老陰 1/16。</p>
+      <h3>金錢卦</h3>
+      <p>以三枚銅錢代替蓍草，相傳始於漢代，是後世最通行的簡化做法。正面記 3、反面記 2，三枚相加得 6、7、8、9。機率是老陽、老陰各 1/8，少陽、少陰各 3/8，<strong>和蓍草法並不相同</strong>：蓍草法比較不容易出現老陰。</p>
+      <h3>梅花易數</h3>
+      <p>相傳為宋代邵雍所傳。年月日時起卦：年支數、農曆月、日相加除八取上卦，再加時辰數除八取下卦、除六取動爻；八卦用先天數（乾一、兌二、離三、震四、巽五、坎六、艮七、坤八）。有動爻的一卦為「用」，另一卦為「體」，以五行生剋論吉凶。農曆換算使用瀏覽器內建的農曆曆法。</p>
+    </section>
+
+    <section class="card">
+      <h2>動爻怎麼看</h2>
+      <p>「解卦重點」依朱熹《易學啟蒙・考變占》的規則：</p>
+      <ul>
+        <li>六爻皆不變：占本卦卦辭。</li>
+        <li>一爻變：以本卦變爻的爻辭占。</li>
+        <li>二爻變：以本卦兩個變爻的爻辭占，以上爻為主。</li>
+        <li>三爻變：占本卦及之卦的卦辭，「前十卦主貞，後十卦主悔」，即動爻含初爻時以本卦為主，否則以之卦為主。</li>
+        <li>四爻變：以之卦兩個不變爻占，以下爻為主。</li>
+        <li>五爻變：以之卦不變爻占。</li>
+        <li>六爻變：乾坤占用九、用六，其餘占之卦卦辭。</li>
+      </ul>
+      <p class="hint">這套規則是宋代以後最通行的一種，但不是唯一的一種。《左傳》《國語》裡的筮例就有和它不合的地方；其中四爻變一條，朱熹自己也說經傳沒有明文，是「以例推之」。出處可見<a href="https://zh.wikisource.org/wiki/易學象數論/占法" target="_blank" rel="noopener">黃宗羲《易學象數論・占法》</a>所引。</p>
+    </section>
+
+    <section class="card">
+      <h2>吉凶評等</h2>
+      <p>《繫辭上傳》對斷辭有明確的輕重之分：「吉凶者，言乎其失得也。悔吝者，言乎其小疵也。无咎者，善補過也。」本 app 據此把每一句辭分成五等：</p>
+      <ul>
+        <li><span class="tone good">大吉</span>　辭作「元吉」「大吉」「无不利」一類。</li>
+        <li><span class="tone good">吉</span>　辭作「吉」「亨」「利」一類。</li>
+        <li><span class="tone neutral">平</span>　辭作「无咎」「无悔」，或沒有斷語，或吉凶附帶條件。</li>
+        <li><span class="tone caution">不利</span>　辭作「悔」「吝」「厲」「无攸利」一類。</li>
+        <li><span class="tone bad">凶</span>　辭作「凶」。</li>
+      </ul>
+      <p><strong>448 句的評等是逐句人工判定的，沒有依循任何一家注本。</strong>遇到一句辭裡吉凶並見、或者有條件的（例如「婦人吉，夫子凶」），解讀會另外說明條件，不會只給一個標籤。全部評等可以在<a href="catalog.html">六十四卦</a>頁面逐句查看。</p>
+    </section>
+
+    <section class="card">
+      <h2>六爻納甲</h2>
+      <p>納甲法出自西漢京房，後世稱文王卦或火珠林法，以八宮、世應、干支、六親、六神來斷卦。本 app 的排盤依通行的歌訣：</p>
+      <ul>
+        <li><strong>納甲</strong>：「乾金甲子外壬午，坎水戊寅外戊申，艮土丙辰外丙戌，震木庚子外庚午，巽木辛丑外辛未，離火己卯外己酉，坤土乙未外癸丑，兌金丁巳外丁亥。」見<a href="https://zh.wikisource.org/wiki/增刪卜易" target="_blank" rel="noopener">《增刪卜易》</a>等書。</li>
+        <li><strong>八宮世應</strong>：八純卦世在上爻，一世至五世卦世在初爻至五爻，游魂卦世在四爻，歸魂卦世在三爻；應爻與世爻相隔三位。</li>
+        <li><strong>六親</strong>：以本宮五行為我，同我者兄弟，我生者子孫，生我者父母，我剋者妻財，剋我者官鬼。</li>
+        <li><strong>六神</strong>：「甲乙起青龍，丙丁起朱雀，戊日起勾陳，己日起螣蛇，庚辛起白虎，壬癸起玄武」，由初爻往上排。見《古今圖書集成・藝術典》所錄。</li>
+        <li><strong>干支曆</strong>：年以立春為界，月以節氣為界，節氣由太陽黃經計算（交節時刻誤差約半小時內）；日柱由儒略日推算，已用 2000 年 1 月 1 日為戊午日驗證。</li>
+      </ul>
+      <p><strong>用神判讀只用了最基本的規則</strong>：用神是否上卦、月建與日辰的生剋、動爻的回頭生剋、旬空、原神與忌神、世應關係。三合、六合、六沖、進退神、月破、反吟伏吟等細則都沒有納入，所以它的結論比真人卦師粗略得多。</p>
+    </section>
+
+    <section class="card">
+      <h2>這個 app 不能做什麼</h2>
+      <ul>
+        <li>它不能預測未來。占卜是幫人整理思緒、換個角度看事情的工具。</li>
+        <li>健康、法律、重大財務的決定，請找醫師、律師、專業人士。</li>
+        <li>解讀文字是程式依規則拼成的，同樣的卦、同類的問題會得到同樣的話，它不了解你的實際處境。</li>
+      </ul>
+    </section>
+  </main>
+
+  <footer>發現原文或解說有錯，歡迎指正。</footer>
+  <script src="js/pwa.js"></script>
+</body>
+</html>
