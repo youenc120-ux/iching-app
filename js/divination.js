@@ -73,36 +73,68 @@ function castYarrowLine() {
 }
 
 // ── 梅花易數 ──
-// 取得農曆年月日（靠瀏覽器內建的農曆曆法）
-function lunarDate(date) {
-  const parts = new Intl.DateTimeFormat("zh-TW-u-ca-chinese", {
-    year: "numeric", month: "numeric", day: "numeric",
-  }).formatToParts(date);
-  const get = (type) => (parts.find((p) => p.type === type) || {}).value || "";
-  const toNumber = (s) => {
-    const digits = s.match(/\d+/);
-    if (digits) return Number(digits[0]);
-    // 有些瀏覽器會回傳「正月」「臘月」這類中文月名
-    const names = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"];
-    const cleaned = s.replace(/[閏月]/g, "").replace("正", "一").replace("冬", "十一").replace("臘", "十二");
-    const idx = names.indexOf(cleaned);
-    return idx >= 0 ? idx + 1 : NaN;
-  };
-  // 干支年：優先用對應的西元年推算（西元 4 年為甲子），沒有才看瀏覽器給的年名
-  const relatedYear = Number(get("relatedYear"));
-  let yearName = get("yearName");
-  let branch = yearName ? BRANCHES.indexOf(yearName.slice(-1)) + 1 : 0;
-  if (relatedYear) {
-    const offset = (((relatedYear - 4) % 60) + 60) % 60;
-    branch = (offset % 12) + 1;
-    yearName = STEMS[offset % 10] + BRANCHES[offset % 12];
+// ── 農曆換算 ──
+// 靠瀏覽器內建的農曆曆法（Intl），但各家瀏覽器回傳的格式不一樣：
+// Chrome 給阿拉伯數字和對應的西元年；Safari 可能給「臘月」「廿四」這類中文，也可能不給年份。
+// 所以月、日兩種寫法都認，年份則不依賴瀏覽器，改由月份自己推算。
+
+// 中文數字轉數值：初一、十五、二十、廿四、三十、卅 …
+function chineseNumber(text) {
+  const digits = "〇一二三四五六七八九";
+  let total = 0;
+  let current = 0;
+  for (const char of text) {
+    if (char === "十") { total += (current || 1) * 10; current = 0; }
+    else if (char === "廿") { total += 20; current = 0; }
+    else if (char === "卅") { total += 30; current = 0; }
+    else if (digits.includes(char)) current = digits.indexOf(char);
   }
-  const month = toNumber(get("month"));
-  const day = toNumber(get("day"));
-  if (!branch || !month || !day) throw new Error("此瀏覽器無法換算農曆");
-  return { branch, month, day, yearName };
+  return total + current;
 }
 
+// 從瀏覽器回傳的文字讀出月或日的數值
+function lunarNumber(text) {
+  const digits = text.match(/\d+/);
+  if (digits) return Number(digits[0]);
+  return chineseNumber(text.replace("正", "一").replace("冬", "十一").replace("臘", "十二").replace("腊", "十二"));
+}
+
+// 把瀏覽器回傳的片段整理成 { month, day, leap }；讀不出來回傳 null
+function parseLunarParts(parts) {
+  const get = (type) => (parts.find((p) => p.type === type) || {}).value || "";
+  const monthText = get("month");
+  const month = lunarNumber(monthText);
+  const day = lunarNumber(get("day"));
+  if (!(month >= 1 && month <= 12 && day >= 1 && day <= 30)) return null;
+  return { month, day, leap: /閏|闰|bis|leap/i.test(monthText) };
+}
+
+// 西曆年月日換農曆。回傳 { year: 農曆年對應的西元年, month, day, leap }
+function lunarOf(y, m, d) {
+  const instant = new Date(Date.UTC(y, m - 1, d, 12));
+  let lunar = null;
+  for (const locale of ["en-US-u-ca-chinese-nu-latn", "zh-TW-u-ca-chinese-nu-latn", "zh-TW-u-ca-chinese"]) {
+    try {
+      const format = new Intl.DateTimeFormat(locale, { month: "numeric", day: "numeric", timeZone: "UTC" });
+      if (!format.resolvedOptions().calendar.includes("chinese")) continue;
+      lunar = parseLunarParts(format.formatToParts(instant));
+    } catch {
+      lunar = null;
+    }
+    if (lunar) break;
+  }
+  if (!lunar) throw new Error("這個瀏覽器無法換算農曆，請更新瀏覽器後再試。");
+  // 國曆一、二月遇到農曆十一、十二月，表示還沒過年，農曆年是前一年
+  lunar.year = m <= 2 && lunar.month >= 11 ? y - 1 : y;
+  return lunar;
+}
+
+// 以這台裝置當地的日期換農曆，並附上年支數與干支年名（梅花易數用）
+function lunarDate(date) {
+  const lunar = lunarOf(date.getFullYear(), date.getMonth() + 1, date.getDate());
+  const offset = (((lunar.year - 4) % 60) + 60) % 60;
+  return { branch: (offset % 12) + 1, month: lunar.month, day: lunar.day, yearName: STEMS[offset % 10] + BRANCHES[offset % 12] };
+}
 // 時辰數：子時（23–1 點）為 1 … 亥時為 12
 const hourBranch = (date) => Math.floor(((date.getHours() + 1) % 24) / 2) + 1;
 

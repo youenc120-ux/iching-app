@@ -44,24 +44,7 @@ function birthInstant(birth) {
   return Date.UTC(birth.year, birth.month - 1, birth.day, birth.hour, birth.minute) - birth.zone * 3600000;
 }
 
-// 西曆年月日換農曆（靠瀏覽器內建的農曆曆法）。回傳 { year: 對應的西元年, month, day, leap }
-function lunarOf(y, m, d) {
-  const parts = new Intl.DateTimeFormat("zh-TW-u-ca-chinese", {
-    year: "numeric", month: "numeric", day: "numeric", timeZone: "UTC",
-  }).formatToParts(new Date(Date.UTC(y, m - 1, d, 12)));
-  const get = (type) => (parts.find((p) => p.type === type) || {}).value || "";
-  const names = ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"];
-  const toNumber = (text) => {
-    const digits = text.match(/\d+/);
-    if (digits) return Number(digits[0]);
-    const cleaned = text.replace(/[閏月]/g, "").replace("正", "一").replace("冬", "十一").replace("臘", "十二");
-    return names.indexOf(cleaned) + 1;
-  };
-  const monthText = get("month");
-  const lunar = { year: Number(get("relatedYear")), month: toNumber(monthText), day: toNumber(get("day")), leap: monthText.includes("閏") };
-  if (!lunar.year || !lunar.month || !lunar.day) throw new Error("這個瀏覽器無法換算農曆，請改用新版的 Chrome、Edge 或 Safari。");
-  return lunar;
-}
+// 農曆換算 lunarOf() 在 divination.js。
 
 // 把表單畫到 container 裡。options.place 為 true 時多出出生地欄位（星盤用）。
 // 按下按鈕時呼叫 onSubmit(birth)；若先前存過資料，會自動帶入並立刻排一次。
