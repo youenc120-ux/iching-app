@@ -173,11 +173,14 @@ function readingGuide(result) {
         tip: `兩爻動，看本卦這兩爻的爻辭，以上面的「${title("primary", moving[1])}」為主。`,
         focus: [{ hex: "primary", part: moving[0] }, { hex: "primary", part: moving[1], main: true }],
       };
-    case 3:
+    case 3: {
+      // 《易學啟蒙》：前十卦主貞（本卦），後十卦主悔（之卦）。動爻含初爻者屬前十卦。
+      const front = moving.includes(0);
       return {
-        tip: "三爻動，合看本卦與變卦的卦辭，以本卦為主、變卦為輔。",
-        focus: [{ hex: "primary", part: "judgment", main: true }, { hex: "changed", part: "judgment" }],
+        tip: `三爻動，合看本卦與變卦的卦辭；${front ? "動爻含初爻，以本卦為主、變卦為輔" : "動爻不含初爻，以變卦為主、本卦為輔"}。`,
+        focus: [{ hex: "primary", part: "judgment", main: front }, { hex: "changed", part: "judgment", main: !front }],
       };
+    }
     case 4:
       return {
         tip: `四爻動，看變卦中兩個不變的爻，以下面的「${title("changed", still[0])}」為主。`,

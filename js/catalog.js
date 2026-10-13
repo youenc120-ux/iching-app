@@ -21,6 +21,13 @@ function textRow(title, text, plain, rating) {
   return row;
 }
 
+// 吉凶有條件的辭句，在下面補上條件說明
+function withCondition(row, hex, position) {
+  const condition = CONDITIONS[`${hex.number}-${position}`];
+  if (condition) row.append(el("p", "condition", `有條件：${condition}`));
+  return row;
+}
+
 function hexCard(hex) {
   const bars = hex.bits.map((bit) => {
     const bar = el("span", `bar ${bit ? "yang" : "yin"}`);
@@ -39,11 +46,12 @@ function hexCard(hex) {
         el("p", "meta", `上${hex.upper}${up.symbol}（${up.nature}）　下${hex.lower}${low.symbol}（${low.nature}）`),
       ]),
     ]),
-    textRow("卦辭", `${hex.name}：${hex.judgment}`, hex.judgmentPlain, ratingOf(hex, "judgment")),
+    el("p", "hex-note", `${HEX_NOTES[hex.number - 1][0]}：${HEX_NOTES[hex.number - 1][1]}${HEX_NOTES[hex.number - 1][2]}`),
+    withCondition(textRow("卦辭", `${hex.name}：${hex.judgment}`, hex.judgmentPlain, ratingOf(hex, "judgment")), hex, 0),
     textRow("象曰", hex.image)
   );
   hex.lines.forEach((line, i) => {
-    card.append(textRow(lineTitle(i, hex.bits[i] === 1), line.text, line.plain, ratingOf(hex, i)));
+    card.append(withCondition(textRow(lineTitle(i, hex.bits[i] === 1), line.text, line.plain, ratingOf(hex, i)), hex, i + 1));
   });
   if (hex.extra) {
     card.append(textRow(hex.name === "乾" ? "用九" : "用六", hex.extra.text, hex.extra.plain, ratingOf(hex, "extra")));

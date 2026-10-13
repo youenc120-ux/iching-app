@@ -117,9 +117,13 @@ const TOPIC_ADVICE = {
   ],
 };
 
-function detectTopic(question) {
+// chosen：使用者自己點選的類別；沒選（auto）才用問題裡的關鍵字判斷
+function detectTopic(question, chosen) {
+  const general = { key: "general", name: "整體" };
+  if (chosen === "general") return general;
+  if (chosen && chosen !== "auto") return TOPICS.find((topic) => topic.key === chosen) || general;
   const text = (question || "").toLowerCase();
-  return TOPICS.find((topic) => topic.words.some((word) => text.includes(word))) || { key: "general", name: "整體" };
+  return TOPICS.find((topic) => topic.words.some((word) => text.includes(word))) || general;
 }
 
 // 取出 readingGuide 標示的重點辭句（原文、白話與評等）
@@ -128,14 +132,15 @@ function focusTexts(result, guide) {
     const hex = result[f.hex];
     const where = f.hex === "primary" ? "本卦" : "變卦";
     const rating = ratingOf(hex, f.part);
+    const condition = CONDITIONS[`${hex.number}-${f.part === "judgment" ? 0 : f.part + 1}`];
     if (f.part === "judgment") {
-      return { main: f.main, rating, label: `${where}${hex.name}卦卦辭`, text: hex.judgment, plain: hex.judgmentPlain };
+      return { main: f.main, rating, condition, label: `${where}${hex.name}卦卦辭`, text: hex.judgment, plain: hex.judgmentPlain };
     }
     if (f.part === "extra") {
       return { main: f.main, rating, label: hex.name === "乾" ? "用九" : "用六", text: hex.extra.text, plain: hex.extra.plain };
     }
     const line = hex.lines[f.part];
-    return { main: f.main, rating, label: `${where}${lineTitle(f.part, hex.bits[f.part] === 1)}`, text: line.text, plain: line.plain };
+    return { main: f.main, rating, condition, label: `${where}${lineTitle(f.part, hex.bits[f.part] === 1)}`, text: line.text, plain: line.plain };
   });
 }
 
@@ -148,7 +153,7 @@ function composeReading(entry, result, guide) {
   // 總評等：為主的辭句算兩份，其餘各算一份
   const level = Math.round((main.rating * 2 + others.reduce((sum, f) => sum + f.rating, 0)) / (2 + others.length));
   const tone = LEVELS[level];
-  const topic = detectTopic(entry.question);
+  const topic = detectTopic(entry.question, entry.topic);
   const sections = [];
 
   // 一、直說：先給結論
@@ -156,15 +161,18 @@ function composeReading(entry, result, guide) {
 
   // 二、依據：結論是從哪一句辭來的
   let basis = `依據是${main.label}：「${main.text}」意思是：${main.plain}`;
-  if (main.rating === 3) basis += "\n這句辭本身沒有斷言吉或凶，或者吉凶附帶條件。不要只挑你想聽的那一半來讀。";
+  if (main.condition) basis += `\n這句辭的吉凶是有條件的：${main.condition}`;
+  else if (main.rating === 3) basis += "\n這句辭本身沒有斷言吉或凶。不要只挑你想聽的那一半來讀。";
   for (const other of others) {
     basis += `\n另一句要一起看的是${other.label}：「${other.text}」意思是：${other.plain}`;
+    if (other.condition) basis += `（有條件：${other.condition}）`;
     if (Math.abs(other.rating - main.rating) >= 2) basis += "這一句和上一句的方向不同，表示事情有好有壞，不是單純的一面。";
   }
   if (moving.length === 1) basis += `\n${POSITION_MEANINGS[moving[0]]}`;
   sections.push({ title: "依據", text: basis });
 
   // 三、處境：本卦與內外卦
+  const note = HEX_NOTES[primary.number - 1];
   const up = TRIGRAMS[primary.upper];
   const low = TRIGRAMS[primary.lower];
   const picture = primary.upper === primary.lower
@@ -172,7 +180,8 @@ function composeReading(entry, result, guide) {
     : `上卦${primary.upper}（${up.nature}），下卦${primary.lower}（${low.nature}）`;
   sections.push({
     title: "處境",
-    text: `本卦「${primary.fullName}」，${picture}。${primary.judgmentPlain}`
+    text: `本卦「${primary.fullName}」講的是「${note[0]}」：${note[1]}`
+      + `\n卦象是${picture}。卦辭的意思：${primary.judgmentPlain}`
       + `\n你這一邊：${TRIGRAM_TRAITS[primary.lower].inner}。對方或環境那一邊：${TRIGRAM_TRAITS[primary.upper].outer}。`,
   });
 
@@ -202,7 +211,7 @@ function composeReading(entry, result, guide) {
   const ways = primary.upper === primary.lower
     ? TRIGRAM_TRAITS[primary.lower].way
     : `你自己這邊，${TRIGRAM_TRAITS[primary.lower].way}。面對外在，記得${TRIGRAM_TRAITS[primary.upper].outer}，別用一廂情願的方式應對`;
-  let action = `${ways}。\n《象傳》給這一卦的要求是：「${primary.image}」`;
+  let action = `${note[2]}\n${ways}。\n《象傳》給這一卦的要求是：「${primary.image}」`;
   if (topic.key === "health") action += "\n身體的事以醫師的診斷為準，占卜不能代替檢查。";
   sections.push({ title: "該怎麼做", text: action });
 
