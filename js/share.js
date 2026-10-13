@@ -2,7 +2,7 @@
 // 自成一個檔案，不依賴其他程式，所有頁面都載入。
 (() => {
   const SITE_URL = "https://youenc120-ux.github.io/iching-app/";
-  const SITE_NAME = "易經卜卦";
+  const SITE_NAME = "觀象";
   // SITE_URL 的 QR code（29×29，容錯等級 M），每一列的黑白格轉成 36 進位。
   // 網址如果改了，這張圖要重新產生，否則掃出來還是舊網址。
   const QR_SIZE = 29;
@@ -67,7 +67,7 @@
     shareButton.hidden = !navigator.share;
     shareButton.addEventListener("click", async () => {
       try {
-        await navigator.share({ title: SITE_NAME, text: "易經卜卦、八字、紫微斗數、星盤", url: SITE_URL });
+        await navigator.share({ title: SITE_NAME, text: "易經卜卦、八字、紫微斗數、星盤、合盤", url: SITE_URL });
       } catch {
         // 使用者自己取消分享，不用處理
       }

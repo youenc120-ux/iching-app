@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="iching">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#b8322a">
+  <meta name="description" content="觀象：易經卜卦、八字、紫微斗數、西洋星盤與合盤，排盤與解讀都在你的裝置上完成。">
+  <title>卜卦 · 觀象</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html">首頁</a>
+    <a href="iching.html" class="current">卜卦</a>
+    <a href="catalog.html">六十四卦</a>
+    <a href="bazi.html">八字</a>
+    <a href="ziwei.html">紫微斗數</a>
+    <a href="astro.html">星盤</a>
+    <a href="compat.html">合盤</a>
+    <a href="about.html">依據與來源</a>
+  </nav>
+  <header>
+    <div class="taiji" aria-hidden="true"></div>
+    <h1>易經卜卦</h1>
+    <p class="subtitle">心誠則靈 · 一事一占</p>
+  </header>
+
+  <main>
+    <section class="card" id="ask">
+      <label for="question">所問之事</label>
+      <input id="question" type="text" maxlength="60" placeholder="靜心默想，寫下你想問的事（可留空）">
+
+      <label class="spaced">問的是哪一類</label>
+      <div class="choices" id="topics"></div>
+
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-method="coin" role="tab">金錢卦</button>
+        <button class="tab" data-method="yarrow" role="tab">蓍草法</button>
+        <button class="tab" data-method="meihua" role="tab">梅花易數</button>
+      </div>
+
+      <!-- 金錢卦／蓍草法：一爻一爻起，共六次 -->
+      <div class="panel" id="panel-step">
+        <p class="hint" id="step-hint"></p>
+        <div class="stage" id="stage"></div>
+        <ol class="progress" id="progress"></ol>
+        <div class="actions">
+          <button class="primary" id="btn-step">起初爻</button>
+          <button id="btn-all">一次起完</button>
+        </div>
+      </div>
+
+      <!-- 梅花易數 -->
+      <div class="panel" id="panel-meihua" hidden>
+        <p class="hint">梅花易數以數起卦：可用當下的農曆年月日時，或心中浮現的兩個數字。</p>
+        <div class="actions">
+          <button class="primary" id="btn-time">以此刻時間起卦</button>
+        </div>
+        <div class="numbers">
+          <input id="num-a" type="number" min="1" inputmode="numeric" placeholder="第一個數">
+          <input id="num-b" type="number" min="1" inputmode="numeric" placeholder="第二個數">
+          <button id="btn-numbers">以數字起卦</button>
+        </div>
+        <p class="error" id="meihua-error" hidden></p>
+        <div class="stage" id="meihua-stage" hidden><div class="taiji big"></div></div>
+      </div>
+
+      <button class="link corner" id="btn-sound"></button>
+    </section>
+
+    <section id="result" hidden></section>
+
+    <section class="card" id="history-card">
+      <div class="history-head">
+        <h2>占卜紀錄</h2>
+        <div class="history-tools">
+          <button id="btn-export" class="link">匯出備份</button>
+          <button id="btn-import" class="link">匯入</button>
+          <button id="btn-clear" class="link">清除</button>
+          <input id="import-file" type="file" accept="application/json,.json" hidden>
+        </div>
+      </div>
+      <p class="hint" id="history-stats"></p>
+      <p class="hint" id="history-status"></p>
+      <div id="history-list-wrap"><ul id="history"></ul></div>
+      <p class="hint">紀錄只存在這台裝置的瀏覽器裡。換手機或清除瀏覽資料前，請先匯出備份。</p>
+    </section>
+  </main>
+
+  <footer>卦辭、爻辭、大象傳為《周易》原文；白話為意譯；「卦象解讀」與「六爻納甲」由程式依規則自動產生，僅供參考。</footer>
+
+  <script src="js/hexagrams-1.js"></script>
+  <script src="js/hexagrams-2.js"></script>
+  <script src="js/lunar-data.js"></script>
+  <script src="js/divination.js"></script>
+  <script src="js/texts.js"></script>
+  <script src="js/reading.js"></script>
+  <script src="js/najia.js"></script>
+  <script src="js/poster.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/share.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

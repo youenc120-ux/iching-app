@@ -375,18 +375,19 @@ function reviewSection(entry) {
   ]);
 }
 
-// ── 存成圖片 ── 把問題、卦象和結論畫到畫布上
+// ── 存成圖片 ── 把問題、卦象和結論畫到畫布上（共用的畫布工具在 poster.js）
 function drawHexagram(ctx, values, centerX, top, width, colors) {
   const height = 22, gap = 16;
   values.slice().reverse().forEach((value, row) => {
     const y = top + row * (height + gap);
     ctx.fillStyle = isMoving(value) ? colors.accent : colors.ink;
+    const piece = (x, w) => { posterRoundRect(ctx, x, y, w, height, 11); ctx.fill(); };
     if (isYang(value)) {
-      ctx.fillRect(centerX - width / 2, y, width, height);
+      piece(centerX - width / 2, width);
     } else {
       const part = width * 0.43;
-      ctx.fillRect(centerX - width / 2, y, part, height);
-      ctx.fillRect(centerX + width / 2 - part, y, part, height);
+      piece(centerX - width / 2, part);
+      piece(centerX + width / 2 - part, part);
     }
     if (isMoving(value)) {
       ctx.font = "28px serif";
@@ -397,110 +398,47 @@ function drawHexagram(ctx, values, centerX, top, width, colors) {
   return top + 6 * (height + gap);
 }
 
-// 中文逐字換行，回傳畫完後的 y 座標
-function drawWrapped(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
-  let line = "";
-  let lines = 0;
-  for (const char of text) {
-    if (char === "\n" || ctx.measureText(line + char).width > maxWidth) {
-      ctx.fillText(line, x, y);
-      y += lineHeight;
-      line = char === "\n" ? "" : char;
-      if (++lines >= maxLines) return y;
-    } else {
-      line += char;
-    }
-  }
-  if (line) { ctx.fillText(line, x, y); y += lineHeight; }
-  return y;
-}
-
-function renderShareImage(entry, result, reading) {
-  const colors = { paper: "#f4efe4", ink: "#2b2620", muted: "#7a7062", accent: "#9c2f22", line: "#d9cfbc" };
-  const serif = '"Noto Serif TC", "Songti TC", "PMingLiU", serif';
-  const canvas = document.createElement("canvas");
-  canvas.width = 1080;
-  canvas.height = 1350;
-  const ctx = canvas.getContext("2d");
-  ctx.fillStyle = colors.paper;
-  ctx.fillRect(0, 0, 1080, 1350);
-  ctx.strokeStyle = colors.line;
-  ctx.lineWidth = 3;
-  ctx.strokeRect(36, 36, 1008, 1278);
-
-  ctx.textAlign = "center";
-  ctx.fillStyle = colors.muted;
-  ctx.font = `30px ${serif}`;
-  ctx.fillText(`易經卜卦 · ${METHOD_NAMES[entry.method]} · ${new Date(entry.time).toLocaleDateString("zh-TW")}`, 540, 120);
+function ichingPoster(entry, result, reading) {
+  const { canvas, ctx, colors } = createPoster("iching", `${METHOD_NAMES[entry.method]} · ${new Date(entry.time).toLocaleDateString("zh-TW")}`);
   ctx.fillStyle = colors.ink;
-  ctx.font = `bold 50px ${serif}`;
-  let y = drawWrapped(ctx, entry.question ? `問：${entry.question}` : "卦象", 540, 210, 900, 66, 2);
+  ctx.font = `700 50px ${POSTER_SERIF}`;
+  let y = posterWrap(ctx, entry.question ? `問：${entry.question}` : "卦象", 540, 210, 900, 66, 2);
 
   // 本卦（與變卦）
   const figures = [{ hex: result.primary, values: result.values, caption: "本卦" }];
   if (result.changed) figures.push({ hex: result.changed, values: result.changed.bits.map((b) => (b ? 7 : 8)), caption: "變卦" });
-  const top = y + 70;
+  const top = y + 80;
+  posterPanel(ctx, colors, 96, top - 70, 888, 400);
   figures.forEach((figure, i) => {
     const centerX = figures.length === 1 ? 540 : 300 + i * 480;
     ctx.textAlign = "center";
     ctx.fillStyle = colors.muted;
-    ctx.font = `28px ${serif}`;
+    ctx.font = `26px ${POSTER_SANS}`;
     ctx.fillText(figure.caption, centerX, top - 24);
     const bottom = drawHexagram(ctx, figure.values, centerX, top, 240, colors);
     ctx.textAlign = "center";
     ctx.fillStyle = colors.ink;
-    ctx.font = `bold 46px ${serif}`;
+    ctx.font = `700 46px ${POSTER_SERIF}`;
     ctx.fillText(figure.hex.fullName, centerX, bottom + 46);
     y = bottom + 46;
   });
   if (figures.length === 2) {
     ctx.fillStyle = colors.muted;
-    ctx.font = `48px ${serif}`;
+    ctx.font = `48px ${POSTER_SERIF}`;
     ctx.fillText("→", 540, top + 120);
   }
 
   // 吉凶與結論
-  y += 90;
+  y += 110;
   ctx.fillStyle = colors.accent;
-  ctx.font = `bold 44px ${serif}`;
+  ctx.font = `700 46px ${POSTER_SERIF}`;
   ctx.fillText(`【${reading.tone.label}】`, 540, y);
   ctx.fillStyle = colors.ink;
-  ctx.font = `34px ${serif}`;
+  ctx.font = `34px ${POSTER_SANS}`;
   ctx.textAlign = "left";
-  drawWrapped(ctx, reading.sections[0].text, 110, y + 74, 860, 54, 8);
-
-  ctx.textAlign = "center";
-  ctx.fillStyle = colors.muted;
-  ctx.font = `26px ${serif}`;
-  ctx.fillText("占卜是整理思緒的工具，僅供參考", 540, 1270);
+  posterWrap(ctx, reading.sections[0].text, 110, y + 74, 860, 54, 7);
   return canvas;
 }
-
-async function shareImage(entry, result, reading) {
-  const canvas = renderShareImage(entry, result, reading);
-  const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/png"));
-  const name = `易經卜卦-${result.primary.name}.png`;
-  const file = new File([blob], name, { type: "image/png" });
-  // 手機上直接叫出分享選單；不支援就下載檔案
-  if (navigator.canShare && navigator.canShare({ files: [file] })) {
-    try {
-      await navigator.share({ files: [file], title: "易經卜卦" });
-      return;
-    } catch (err) {
-      if (err.name === "AbortError") return; // 使用者自己取消
-    }
-  }
-  downloadBlob(blob, name);
-}
-
-function downloadBlob(blob, name) {
-  const link = el("a");
-  link.href = URL.createObjectURL(blob);
-  link.download = name;
-  link.click();
-  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
-}
-
 // ── 顯示結果 ──
 // isNew：剛起出的卦（要存紀錄、播放浮現動畫）；從紀錄重看時為 false
 function showReading(reading, isNew = true) {
@@ -547,8 +485,7 @@ function showReading(reading, isNew = true) {
       `體卦 ${t.ti}（${t.tiElement}）代表自己，用卦 ${t.yong}（${t.yongElement}）代表所問之事：${t.relation}，${t.verdict}`));
   }
   const composed = composeReading(entry, result, guide);
-  const shareButton = el("button", null, "存成圖片");
-  shareButton.addEventListener("click", () => shareImage(entry, result, composed));
+  const shareButton = posterButton(() => ichingPoster(entry, result, composed), `觀象-${result.primary.name}卦.png`);
   summary.append(tips, readingSection(composed), el("div", "actions summary-actions", [shareButton]));
   container.append(summary, najiaSection(entry, result), reviewSection(entry));
 
@@ -599,7 +536,7 @@ function isValidEntry(entry) {
 
 function exportHistory() {
   const blob = new Blob([JSON.stringify(loadHistory(), null, 2)], { type: "application/json" });
-  downloadBlob(blob, `易經卜卦紀錄-${new Date().toISOString().slice(0, 10)}.json`);
+  downloadBlob(blob, `觀象-占卜紀錄-${new Date().toISOString().slice(0, 10)}.json`);
 }
 
 // 匯入：和現有紀錄合併，同一時間的視為同一筆（以現有的為準）

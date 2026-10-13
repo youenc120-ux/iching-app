@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="compat">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#c8456f">
+  <meta name="description" content="觀象：易經卜卦、八字、紫微斗數、西洋星盤與合盤，排盤與解讀都在你的裝置上完成。">
+  <title>合盤 · 觀象</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html">首頁</a>
+    <a href="iching.html">卜卦</a>
+    <a href="catalog.html">六十四卦</a>
+    <a href="bazi.html">八字</a>
+    <a href="ziwei.html">紫微斗數</a>
+    <a href="astro.html">星盤</a>
+    <a href="compat.html" class="current">合盤</a>
+    <a href="about.html">依據與來源</a>
+  </nav>
+  <header>
+    <div class="emblem" aria-hidden="true"></div>
+    <h1>合盤</h1>
+    <p class="subtitle">八字與星盤 · 看兩個人的互動</p>
+  </header>
+  <main>
+    <section class="card">
+      <h2>選兩個人</h2>
+      <div class="fields">
+        <label class="field"><span>第一位</span><select id="person-a"></select></label>
+        <label class="field"><span>第二位</span><select id="person-b"></select></label>
+      </div>
+      <p class="hint">合盤同時看八字和星盤。出生時間越準，結果越有參考價值。</p>
+    </section>
+
+    <div id="result" hidden></div>
+
+    <section class="card">
+      <h2>新增或修改人物</h2>
+      <div id="birth-form"></div>
+    </section>
+  </main>
+
+  <footer>合盤只看了最主要的幾個因素，分數是加總的參考值；兩個人合不合，最終看實際相處。</footer>
+
+  <script src="js/hexagrams-1.js"></script>
+  <script src="js/hexagrams-2.js"></script>
+  <script src="js/lunar-data.js"></script>
+  <script src="js/divination.js"></script>
+  <script src="js/najia.js"></script>
+  <script src="js/poster.js"></script>
+  <script src="js/birth.js"></script>
+  <script src="js/bazi.js"></script>
+  <script src="js/astro.js"></script>
+  <script src="js/compat.js"></script>
+  <script src="js/share.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

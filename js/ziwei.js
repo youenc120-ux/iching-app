@@ -31,8 +31,37 @@ const HORSE = [2, 11, 8, 5, 2, 11, 8, 5, 2, 11, 8, 5]; // 天馬
 const LIFE_LORD = ["貪狼", "巨門", "祿存", "文曲", "廉貞", "武曲", "破軍", "武曲", "廉貞", "文曲", "祿存", "巨門"];
 const BODY_LORD = ["火星", "天相", "天梁", "天同", "文昌", "天機", "火星", "天相", "天梁", "天同", "文昌", "天機"];
 
-function ziweiChart(birth) {
-  // 晚上 11 點後算隔天的子時
+// 星曜亮度，依《紫微斗數全書》卷二的廟旺表。每個地支七欄：廟、旺、得地、利益、平和、不得地、落陷。
+// 星名用一個字代表：紫機日武同廉府月貪巨相梁殺破昌曲祿羊陀火鈴
+const BRIGHT_LEVELS = ["廟", "旺", "得", "利", "平", "不", "陷"];
+const BRIGHT_TABLE = [
+  ["機府月相梁破祿", "武同貪巨殺", "昌曲", "", "紫廉", "", "日羊火鈴"],
+  ["紫武府月貪相殺昌曲羊陀", "梁破", "火鈴", "廉", "", "日同巨", "機"],
+  ["廉府巨相梁殺祿火鈴", "紫日月", "機武破", "同", "貪曲", "", "昌陀"],
+  ["日巨梁祿", "紫機殺曲", "府", "武貪昌火鈴", "同廉", "", "月相破羊"],
+  ["武府貪梁殺羊陀", "日破", "紫相昌曲", "機廉", "同", "", "月巨火鈴"],
+  ["同昌曲祿", "紫日巨", "府相火鈴", "", "機武殺破", "", "廉月貪梁陀"],
+  ["紫機相梁破祿火鈴", "日武府貪巨殺", "", "", "廉", "月", "同昌曲羊"],
+  ["紫武府貪殺羊陀", "梁破曲", "日相", "廉昌火鈴", "", "同月巨", "機"],
+  ["廉巨相殺祿", "紫同", "機日武府破昌曲", "月", "貪", "", "梁陀火鈴"],
+  ["巨昌曲祿", "紫機府月殺", "梁火鈴", "武貪", "日同廉", "", "相破羊"],
+  ["武府貪梁殺羊陀火鈴", "月破", "紫相", "機廉", "同", "日", "巨昌曲"],
+  ["同月祿", "紫巨曲", "府相", "昌火鈴", "機武殺破", "", "日廉貪梁陀"],
+];
+const STAR_KEYS = {
+  紫微: "紫", 天機: "機", 太陽: "日", 武曲: "武", 天同: "同", 廉貞: "廉", 天府: "府", 太陰: "月", 貪狼: "貪", 巨門: "巨",
+  天相: "相", 天梁: "梁", 七殺: "殺", 破軍: "破", 文昌: "昌", 文曲: "曲", 祿存: "祿", 擎羊: "羊", 陀羅: "陀", 火星: "火", 鈴星: "鈴",
+};
+function brightnessOf(star, branch) {
+  const key = STAR_KEYS[star];
+  if (!key) return "";
+  const column = BRIGHT_TABLE[branch].findIndex((stars) => stars.includes(key));
+  return column >= 0 ? BRIGHT_LEVELS[column] : "";
+}
+
+function ziweiChart(input) {
+  // 用換回標準時間後的鐘面時間；晚上 11 點後算隔天的子時
+  const birth = { ...input, ...(input.clock || {}) };
   const shifted = new Date(Date.UTC(birth.year, birth.month - 1, birth.day + (birth.hour >= 23 ? 1 : 0)));
   const lunar = lunarOf(shifted.getUTCFullYear(), shifted.getUTCMonth() + 1, shifted.getUTCDate());
   // 閏月：前半月算本月，後半月算下個月
@@ -65,7 +94,7 @@ function ziweiChart(birth) {
     branch, stem: stemOf(branch), name: PALACE_NAMES[mod12(life - branch)],
     major: [], minor: [], isBody: branch === body,
   }));
-  const put = (list, star, branch) => palaces[mod12(branch)][list].push({ name: star });
+  const put = (list, star, branch) => palaces[mod12(branch)][list].push({ name: star, bright: brightnessOf(star, mod12(branch)) });
   ZIWEI_GROUP.forEach(([star, offset]) => put("major", star, ziwei + offset));
   TIANFU_GROUP.forEach(([star, offset]) => put("major", star, tianfu + offset));
 
@@ -146,6 +175,7 @@ const TRANSFORM_TEXTS = {
 };
 
 function renderZiwei(birth) {
+  const input = birth;
   const chart = ziweiChart(birth);
   const root = document.querySelector("#result");
   root.replaceChildren();
@@ -171,7 +201,8 @@ function renderZiwei(birth) {
     }
     const palace = chart.palaces[branch];
     const current = age >= palace.decade[0] && age <= palace.decade[1];
-    const star = (s, cls) => el("span", cls, [s.name, s.transform ? el("b", `transform t-${s.transform}`, s.transform) : null]);
+    const star = (s, cls) => el("span", cls, [s.name, s.bright ? el("sub", `bright b-${s.bright}`, s.bright) : null,
+      s.transform ? el("b", `transform t-${s.transform}`, s.transform) : null]);
     board.append(el("div", `ziwei-cell${palace.name === "命宮" ? " life" : ""}${current ? " current" : ""}`, [
       el("div", "ziwei-major", palace.major.map((s) => star(s, "major"))),
       el("div", "ziwei-minor", palace.minor.map((s) => star(s, "minor"))),
@@ -182,8 +213,12 @@ function renderZiwei(birth) {
       ]),
     ]));
   });
-  root.append(el("section", "card", [el("h2", null, "命盤"), board,
-    el("p", "hint", "框線加粗的是命宮，底色較深的是目前所在的大限。星名後的小字是生年四化。")]));
+  const note = dstNote(input);
+  root.append(el("section", "card", [el("h2", null, `${input.name || ""}的命盤`),
+    note ? el("p", "hint", note) : null,
+    board,
+    el("p", "hint", "框線發亮的是命宮，底色較深的是目前所在的大限。星名右下的小字是亮度（廟、旺、得地、利益、平和、不得地、落陷），彩色標籤是生年四化。"),
+    el("div", "actions summary-actions", [posterButton(() => ziweiPoster(input, chart), `觀象-紫微-${input.name || "命盤"}.png`)])]));
 
   // 解讀
   const reading = el("section", "card reading-card");
@@ -207,7 +242,26 @@ function renderZiwei(birth) {
   const bad = helpers.filter((n) => ["擎羊", "陀羅", "火星", "鈴星", "地空", "地劫"].includes(n));
   if (good.length) lifeText += `\n命宮有${good.join("、")}同宮，是助力，做事比較有人幫、有資源。`;
   if (bad.length) lifeText += `\n命宮有${bad.join("、")}同宮，是煞星，個性裡有衝、急或想法與現實落差的一面，人生波折也比較多。`;
+  const strong = lifeStars.stars.filter((s) => s.bright === "廟" || s.bright === "旺").map((s) => s.name);
+  const weak = lifeStars.stars.filter((s) => s.bright === "陷" || s.bright === "不").map((s) => s.name);
+  if (!lifeStars.borrowed && strong.length) lifeText += `\n${strong.join("、")}在這個宮位是廟旺，星的優點能充分發揮。`;
+  if (!lifeStars.borrowed && weak.length) lifeText += `\n${weak.join("、")}在這個宮位落陷或不得地，星的優點打折、缺點比較明顯，要靠後天努力補。`;
   part("命宮", lifeText);
+
+  // 三方四正：命宮、財帛、官祿、遷移四個宮位合起來看一個人的整體格局
+  const quartet = ["命宮", "財帛", "官祿", "遷移"].map(byName);
+  const allStars = quartet.flatMap((p) => [...p.major, ...p.minor]);
+  const lucky = allStars.filter((s) => ["文昌", "文曲", "左輔", "右弼", "天魁", "天鉞", "祿存", "天馬"].includes(s.name)).map((s) => s.name);
+  const harsh = allStars.filter((s) => ["擎羊", "陀羅", "火星", "鈴星", "地空", "地劫"].includes(s.name)).map((s) => s.name);
+  const quartetTransforms = allStars.filter((s) => s.transform).map((s) => `${s.name}化${s.transform}`);
+  let quartetText = quartet.map((p) => `${p.name}：${p.major.map((s) => s.name + (s.bright ? `（${s.bright}）` : "")).join("、") || "無主星"}`).join("\n");
+  quartetText += `\n這四個宮位裡，吉星有 ${lucky.length} 顆${lucky.length ? `（${lucky.join("、")}）` : ""}，煞星有 ${harsh.length} 顆${harsh.length ? `（${harsh.join("、")}）` : ""}。`;
+  quartetText += lucky.length > harsh.length + 1 ? "吉多於煞，做事助力多、阻力少，格局偏順。"
+    : harsh.length > lucky.length + 1 ? "煞多於吉，凡事要靠自己硬拼，過程辛苦、起伏大，但煞星也給人衝勁。"
+    : "吉煞相當，有助力也有阻力，成敗看怎麼用。";
+  if (quartetTransforms.length) quartetText += `\n其中帶有生年四化：${quartetTransforms.join("、")}。`;
+  if (quartetTransforms.some((t) => t.endsWith("忌"))) quartetText += "化忌進了三方四正，那顆星代表的事會是你反覆卡關的地方。";
+  part("三方四正", quartetText);
 
   const bodyPalace = chart.palaces.find((p) => p.isBody);
   part("身宮", `身宮在${bodyPalace.name}。身宮代表中年以後的重心與你實際花最多力氣的地方：`
@@ -230,11 +284,59 @@ function renderZiwei(birth) {
       + `這十年的主題會圍繞著這個宮位代表的事情。${borrowed ? "宮內無主星，借對宮" : "宮內主星是"}${stars.map((s) => s.name).join("、") || "無"}。`);
   }
 
-  reading.append(el("p", "hint", "這裡只排了十四主星和常用的輔星、煞星、生年四化，沒有納入星曜的廟旺利陷、流年、小限、飛星四化與雜曜；解說只看單宮主星，沒有論三方四正的組合。各門派對庚年四化、閏月等細節的排法並不一致。"));
+  // 流年：今年地支所在的宮位就是流年命宮
+  const yearBranchNow = mod12(now - 4);
+  const yearPalace = chart.palaces[yearBranchNow];
+  const yearStars = starsOf(yearPalace);
+  part(`今年（${now}）流年`, `今年是${BRANCHES[yearBranchNow]}年，流年命宮落在本命的${yearPalace.name}，今年的重心和際遇會圍繞這個宮位的事。`
+    + `${yearStars.borrowed ? "宮內無主星，借對宮" : "宮內主星是"}${yearStars.stars.map((s) => s.name).join("、") || "無"}。`
+    + (yearPalace.minor.some((s) => ["擎羊", "陀羅", "火星", "鈴星", "地空", "地劫"].includes(s.name)) ? "宮內有煞星，今年在這方面容易有波折，行事保守為宜。" : ""));
+
+  reading.append(el("p", "hint", "這裡排了十四主星、常用的輔星煞星、生年四化與亮度，流年只看流年命宮；沒有納入小限、流年四化、飛星與雜曜。各門派對壬年化科、閏月等細節的排法並不一致。"));
   root.append(reading);
   root.hidden = false;
 }
 
-if (typeof document !== "undefined" && document.querySelector("#birth-form")) {
-  birthForm(document.querySelector("#birth-form"), { place: false, button: "排命盤" }, renderZiwei);
+// 存成圖片：四乘四的命盤
+function ziweiPoster(birth, chart) {
+  const { canvas, ctx, colors } = createPoster("ziwei", "紫微斗數命盤");
+  const layout = [5, 6, 7, 8, 4, null, null, 9, 3, null, null, 10, 2, 1, 0, 11];
+  const size = 232, left = 76, top = 170;
+  layout.forEach((branch, i) => {
+    if (branch === null) return;
+    const palace = chart.palaces[branch];
+    const x = left + (i % 4) * size, y = top + Math.floor(i / 4) * size;
+    posterPanel(ctx, colors, x + 6, y + 6, size - 12, size - 12);
+    if (palace.name === "命宮") { ctx.strokeStyle = colors.accent; ctx.lineWidth = 3; posterRoundRect(ctx, x + 6, y + 6, size - 12, size - 12, 28); ctx.stroke(); }
+    ctx.textAlign = "left";
+    ctx.fillStyle = colors.accent;
+    ctx.font = `700 30px ${POSTER_SERIF}`;
+    palace.major.forEach((star, k) => ctx.fillText(star.name + (star.transform ? `化${star.transform}` : ""), x + 22, y + 52 + k * 38));
+    ctx.fillStyle = colors.muted;
+    ctx.font = `20px ${POSTER_SANS}`;
+    posterWrap(ctx, palace.minor.map((s) => s.name).join(" "), x + 22, y + 52 + Math.max(palace.major.length, 1) * 38, size - 44, 26, 2);
+    ctx.fillStyle = colors.ink;
+    ctx.font = `700 24px ${POSTER_SANS}`;
+    ctx.fillText(palace.name + (palace.isBody ? "・身" : ""), x + 22, y + size - 26);
+    ctx.textAlign = "right";
+    ctx.fillStyle = colors.muted;
+    ctx.font = `20px ${POSTER_SANS}`;
+    ctx.fillText(STEMS[palace.stem] + BRANCHES[palace.branch], x + size - 22, y + size - 26);
+  });
+  ctx.textAlign = "center";
+  ctx.fillStyle = colors.accent;
+  ctx.font = `700 54px ${POSTER_SERIF}`;
+  ctx.fillText(`${chart.bureauElement}${"二三四五六"[chart.bureau - 2]}局`, 540, top + size * 2 - 40);
+  ctx.fillStyle = colors.ink;
+  ctx.font = `700 40px ${POSTER_SERIF}`;
+  ctx.fillText(birth.name || "", 540, top + size * 2 + 22);
+  ctx.fillStyle = colors.muted;
+  ctx.font = `26px ${POSTER_SANS}`;
+  ctx.fillText(`農曆 ${STEMS[chart.yearStem]}${BRANCHES[chart.yearBranch]}年 ${chart.lunar.month} 月 ${chart.lunar.day} 日 ${BRANCHES[chart.hour]}時`, 540, top + size * 2 + 70);
+  ctx.fillText(`${birth.gender === "male" ? "男" : "女"}命　命主${chart.lifeLord}　身主${chart.bodyLord}`, 540, top + size * 2 + 108);
+  return canvas;
+}
+
+if (typeof document !== "undefined" && document.querySelector("#birth-form") && document.documentElement.dataset.theme === "ziwei") {
+  birthForm(document.querySelector("#birth-form"), { button: "排命盤" }, renderZiwei);
 }

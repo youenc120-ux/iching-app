@@ -119,6 +119,41 @@ const PLANET_ORDER = ["太陽", "月亮", "水星", "金星", "火星", "木星"
 const PLANET_GLYPHS = { 太陽: "☉", 月亮: "☽", 水星: "☿", 金星: "♀", 火星: "♂", 木星: "♃", 土星: "♄", 天王星: "♅", 海王星: "♆", 冥王星: "♇", 北交點: "☊", 上升: "ASC", 天頂: "MC" };
 const ASPECTS = [["合相", 0, 8, "融合"], ["六分相", 60, 4, "和諧"], ["四分相", 90, 6, "緊張"], ["三分相", 120, 6, "和諧"], ["對分相", 180, 8, "緊張"]];
 
+// Placidus 宮位制：把每個黃道點在地平線上、下的弧各分成三等份。
+// 回傳十二個宮頭的黃經（第 1 宮到第 12 宮）；緯度太高算不出來時回傳 null。
+function placidusCusps(ramc, ecl, latitude, asc, mc) {
+  const tanLat = Math.tan(latitude * DEG);
+  const toLongitude = (ra) => norm360(atan2(sin(ra), cos(ra) * cos(ecl)));
+  // 反覆逼近：某個赤經的黃道點，它的半弧的幾分之幾剛好落在那個赤經上
+  const solve = (start, fraction, above) => {
+    let ra = start;
+    for (let i = 0; i < 16; i++) {
+      const declination = Math.atan(sin(ra) * Math.tan(ecl * DEG));
+      const x = -tanLat * Math.tan(declination);
+      if (Math.abs(x) > 1) return null;
+      const diurnal = Math.acos(x) / DEG; // 地平線以上的半弧
+      ra = above ? ramc + fraction * diurnal : ramc + 180 - fraction * (180 - diurnal);
+    }
+    return toLongitude(ra);
+  };
+  const c11 = solve(ramc + 30, 1 / 3, true);
+  const c12 = solve(ramc + 60, 2 / 3, true);
+  const c2 = solve(ramc + 120, 2 / 3, false);
+  const c3 = solve(ramc + 150, 1 / 3, false);
+  if ([c11, c12, c2, c3].includes(null)) return null;
+  const opposite = (lon) => norm360(lon + 180);
+  return [asc, c2, c3, opposite(mc), opposite(c11), opposite(c12), opposite(asc), opposite(c2), opposite(c3), mc, c11, c12];
+}
+
+// 某個黃經落在第幾宮
+function houseOf(lon, cusps) {
+  for (let i = 0; i < 12; i++) {
+    const width = norm360(cusps[(i + 1) % 12] - cusps[i]);
+    if (norm360(lon - cusps[i]) < width) return i + 1;
+  }
+  return 1;
+}
+
 function astroChart(birth) {
   const instant = birthInstant(birth);
   const d = instant / 86400000 + 2440587.5 - 2451543.5;
@@ -135,9 +170,11 @@ function astroChart(birth) {
   if (norm360(asc - mc) > 180) asc = norm360(asc + 180); // 上升一定在天頂之後的東半邊
 
   const ascSign = Math.floor(asc / 30);
+  // 宮位制：預設整宮制（上升所在的星座整個算第一宮）；選 Placidus 而且算得出來才用它
+  const cusps = birth.houses === "placidus" ? placidusCusps(lst, ecl, birth.latitude, asc, mc) : null;
   const place = (name, lon, extra = {}) => ({
     name, lon, sign: Math.floor(lon / 30), degree: lon % 30,
-    house: ((Math.floor(lon / 30) - ascSign + 12) % 12) + 1, // 整宮制：上升所在的星座整個算第一宮
+    house: cusps ? houseOf(lon, cusps) : ((Math.floor(lon / 30) - ascSign + 12) % 12) + 1,
     ...extra,
   });
   const planets = PLANET_ORDER.map((name) => {
@@ -160,7 +197,7 @@ function astroChart(birth) {
   }
   aspects.sort((x, y) => x.orb - y.orb);
 
-  return { planets, points, asc, mc, ascSign, aspects };
+  return { planets, points, asc, mc, ascSign, aspects, cusps, lst, ecl };
 }
 
 // ── 解說文字 ──
@@ -227,11 +264,24 @@ function drawWheel(chart) {
     add("line", { x1, y1, x2, y2, class: "wheel-line" });
     const [tx, ty] = point(sign * 30 + 15, 172);
     add("text", { x: tx, y: ty, class: `wheel-sign s${sign % 4}` }, SIGN_GLYPHS[sign]);
-    // 整宮制：每個星座就是一宮
-    const [hx, hy] = point(sign * 30 + 15, 75);
-    add("text", { x: hx, y: hy, class: "wheel-house" }, String(((sign - chart.ascSign + 12) % 12) + 1));
-    const [l1x, l1y] = point(sign * 30, 60);
-    add("line", { x1: l1x, y1: l1y, x2: x1, y2: y1, class: "wheel-line faint" });
+    if (!chart.cusps) {
+      // 整宮制：每個星座就是一宮
+      const [hx, hy] = point(sign * 30 + 15, 75);
+      add("text", { x: hx, y: hy, class: "wheel-house" }, String(((sign - chart.ascSign + 12) % 12) + 1));
+      const [l1x, l1y] = point(sign * 30, 60);
+      add("line", { x1: l1x, y1: l1y, x2: x1, y2: y1, class: "wheel-line faint" });
+    }
+  }
+  if (chart.cusps) {
+    // Placidus：宮頭不在星座交界，各宮大小不一
+    chart.cusps.forEach((cusp, i) => {
+      const [x1, y1] = point(cusp, 60);
+      const [x2, y2] = point(cusp, 155);
+      add("line", { x1, y1, x2, y2, class: "wheel-line faint" });
+      const middle = cusp + norm360(chart.cusps[(i + 1) % 12] - cusp) / 2;
+      const [hx, hy] = point(middle, 75);
+      add("text", { x: hx, y: hy, class: "wheel-house" }, String(i + 1));
+    });
   }
   // 相位線
   const lonOf = Object.fromEntries([...chart.planets, ...chart.points].map((b) => [b.name, b.lon]));
@@ -262,10 +312,87 @@ function drawWheel(chart) {
   return svg;
 }
 
-function renderAstro(birth) {
+// ── 行運：現在天上的行星和本命盤形成的相位 ──
+const TRANSIT_TEXTS = {
+  火星: "這幾週衝勁變強，也容易急躁、起衝突",
+  木星: "這段時間有擴展的機會，容易樂觀，也容易做過頭",
+  土星: "這段時間要面對責任與考驗，進展慢，但做紮實的會留下來",
+  天王星: "這一兩年有突如其來的變動，想打破原本的模式",
+  海王星: "這一兩年界線變模糊，容易理想化，也容易迷惘或看錯",
+  冥王星: "這幾年有深層的轉變，舊的東西被迫結束、重新開始",
+};
+
+function transitAspects(chart, date = new Date()) {
+  const now = planetLongitudes(date.getTime() / 86400000 + 2440587.5 - 2451543.5);
+  const natal = [...chart.planets.slice(0, 5), chart.points[0], chart.points[1]];
+  const found = [];
+  for (const transit of Object.keys(TRANSIT_TEXTS)) {
+    for (const body of natal) {
+      const angle = Math.abs(((now[transit] - body.lon + 540) % 360) - 180);
+      for (const [name, exact, , nature] of ASPECTS) {
+        if (Math.abs(angle - exact) <= 2) found.push({ transit, natal: body.name, name, nature, orb: Math.abs(angle - exact) });
+      }
+    }
+  }
+  return { now, aspects: found.sort((a, b) => a.orb - b.orb) };
+}
+
+// 存成圖片：三大要素與行星位置
+function astroPoster(birth, chart) {
+  const { canvas, ctx, colors } = createPoster("astro", "本命星盤");
+  const byName = (name) => [...chart.planets, ...chart.points].find((b) => b.name === name);
+  ctx.fillStyle = colors.ink;
+  ctx.font = `700 52px ${POSTER_SERIF}`;
+  ctx.fillText(birth.name || "星盤", 540, 210);
+  ctx.fillStyle = colors.muted;
+  ctx.font = `28px ${POSTER_SANS}`;
+  ctx.fillText(`${birthLabel(birth)}　${birth.place === "custom" ? "" : birth.place}`, 540, 262);
+  ["太陽", "月亮", "上升"].forEach((name, i) => {
+    const x = 96 + i * 304;
+    posterPanel(ctx, colors, x, 310, 280, 250);
+    ctx.textAlign = "center";
+    ctx.fillStyle = colors.muted;
+    ctx.font = `28px ${POSTER_SANS}`;
+    ctx.fillText(name, x + 140, 366);
+    ctx.fillStyle = colors.accent;
+    ctx.font = `700 76px ${POSTER_SERIF}`;
+    ctx.fillText(SIGNS[byName(name).sign], x + 140, 466);
+    ctx.fillStyle = colors.ink;
+    ctx.font = `28px ${POSTER_SANS}`;
+    ctx.fillText(`${Math.floor(byName(name).degree)}°`, x + 140, 520);
+  });
+  ctx.font = `32px ${POSTER_SANS}`;
+  chart.planets.slice(2).forEach((body, i) => {
+    const x = 130 + (i % 2) * 440, y = 650 + Math.floor(i / 2) * 64;
+    ctx.textAlign = "left";
+    ctx.fillStyle = colors.muted;
+    ctx.fillText(body.name, x, y);
+    ctx.fillStyle = colors.ink;
+    ctx.fillText(`${SIGNS[body.sign]} ${Math.floor(body.degree)}°　${body.house} 宮`, x + 130, y);
+  });
+  ctx.fillStyle = colors.muted;
+  ctx.font = `28px ${POSTER_SANS}`;
+  posterWrap(ctx, `太陽${SIGNS[byName("太陽").sign]}：${SIGN_TRAITS[byName("太陽").sign]}`, 130, 950, 820, 46, 5);
+  return canvas;
+}
+
+const HOUSE_KEY = "iching-houses";
+
+function renderAstro(input) {
+  let system = "whole";
+  try { system = localStorage.getItem(HOUSE_KEY) || "whole"; } catch { /* 用預設 */ }
+  const birth = { ...input, houses: system };
   const chart = astroChart(birth);
   const root = document.querySelector("#result");
   root.replaceChildren();
+
+  const systemSelect = el("select", null, [["whole", "整宮制"], ["placidus", "Placidus 制"]].map(([value, text]) => Object.assign(el("option", null, text), { value })));
+  systemSelect.value = system;
+  systemSelect.addEventListener("change", () => {
+    try { localStorage.setItem(HOUSE_KEY, systemSelect.value); } catch { /* 存不了就只在這次生效 */ }
+    renderAstro(input);
+  });
+  const systemNote = system === "placidus" && !chart.cusps ? "這個緯度算不出 Placidus 宮位，已改用整宮制。" : "";
 
   const rows = [...chart.planets, ...chart.points].map((body) => el("div", "astro-row", [
     el("span", "astro-glyph", PLANET_GLYPHS[body.name]),
@@ -274,10 +401,13 @@ function renderAstro(birth) {
     el("span", "astro-house", body.name === "上升" || body.name === "天頂" ? "" : `第 ${body.house} 宮`),
   ]));
   root.append(el("section", "card", [
-    el("h2", null, "本命盤"),
-    el("p", "meta", `${birth.year}/${birth.month}/${birth.day} ${String(birth.hour).padStart(2, "0")}:${String(birth.minute).padStart(2, "0")}（UTC${birth.zone >= 0 ? "+" : ""}${birth.zone}）· ${birth.place === "custom" ? "自訂地點" : birth.place} ${birth.latitude}°, ${birth.longitude}°`),
+    el("h2", null, `${birth.name || ""}的本命盤`),
+    el("p", "meta", `${birthLabel(birth)}（UTC${birth.zone >= 0 ? "+" : ""}${birth.zone}${birth.dst ? "，夏令時間" : ""}）· ${birth.place === "custom" ? "自訂地點" : birth.place} ${birth.latitude}°, ${birth.longitude}°`),
+    el("label", "field inline", [el("span", null, "宮位制"), systemSelect]),
+    systemNote ? el("p", "hint", systemNote) : null,
     drawWheel(chart),
     el("div", "astro-table", rows),
+    el("div", "actions summary-actions", [posterButton(() => astroPoster(birth, chart), `觀象-星盤-${birth.name || "本命盤"}.png`)]),
   ]));
 
   const reading = el("section", "card reading-card");
@@ -319,11 +449,17 @@ function renderAstro(birth) {
     return `${a.a}${a.name}${a.b}（誤差 ${a.orb.toFixed(1)}°）：${PLANET_KEYWORDS[a.a]}與${PLANET_KEYWORDS[a.b]}，${meaning}。`;
   }).join("\n") : "沒有在容許度內的主要相位。");
 
-  reading.append(el("p", "hint", "宮位採整宮制（上升所在的星座整個算第一宮），和常見的 Placidus 制可能差一宮。行星位置的誤差約 1 到 2 角分，冥王星略大；星體剛好在星座交界、或出生時間不準時，星座與上升可能有出入。解說是把星座、宮位、相位的一般意義組合起來，沒有論整體格局。"));
+  const transits = transitAspects(chart);
+  part("目前的行運", transits.aspects.length
+    ? transits.aspects.slice(0, 6).map((t) => `行運${t.transit}${t.name}本命${t.natal}（誤差 ${t.orb.toFixed(1)}°）：${TRANSIT_TEXTS[t.transit]}，作用在你的${PLANET_KEYWORDS[t.natal]}上，`
+      + (t.nature === "和諧" ? "過程相對順。" : t.nature === "緊張" ? "過程有壓力和摩擦。" : "影響最直接。")).join("\n")
+    : "目前火星到冥王星沒有和你的太陽、月亮、水星、金星、火星、上升、天頂形成 2 度以內的主要相位，這陣子沒有特別強的外在推力。");
+
+  reading.append(el("p", "hint", "宮位預設採整宮制（上升所在的星座整個算第一宮），可在上方改成 Placidus 制，兩者行星落的宮位可能差一宮。行星位置的誤差約 1 到 2 角分，冥王星略大；星體剛好在星座交界、或出生時間不準時，星座與上升可能有出入。解說是把星座、宮位、相位的一般意義組合起來，沒有論整體格局。"));
   root.append(reading);
   root.hidden = false;
 }
 
-if (typeof document !== "undefined" && document.querySelector("#birth-form")) {
-  birthForm(document.querySelector("#birth-form"), { place: true, button: "排星盤" }, renderAstro);
+if (typeof document !== "undefined" && document.querySelector("#birth-form") && document.documentElement.dataset.theme === "astro") {
+  birthForm(document.querySelector("#birth-form"), { button: "排星盤" }, renderAstro);
 }

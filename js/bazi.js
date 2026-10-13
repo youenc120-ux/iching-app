@@ -1,5 +1,5 @@
-// 八字（四柱推命）：排四柱、十神、藏干、五行分布、日主強弱、大運與流年。
-// 需要 divination.js（STEMS、BRANCHES）、najia.js（ganzhiAt、nearestJie、GENERATES、controls）、birth.js。
+// 八字（四柱推命）：排四柱、十神、藏干、五行分布、日主強弱、格局、神煞、大運與流年。
+// 需要 divination.js（STEMS、BRANCHES）、najia.js（ganzhiAt、nearestJie、GENERATES、controls）、birth.js、poster.js。
 
 const STEM_ELEMENTS = "木木火火土土金金水水"; // 甲乙丙丁戊己庚辛壬癸
 // 地支藏干：本氣、中氣、餘氣
@@ -48,6 +48,20 @@ const TEN_GOD_TEXTS = {
   正印: "正印重：有貴人和長輩照顧，愛學習、心地善良。缺點是依賴、想得多做得少，行動力不足。",
 };
 
+// 每天的日干對日主是哪個十神，當天的提示
+const DAILY_TEXTS = {
+  比肩: "今天適合靠自己把事情做完，也容易遇到和你想法一樣的人。別太堅持己見，和人合作時讓一步。",
+  劫財: "今天容易衝動花錢或被人拉去花錢，借貸、合夥、打賭都先不要。把力氣用在運動和執行上。",
+  食神: "今天心情放鬆、胃口好，適合創作、聚餐、做喜歡的事。重要的硬仗不要排在今天。",
+  傷官: "今天腦筋快、話也多，適合發想和表達。但說話容易太直，對長官和長輩收斂一點。",
+  偏財: "今天人際和機會都活絡，適合談生意、見客戶、社交。有意外之財的機會，也有意外開銷。",
+  正財: "今天適合處理錢和實務：對帳、採買、把該做的工作做完。踏實做就有回報。",
+  七殺: "今天壓力大、事情急，容易遇到強勢的人或突發狀況。沉住氣處理，不要正面硬碰。",
+  正官: "今天適合處理正事、面對主管或公家機關，照規矩來就順。不適合投機取巧。",
+  偏印: "今天適合獨處、研究、想事情，靈感不錯。但容易想太多、懶得動，約好的事別放鴿子。",
+  正印: "今天有人幫、有人照顧，適合學習、請教、休養。事情可以慢一點，不用急著出手。",
+};
+
 const ELEMENT_NOTES = {
   木: ["木過旺：主觀強、固執，容易鑽牛角尖。", "缺木：缺乏規劃和衝勁，容易猶豫、沒有主見。"],
   火: ["火過旺：急躁、衝動，做事三分鐘熱度。", "缺火：缺乏熱情和表現慾，容易顯得冷淡、不夠積極。"],
@@ -56,9 +70,50 @@ const ELEMENT_NOTES = {
   水: ["水過旺：想太多、善變，缺乏定性。", "缺水：缺乏彈性和機變，做事容易死板。"],
 };
 
+// ── 神煞 ── 只取最常用的幾個。地支用序號：子 0 … 亥 11
+const NOBLE = [[1, 7], [0, 8], [11, 9], [11, 9], [1, 7], [0, 8], [1, 7], [6, 2], [3, 5], [3, 5]]; // 天乙貴人，依日干
+const WENCHANG = [5, 6, 8, 9, 8, 9, 11, 0, 2, 3]; // 文昌，依日干
+const BLADE = { 0: 3, 2: 6, 4: 6, 6: 9, 8: 0 }; // 羊刃，只論陽干
+// 依年支或日支的三合局（申子辰、巳酉丑、寅午戌、亥卯未，即地支序號除以 4 的餘數）
+const PEACH = [9, 6, 3, 0]; // 桃花（咸池）
+const HORSE_STAR = [2, 11, 8, 5]; // 驛馬
+const CANOPY = [4, 1, 10, 7]; // 華蓋
+const STAR_NOTES = {
+  天乙貴人: "遇事容易有人出手相助，逢凶化吉。",
+  文昌: "聰明、好學、文筆與考運佳。",
+  桃花: "有魅力、人緣與異性緣好；也容易有感情糾葛。",
+  驛馬: "一生多奔波變動，適合外出發展、常出差或搬遷。",
+  華蓋: "有才藝、悟性高，但性格孤高，喜歡獨處或接觸宗教玄學。",
+  羊刃: "個性剛烈、敢拼，容易有刀傷、意外或衝突，需要制衡。",
+};
+
+function baziStars(pillars, dayStem) {
+  const names = pillars.map((p) => p.name);
+  const branches = pillars.map((p) => p.branch);
+  const stars = [];
+  const add = (name, targets, skip = -1) => {
+    const where = branches.map((b, i) => (targets.includes(b) && i !== skip ? names[i] : null)).filter(Boolean);
+    if (where.length) stars.push({ name, where: [...new Set(where)], note: STAR_NOTES[name] });
+  };
+  add("天乙貴人", NOBLE[dayStem]);
+  add("文昌", [WENCHANG[dayStem]]);
+  if (BLADE[dayStem] !== undefined) add("羊刃", [BLADE[dayStem]]);
+  // 桃花、驛馬、華蓋：以年支和日支各查一次，查到的那一柱不能是自己
+  for (const [name, table] of [["桃花", PEACH], ["驛馬", HORSE_STAR], ["華蓋", CANOPY]]) {
+    const where = new Set();
+    for (const base of [0, 2]) {
+      const target = table[branches[base] % 4];
+      branches.forEach((b, i) => { if (b === target && i !== base) where.add(names[i]); });
+    }
+    if (where.size) stars.push({ name, where: [...where], note: STAR_NOTES[name] });
+  }
+  return stars;
+}
+
 function baziChart(birth) {
   const instant = birthInstant(birth);
-  const gz = ganzhiAt(birth.year, birth.month, birth.day, birth.hour, instant, true);
+  const clock = birth.clock || birth;
+  const gz = ganzhiAt(clock.year, clock.month, clock.day, clock.hour, instant, true);
   const dayStem = gz.dayStem;
   const pillars = [
     { name: "年柱", stem: gz.yearIndex % 10, branch: gz.yearIndex % 12 },
@@ -100,6 +155,10 @@ function baziChart(birth) {
   const officer = GENERATES[wealth];
   const favorable = strength === "偏強" ? [child, wealth, officer] : strength === "偏弱" ? [mother, me] : [];
 
+  // 格局：取月令本氣對日主的十神；本氣是比劫時稱建祿格或羊刃格
+  const monthGod = pillars[1].hidden[0].god;
+  const pattern = monthGod === "比肩" ? "建祿格" : monthGod === "劫財" ? (dayStem % 2 === 0 ? "羊刃格" : "月劫格") : `${monthGod}格`;
+
   // 大運：陽年男、陰年女順排，反之逆排；出生到最近一個節的天數，三天折一年
   const forward = (gz.yearIndex % 2 === 0) === (birth.gender === "male");
   const days = Math.abs(nearestJie(instant, forward) - instant) / 86400000;
@@ -111,18 +170,65 @@ function baziChart(birth) {
     return { stem: index % 10, branch: index % 12, age, year: Math.floor(birth.year + age), god: tenGod(dayStem, index % 10) };
   });
 
-  return { gz, pillars, dayStem, me, weights, total, gods, support, inSeason, strength, favorable, forward, startAge, luck };
+  return {
+    gz, pillars, dayStem, me, weights, total, gods, support, inSeason, strength, favorable, pattern,
+    stars: baziStars(pillars, dayStem), forward, startAge, luck,
+  };
+}
+
+// 某一天對這張命盤的提示（首頁的今日運勢用）
+function baziDaily(chart, date = new Date()) {
+  const day = ganzhiDate(date);
+  const god = tenGod(chart.dayStem, day.dayStem);
+  const element = STEM_ELEMENTS[day.dayStem];
+  const lean = chart.favorable.length ? (chart.favorable.includes(element) ? "今天的日干是你的喜用五行，整體偏順。" : "今天的日干不是你的喜用五行，凡事保守一點。") : "";
+  return { day: day.day, god, text: `${DAILY_TEXTS[god]}${lean}` };
 }
 
 // ── 畫面 ──
 const pairText = (stem, branch) => STEMS[stem] + BRANCHES[branch];
+
+function baziPoster(birth, chart) {
+  const { canvas, ctx, colors } = createPoster("bazi", "八字命盤");
+  ctx.fillStyle = colors.ink;
+  ctx.font = `700 52px ${POSTER_SERIF}`;
+  ctx.fillText(birth.name || "命盤", 540, 210);
+  ctx.fillStyle = colors.muted;
+  ctx.font = `28px ${POSTER_SANS}`;
+  ctx.fillText(`${birthLabel(birth)}　${birth.gender === "male" ? "男" : "女"}命　${chart.pattern}`, 540, 262);
+
+  [...chart.pillars].reverse().forEach((pillar, i) => {
+    const x = 96 + i * 228;
+    posterPanel(ctx, colors, x, 310, 204, 440);
+    ctx.fillStyle = colors.muted;
+    ctx.font = `26px ${POSTER_SANS}`;
+    ctx.fillText(pillar.name, x + 102, 362);
+    ctx.fillStyle = colors.accent;
+    ctx.fillText(pillar.stemGod, x + 102, 404);
+    ctx.font = `700 124px ${POSTER_SERIF}`;
+    ctx.fillStyle = POSTER_ELEMENT_COLORS[STEM_ELEMENTS[pillar.stem]];
+    ctx.fillText(STEMS[pillar.stem], x + 102, 540);
+    ctx.fillStyle = POSTER_ELEMENT_COLORS[BRANCH_ELEMENTS[pillar.branch]];
+    ctx.fillText(BRANCHES[pillar.branch], x + 102, 690);
+  });
+
+  ctx.textAlign = "left";
+  ctx.fillStyle = colors.ink;
+  ctx.font = `34px ${POSTER_SANS}`;
+  let y = posterWrap(ctx, `日主${STEMS[chart.dayStem]}${chart.me}，${chart.strength}`
+    + (chart.favorable.length ? `，喜用${chart.favorable.join("、")}。` : "，五行大致平衡。"), 110, 840, 860, 54, 2);
+  ctx.font = `30px ${POSTER_SANS}`;
+  ctx.fillStyle = colors.muted;
+  posterWrap(ctx, DAY_MASTERS[chart.dayStem], 110, y + 20, 860, 50, 6);
+  return canvas;
+}
 
 function renderBazi(birth) {
   const chart = baziChart(birth);
   const root = document.querySelector("#result");
   root.replaceChildren();
 
-  // 四柱表（傳統由右到左是年月日時，這裡由左到右排時日月年，方便對照）
+  // 四柱表（由左到右排時日月年）
   const table = el("div", "pillars");
   for (const pillar of [...chart.pillars].reverse()) {
     table.append(el("div", `pillar${pillar.name === "日柱" ? " self" : ""}`, [
@@ -143,12 +249,15 @@ function renderBazi(birth) {
     ]);
   }));
 
+  const note = dstNote(birth);
   root.append(el("section", "card", [
-    el("h2", null, "四柱"),
-    el("p", "meta", `${birth.year} 年 ${birth.month} 月 ${birth.day} 日 ${String(birth.hour).padStart(2, "0")}:${String(birth.minute).padStart(2, "0")} · ${birth.gender === "male" ? "男" : "女"}命 · 旬空 ${chart.gz.empty.join("")}`),
+    el("h2", null, `${birth.name}的四柱`),
+    el("p", "meta", `${birthLabel(birth)} · ${birth.gender === "male" ? "男" : "女"}命 · ${chart.pattern} · 旬空 ${chart.gz.empty.join("")}`),
+    note ? el("p", "hint", note) : null,
     table,
     el("h3", null, "五行分布"),
     bars,
+    el("div", "actions summary-actions", [posterButton(() => baziPoster(birth, chart), `觀象-八字-${birth.name}.png`)]),
   ]));
 
   // 解讀
@@ -169,8 +278,16 @@ function renderBazi(birth) {
     : "";
   part("強弱與喜用", `${supportText}\n${strengthText}${favorText}`);
 
+  const monthGod = chart.pillars[1].hidden[0].god;
+  part("格局", `月令本氣是${STEMS[chart.pillars[1].hidden[0].stem]}，對日主為${monthGod}，取為「${chart.pattern}」。`
+    + `月令是八字裡力量最大的位置，它代表你的人生主軸：${(TEN_GOD_TEXTS[monthGod] || "").split("：")[1] || ""}`);
+
   const ranked = Object.entries(chart.gods).sort((a, b) => b[1] - a[1]);
   part("性格與際遇", ranked.slice(0, 2).map(([god]) => TEN_GOD_TEXTS[god]).join("\n"));
+
+  if (chart.stars.length) {
+    part("神煞", chart.stars.map((star) => `${star.name}（在${star.where.join("、")}）：${star.note}`).join("\n"));
+  }
 
   const elementLines = [];
   for (const element of ELEMENT_ORDER) {
@@ -194,27 +311,35 @@ function renderBazi(birth) {
       el("div", "luck-year", `${luck.year}`),
     ]);
   }));
-  const yearIndex = (((now.getFullYear() - 4) % 60) + 60) % 60;
-  const yearGod = tenGod(chart.dayStem, yearIndex % 10);
-  const yearElement = STEM_ELEMENTS[yearIndex % 10];
-  const yearNote = chart.favorable.length
-    ? (chart.favorable.includes(yearElement) ? "天干是你的喜用五行，這一年相對順手。" : "天干不是你的喜用五行，這一年宜守不宜攻。")
-    : "你的命局五行平衡，這一年沒有明顯的偏向。";
+  // 往後五年的流年
+  const years = Array.from({ length: 5 }, (_, i) => {
+    const year = now.getFullYear() + i;
+    const index = (((year - 4) % 60) + 60) % 60;
+    const element = STEM_ELEMENTS[index % 10];
+    const lean = chart.favorable.length ? (chart.favorable.includes(element) ? "順" : "守") : "平";
+    return el("div", `luck${i === 0 ? " current" : ""}`, [
+      el("div", "luck-age", `${year}`),
+      el("div", "pillar-char small", pairText(index % 10, index % 12)),
+      el("div", "luck-god", tenGod(chart.dayStem, index % 10)),
+      el("div", "luck-year", lean),
+    ]);
+  });
   const startYears = Math.floor(chart.startAge);
   const startMonths = Math.round((chart.startAge - startYears) * 12);
+  const today = baziDaily(chart, now);
   root.append(el("section", "card", [
     el("h2", null, "大運與流年"),
     el("p", "meta", `${chart.forward ? "順" : "逆"}行，約 ${startYears} 歲 ${startMonths} 個月起運，每十年換一運。你現在約 ${age} 歲。`),
     luckRow,
-    el("div", "guide", [
-      el("h4", null, `今年（${now.getFullYear()} ${pairText(yearIndex % 10, yearIndex % 12)}年）`),
-      el("p", null, `流年天干${STEMS[yearIndex % 10]}${yearElement}，對你是${yearGod}。${yearNote}`),
-    ]),
-    el("p", "hint", "這裡的強弱與喜用是用五行比重估算的簡易判斷，沒有細論格局、調候、刑沖合害與神煞。年、月以節氣為界；晚上 11 點後出生，日柱算隔天。"),
+    el("h3", null, "往後五年"),
+    el("div", "luck-row five", years),
+    el("p", "hint", "「順」表示流年天干是你的喜用五行，「守」表示不是，「平」表示命局平衡、沒有明顯偏向。"),
+    el("div", "guide", [el("h4", null, `今天（${today.day}日，${today.god}）`), el("p", null, today.text)]),
+    el("p", "hint", "這裡的強弱與喜用是用五行比重估算的簡易判斷，格局只取月令本氣，神煞只列最常用的幾個；沒有細論調候、通根透干與刑沖合害。年、月以節氣為界；晚上 11 點後出生，日柱算隔天。"),
   ]));
   root.hidden = false;
 }
 
-if (typeof document !== "undefined" && document.querySelector("#birth-form")) {
-  birthForm(document.querySelector("#birth-form"), { place: false, button: "排八字" }, renderBazi);
+if (typeof document !== "undefined" && document.querySelector("#birth-form") && document.documentElement.dataset.theme === "bazi") {
+  birthForm(document.querySelector("#birth-form"), { button: "排八字" }, renderBazi);
 }
