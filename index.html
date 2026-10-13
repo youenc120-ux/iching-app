@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#2b2620">
+  <title>易經卜卦</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="taiji" aria-hidden="true"></div>
+    <h1>易經卜卦</h1>
+    <p class="subtitle">心誠則靈 · 一事一占</p>
+    <nav class="nav"><a href="index.html" class="current">卜卦</a><a href="catalog.html">六十四卦</a></nav>
+  </header>
+
+  <main>
+    <section class="card" id="ask">
+      <label for="question">所問之事</label>
+      <input id="question" type="text" maxlength="60" placeholder="靜心默想，寫下你想問的事（可留空）">
+
+      <div class="tabs" role="tablist">
+        <button class="tab active" data-method="coin" role="tab">金錢卦</button>
+        <button class="tab" data-method="yarrow" role="tab">蓍草法</button>
+        <button class="tab" data-method="meihua" role="tab">梅花易數</button>
+      </div>
+
+      <!-- 金錢卦／蓍草法：一爻一爻起，共六次 -->
+      <div class="panel" id="panel-step">
+        <p class="hint" id="step-hint"></p>
+        <div class="stage" id="stage"></div>
+        <ol class="progress" id="progress"></ol>
+        <div class="actions">
+          <button class="primary" id="btn-step">起第一爻</button>
+          <button id="btn-all">一次起完</button>
+        </div>
+      </div>
+
+      <!-- 梅花易數 -->
+      <div class="panel" id="panel-meihua" hidden>
+        <p class="hint">梅花易數以數起卦：可用當下的農曆年月日時，或心中浮現的兩個數字。</p>
+        <div class="actions">
+          <button class="primary" id="btn-time">以此刻時間起卦</button>
+        </div>
+        <div class="numbers">
+          <input id="num-a" type="number" min="1" inputmode="numeric" placeholder="第一個數">
+          <input id="num-b" type="number" min="1" inputmode="numeric" placeholder="第二個數">
+          <button id="btn-numbers">以數字起卦</button>
+        </div>
+        <p class="error" id="meihua-error" hidden></p>
+        <div class="stage" id="meihua-stage" hidden><div class="taiji big"></div></div>
+      </div>
+    </section>
+
+    <section id="result" hidden></section>
+
+    <section class="card" id="history-card" hidden>
+      <div class="history-head">
+        <h2>占卜紀錄</h2>
+        <button id="btn-clear" class="link">清除</button>
+      </div>
+      <ul id="history"></ul>
+    </section>
+  </main>
+
+  <footer>卦辭、爻辭、大象傳為《周易》原文；白話為意譯；「卦象解讀」由程式依卦象自動組成，僅供參考。</footer>
+
+  <script src="js/hexagrams-1.js"></script>
+  <script src="js/hexagrams-2.js"></script>
+  <script src="js/divination.js"></script>
+  <script src="js/reading.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

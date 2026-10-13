@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#2b2620">
+  <title>六十四卦總覽 · 易經卜卦</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="taiji" aria-hidden="true"></div>
+    <h1>六十四卦</h1>
+    <p class="subtitle">原文 · 白話 · 吉凶評等</p>
+    <nav class="nav"><a href="index.html">卜卦</a><a href="catalog.html" class="current">六十四卦</a></nav>
+  </header>
+
+  <main>
+    <section class="card">
+      <input id="search" type="search" placeholder="輸入卦名或卦序搜尋，例如「泰」或「11」">
+      <div class="hex-grid" id="grid"></div>
+      <p class="hint legend">評等說明：
+        <span class="tone good">大吉</span> <span class="tone good">吉</span>
+        <span class="tone neutral">平</span> <span class="tone caution">不利</span> <span class="tone bad">凶</span>
+        ——每句辭旁邊的標籤就是「卦象解讀」下結論的依據，數字存在 js/reading.js 的 RATINGS。
+      </p>
+    </section>
+    <div id="list"></div>
+  </main>
+
+  <footer>卦辭、爻辭、大象傳為《周易》原文；白話為意譯，評等為依辭意判斷，僅供參考。</footer>
+
+  <script src="js/hexagrams-1.js"></script>
+  <script src="js/hexagrams-2.js"></script>
+  <script src="js/divination.js"></script>
+  <script src="js/reading.js"></script>
+  <script src="js/catalog.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>
