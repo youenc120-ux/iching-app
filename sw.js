@@ -1,6 +1,6 @@
 // Service worker：有網路時永遠拿最新的檔案並更新快取，沒網路時才用快取。
 // 這樣開發時改了檔案重新整理就看得到，不會被舊快取卡住。
-const CACHE = "iching-v3";
+const CACHE = "iching-v4";
 const FILES = [
   "./", "index.html", "catalog.html", "bazi.html", "ziwei.html", "astro.html", "about.html",
   "style.css", "manifest.webmanifest",
@@ -22,9 +22,10 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET") return;
+  if (event.request.method !== "GET" || new URL(event.request.url).origin !== location.origin) return;
+  // no-cache：每次都向伺服器確認檔案有沒有更新，避免網站更新後還拿到瀏覽器暫存的舊檔
   event.respondWith(
-    fetch(event.request)
+    fetch(event.request.url, { cache: "no-cache" })
       .then((response) => {
         const copy = response.clone();
         caches.open(CACHE).then((cache) => cache.put(event.request, copy));
