@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#2b2620">
+  <title>八字 · 易經卜卦</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="taiji" aria-hidden="true"></div>
+    <h1>八字</h1>
+    <p class="subtitle">四柱推命 · 十神 · 大運</p>
+    <nav class="nav">
+      <a href="index.html">卜卦</a>
+      <a href="catalog.html">六十四卦</a>
+      <a href="bazi.html" class="current">八字</a>
+      <a href="ziwei.html">紫微斗數</a>
+      <a href="astro.html">星盤</a>
+      <a href="about.html">依據與來源</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="card">
+      <h2>出生資料</h2>
+      <div id="birth-form"></div>
+    </section>
+    <div id="result" hidden></div>
+  </main>
+
+  <footer>排盤依節氣與干支曆計算；強弱、喜用與解說是簡易判斷，僅供參考。</footer>
+
+  <script src="js/hexagrams-1.js"></script>
+  <script src="js/hexagrams-2.js"></script>
+  <script src="js/divination.js"></script>
+  <script src="js/najia.js"></script>
+  <script src="js/birth.js"></script>
+  <script src="js/bazi.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

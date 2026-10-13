@@ -60,9 +60,9 @@ function najiaLines(hex) {
 }
 
 // ── 干支曆 ──
-// 太陽黃經（度），用來定節氣；精度約 0.01 度，節氣交接時刻誤差在半小時內。
-function solarLongitude(date) {
-  const days = date.getTime() / 86400000 + 2440587.5 - 2451545.0;
+// 太陽黃經（度），用來定節氣；精度約 0.01 度，節氣交接時刻誤差在半小時內。instant 是毫秒時間戳。
+function solarLongitudeAt(instant) {
+  const days = instant / 86400000 + 2440587.5 - 2451545.0;
   const rad = Math.PI / 180;
   const mean = 280.46 + 0.9856474 * days;
   const anomaly = (357.528 + 0.9856003 * days) * rad;
@@ -70,31 +70,43 @@ function solarLongitude(date) {
   return ((longitude % 360) + 360) % 360;
 }
 
-// 年月日時四柱。年以立春為界、月以節氣為界（不是農曆初一）。
-function ganzhiDate(date) {
+// 找出最近的「節」（立春、驚蟄…每 30 度一個，交節才換月）的時刻。forward 為 true 找下一個，否則找上一個。
+function nearestJie(instant, forward) {
+  const longitude = solarLongitudeAt(instant);
+  const offset = ((longitude - 15) % 30 + 30) % 30; // 距離上一個節過了幾度
+  let target = instant + ((forward ? 30 - offset : -offset) / 0.9856474) * 86400000;
+  for (let i = 0; i < 6; i++) {
+    const boundary = Math.round((solarLongitudeAt(target) - 15) / 30) * 30 + 15;
+    const diff = ((solarLongitudeAt(target) - boundary + 540) % 360) - 180;
+    target -= (diff / 0.9856474) * 86400000;
+  }
+  return target;
+}
+
+// 由「當地鐘面時間」（年月日時）與絕對時刻算四柱。年以立春為界、月以節氣為界（不是農曆初一）。
+// lateZi：晚上 11 點後日柱算隔天（八字的慣例）。
+function ganzhiAt(y, m, d, hour, instant, lateZi = false) {
   const pair = (index) => STEMS[index % 10] + BRANCHES[index % 12];
-  const longitude = solarLongitude(date);
+  const longitude = solarLongitudeAt(instant);
 
   // 月支：立春（黃經 315 度）起寅月，每 30 度一個月
   const monthBranch = (Math.floor(((longitude + 45) % 360) / 30) + 2) % 12;
 
   // 年：一、二月且還沒到立春，算前一年
-  let year = date.getFullYear();
-  if (date.getMonth() <= 1 && longitude >= 270 && longitude < 315) year -= 1;
+  const year = m <= 2 && longitude >= 270 && longitude < 315 ? y - 1 : y;
   const yearIndex = (((year - 4) % 60) + 60) % 60;
 
   // 月干：甲己之年丙作首（寅月起丙），依序往下
   const monthStem = ((yearIndex % 5) * 2 + 2 + ((monthBranch - 2 + 12) % 12)) % 10;
 
   // 日：儒略日推算（2000-01-01 為戊午日）
-  const y = date.getFullYear(), m = date.getMonth() + 1, d = date.getDate();
   const a = Math.floor((14 - m) / 12);
   const jdn = d + Math.floor((153 * (m + 12 * a - 3) + 2) / 5) + 365 * (y + 4800 - a)
     + Math.floor((y + 4800 - a) / 4) - Math.floor((y + 4800 - a) / 100) + Math.floor((y + 4800 - a) / 400) - 32045;
-  const dayIndex = (jdn + 49) % 60;
+  const dayIndex = (jdn + 49 + (lateZi && hour >= 23 ? 1 : 0)) % 60;
 
   // 時：甲己日起甲子時
-  const hourBranch = Math.floor(((date.getHours() + 1) % 24) / 2);
+  const hourBranch = Math.floor(((hour + 1) % 24) / 2);
   const hourStem = ((dayIndex % 5) * 2 + hourBranch) % 10;
 
   // 旬空：日柱所在的一旬用不到的兩個地支
@@ -109,10 +121,15 @@ function ganzhiDate(date) {
     monthBranch: BRANCHES[monthBranch],
     dayStem: dayIndex % 10,
     dayBranch: BRANCHES[dayIndex % 12],
+    yearIndex, monthIndex: [monthStem, monthBranch], dayIndex, hourIndex: [hourStem, hourBranch],
     empty,
   };
 }
 
+// 以這台裝置的當地時間算四柱（卜卦用）
+function ganzhiDate(date) {
+  return ganzhiAt(date.getFullYear(), date.getMonth() + 1, date.getDate(), date.getHours(), date.getTime());
+}
 // ── 裝卦 ──
 function najiaChart(result, date) {
   const { primary, changed, moving } = result;
@@ -276,5 +293,5 @@ function najiaReading(chart, topicKey) {
 
 // 讓 Node 也能載入做測試；在瀏覽器裡這段不會執行
 if (typeof module !== "undefined") {
-  module.exports = { PALACES, najiaLines, ganzhiDate, najiaChart, najiaReading, solarLongitude };
+  module.exports = { PALACES, najiaLines, ganzhiAt, ganzhiDate, nearestJie, najiaChart, najiaReading, solarLongitudeAt };
 }

@@ -1,7 +1,7 @@
 {
   "name": "易經卜卦",
   "short_name": "易經卜卦",
-  "description": "金錢卦、蓍草法、梅花易數起卦，附六十四卦原文、白話與解讀。",
+  "description": "易經卜卦（金錢卦、蓍草法、梅花易數、六爻納甲），以及八字、紫微斗數、西洋星盤排盤與解讀。",
   "lang": "zh-Hant",
   "start_url": "index.html",
   "scope": "./",

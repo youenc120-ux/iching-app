@@ -347,6 +347,97 @@ textarea {
 .hex-note { margin: 0 0 12px; }
 .condition { margin: 4px 0 0; font-size: 0.9rem; color: var(--accent); }
 
+/* ── 出生資料表單 ── */
+.nav { flex-wrap: wrap; row-gap: 6px; }
+.fields { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 12px; }
+.field { flex: 1 1 150px; margin: 0; }
+.field span { display: block; margin-bottom: 4px; }
+select {
+  width: 100%;
+  padding: 10px 12px;
+  font: inherit;
+  color: inherit;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.reading-card .reading-part:first-of-type { margin-top: 4px; }
+
+/* ── 八字 ── */
+.pillars { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 14px 0 20px; text-align: center; }
+.pillar { border: 1px solid var(--line); border-radius: 8px; padding: 10px 4px; }
+.pillar.self { border-color: var(--accent); background: var(--accent-soft); }
+.pillar-name { color: var(--muted); font-size: 0.85rem; }
+.pillar-god { color: var(--accent); font-size: 0.85rem; min-height: 1.5em; }
+.pillar-char { font-size: 2rem; font-weight: 700; line-height: 1.3; }
+.pillar-char.small { font-size: 1.25rem; }
+.pillar-hidden { display: flex; flex-direction: column; margin-top: 6px; color: var(--muted); font-size: 0.8rem; line-height: 1.5; }
+.element-bars { display: grid; gap: 6px; }
+.element-bar { display: grid; grid-template-columns: 1.5em 1fr 3em; align-items: center; gap: 10px; }
+.element-bar .track { height: 10px; background: var(--line); border-radius: 5px; overflow: hidden; }
+.element-bar .track i { display: block; height: 100%; background: var(--ink); border-radius: 5px; }
+.element-bar.self .track i { background: var(--accent); }
+.element-bar.self span:first-child { color: var(--accent); font-weight: 700; }
+.luck-row { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin: 12px 0 16px; text-align: center; }
+.luck { border: 1px solid var(--line); border-radius: 6px; padding: 6px 2px; }
+.luck.current { border-color: var(--accent); background: var(--accent-soft); }
+.luck-age, .luck-year, .luck-god { color: var(--muted); font-size: 0.75rem; }
+.luck-god { color: var(--accent); }
+
+/* ── 紫微斗數命盤 ── */
+.ziwei-board { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; margin: 12px 0; }
+.ziwei-cell {
+  display: flex;
+  flex-direction: column;
+  min-height: 128px;
+  padding: 6px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 0.82rem;
+  line-height: 1.45;
+}
+.ziwei-cell.life { border: 2px solid var(--accent); }
+.ziwei-cell.current { background: var(--accent-soft); }
+.ziwei-major { display: flex; flex-wrap: wrap; gap: 0 8px; font-weight: 700; font-size: 0.95rem; color: var(--accent); }
+.ziwei-minor { display: flex; flex-wrap: wrap; gap: 0 6px; color: var(--muted); flex: 1; }
+.ziwei-foot { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: baseline; gap: 0 4px; margin-top: 4px; }
+.ziwei-name { font-weight: 700; white-space: nowrap; }
+.ziwei-decade { flex-basis: 100%; }
+.ziwei-decade, .ziwei-gz { color: var(--muted); font-size: 0.72rem; }
+.transform { margin-left: 1px; font-size: 0.7rem; font-weight: 400; padding: 0 3px; border-radius: 3px; background: var(--ink); color: var(--card); }
+.transform.t-忌 { background: var(--accent); color: #fff; }
+.ziwei-center {
+  grid-column: 2 / 4;
+  grid-row: 2 / 4;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.85rem;
+}
+.ziwei-center p { margin: 2px 0; color: var(--muted); }
+.ziwei-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 6px; }
+
+/* ── 星盤 ── */
+.wheel { display: block; width: min(100%, 420px); margin: 12px auto; }
+.wheel-ring { fill: none; stroke: var(--line); stroke-width: 1.2; }
+.wheel-line { stroke: var(--line); stroke-width: 1; }
+.wheel-line.faint { opacity: 0.5; }
+.wheel-axis { stroke: var(--accent); stroke-width: 1.4; }
+.wheel-aspect { stroke-width: 0.8; opacity: 0.7; }
+.wheel-aspect.hard { stroke: var(--accent); }
+.wheel-aspect.soft { stroke: var(--muted); stroke-dasharray: 3 3; }
+.wheel-dot { fill: var(--ink); }
+.wheel text { text-anchor: middle; dominant-baseline: central; font-family: "Segoe UI Symbol", "Noto Sans Symbols 2", serif; }
+.wheel-sign { fill: var(--muted); font-size: 17px; }
+.wheel-house { fill: var(--muted); font-size: 9px; opacity: 0.8; }
+.wheel-planet { fill: var(--ink); font-size: 17px; }
+.wheel-axis-label { fill: var(--accent); font-size: 9px; }
+.astro-table { margin-top: 10px; }
+.astro-row { display: grid; grid-template-columns: 2.4em 6.5em 1fr 4.5em; gap: 8px; padding: 6px 0; border-top: 1px solid var(--line); font-size: 0.92rem; }
+.astro-glyph { font-family: "Segoe UI Symbol", "Noto Sans Symbols 2", serif; color: var(--accent); }
+.astro-house { color: var(--muted); text-align: right; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
@@ -357,6 +448,13 @@ textarea {
   .arrow { display: none; }
   .progress .detail { display: none; }
   .hex-grid { grid-template-columns: repeat(6, 1fr); }
+  .nav { gap: 6px 14px; font-size: 0.92rem; }
+  .luck-row { grid-template-columns: repeat(4, 1fr); }
+  .ziwei-cell { min-height: 104px; padding: 4px; font-size: 0.7rem; }
+  .ziwei-major { font-size: 0.8rem; gap: 0 4px; }
+  .ziwei-center { font-size: 0.72rem; }
+  .ziwei-title { font-size: 1rem; }
+  .astro-row { grid-template-columns: 2em 5.5em 1fr 4em; font-size: 0.82rem; }
   .najia-row { grid-template-columns: 2.6em 6.8em 60px 3em 1fr; gap: 6px; font-size: 0.82rem; }
   .najia-row .bar { width: 52px; }
   button.corner { position: static; display: block; margin-top: 14px; }
