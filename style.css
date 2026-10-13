@@ -271,6 +271,7 @@ footer { padding: 28px 16px 48px; color: var(--muted); font-size: 0.82rem; text-
 /* ── 表單與按鈕 ── */
 label { display: block; color: var(--muted); font-size: 0.85rem; margin-bottom: 6px; }
 label.spaced { margin-top: 16px; }
+.ask-tip { margin: 8px 0 0; }
 
 input, select, textarea {
   width: 100%;

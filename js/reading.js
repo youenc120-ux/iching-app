@@ -56,8 +56,8 @@ const POSITION_MEANINGS = [
 
 // ── 所問之事的面向 ── 依問題中的關鍵字歸類
 const TOPICS = [
-  { key: "love", name: "感情", words: ["感情", "愛", "婚", "戀", "對象", "男友", "女友", "男朋友", "女朋友", "交往", "復合", "桃花", "曖昧", "分手", "老公", "老婆", "伴侶", "喜歡"] },
-  { key: "career", name: "事業", words: ["工作", "事業", "職", "升遷", "面試", "創業", "老闆", "主管", "公司", "同事", "跳槽", "offer", "專案", "合作"] },
+  { key: "love", name: "感情", words: ["感情", "愛", "婚", "戀", "對象", "男友", "女友", "男朋友", "女朋友", "交往", "復合", "桃花", "曖昧", "分手", "老公", "老婆", "伴侶", "喜歡", "挽回", "告白", "追他", "追她", "前任", "回來", "回頭", "想我"] },
+  { key: "career", name: "事業", words: ["工作", "事業", "職", "升遷", "面試", "創業", "老闆", "主管", "公司", "同事", "跳槽", "offer", "專案", "合作", "裁", "離職", "辭職", "轉職", "加薪", "錄取", "上班"] },
   { key: "money", name: "財運", words: ["錢", "財", "投資", "股", "基金", "買", "賣", "生意", "收入", "薪", "貸", "房", "賺", "虧"] },
   { key: "study", name: "學業", words: ["考", "學", "升學", "論文", "成績", "申請", "讀書", "課"] },
   { key: "health", name: "健康", words: ["病", "健康", "身體", "手術", "醫", "痛", "懷孕", "康復"] },
@@ -126,6 +126,132 @@ function detectTopic(question, chosen) {
   return TOPICS.find((topic) => topic.words.some((word) => text.includes(word))) || general;
 }
 
+// ── 問法 ── 同一個卦，問「該不該」「會不會」「什麼時候」要的答案不一樣。
+// 先看問題是哪一種問法，再用那種問法該有的句子直接回答。由上往下比對，先符合的為準。
+const QUESTION_FORMS = [
+  ["choice", /還是|或者|或是|哪一個|哪個|哪一家|哪間|哪邊|選哪/],
+  ["timing", /什麼時候|何時|幾時|多久|哪一年|哪年|幾月|幾歲|多快|要等到/],
+  ["how", /怎麼辦|怎麼做|該怎麼|要怎麼|如何(做|處理|面對|解決|應對|改善|挽回)/],
+  ["decision", /該不該|要不要|應不應該|可不可以|適不適合|好不好|值不值得|能不能(去|做|買|接|換|投|信|嫁|娶|簽)|是否(該|要|應|適合|值得)|(該|應該|要|可以|適合|值得|建議).*嗎|^(該|要不|可以).*/],
+  ["mind", /(他|她|對方|前任|前男友|前女友|老公|老婆|先生|太太|男友|女友|主管|老闆|客戶).*(喜歡|愛|想我|想念|在乎|在意|感覺|心裡|真心|怎麼看|怎麼想|有意思)|對我.*(有意思|有感覺|真心|認真)/],
+  ["outcome", /會不會|能不能|能否|是否|有沒有機會|成不成|過不過|順不順|會.*嗎|能.*嗎|有.*嗎|可能.*嗎|順利嗎|成功嗎|有機會/],
+  ["state", /怎麼樣|怎樣|如何|運勢|狀況|近況|發展|走向|前景|運氣/],
+];
+// 問的是不是壞事會不會發生。這種問題，卦好代表「不會發生」，答案要反過來講。
+const BAD_OUTCOME = /失敗|分手|離婚|離開我|被裁|裁員|失業|虧|賠|落榜|沒上|落選|出事|生病|惡化|復發|被騙|吃虧|倒閉|輸|背叛|外遇|出軌|劈腿|危險|後悔|被拒|拒絕|分開|翻臉|破局|黃掉|泡湯|告吹|被告|坐牢|出意外|變心|不要我/;
+
+function detectForm(question) {
+  const text = (question || "").trim();
+  if (!text) return { type: "none" };
+  const hit = QUESTION_FORMS.find(([, pattern]) => pattern.test(text));
+  const type = hit ? hit[0] : "open";
+  return { type, bad: type === "outcome" && BAD_OUTCOME.test(text) };
+}
+
+// 各種問法在評等 1–5 時的直接回答（索引 0 不用）
+const FORM_ANSWERS = {
+  decision: [null,
+    "不該。這件事現在去做，結果會是壞的。",
+    "先不要。照現在的條件去做會吃虧，等辭裡指出的問題解決了再說。",
+    "卦沒有給你明確的「該」或「不該」。這代表關鍵不在運氣，而在你自己的條件和準備夠不夠；如果你本來就在猶豫，先別急著定。",
+    "可以做。卦象支持，但要照正當的方式來，把準備做足。",
+    "該。卦象明確支持你去做這件事，現在就是時機。",
+  ],
+  outcome: [null,
+    "不會。至少在目前這個局面下，你期待的結果不會出現。",
+    "照目前的情況發展下去，不太會。除非有什麼條件改變。",
+    "還不一定。現在兩種結果都有可能，卦沒有偏向任何一邊。",
+    "會。機會站在你這邊，但要你把該做的做到。",
+    "會，而且會很順。",
+  ],
+  // 問的是壞事會不會發生：卦越好，越不會
+  outcomeBad: [null,
+    "很可能會。卦象是凶，你擔心的情況正是它警告的方向。",
+    "有這個風險。卦象不順，你擔心的事是可能發生的，要提早處理。",
+    "不一定。卦沒有說會，也沒有說不會，要看接下來怎麼處理。",
+    "應該不會。整體是順的，你擔心的情況不是主要的走向。",
+    "不會。卦象很好，你擔心的事不太會發生。",
+  ],
+  mind: [null,
+    "對方沒有那個意思。繼續猜他的心意只是消耗自己。",
+    "對方現在的心思不在你身上，或者他有顧慮。你感覺到的冷淡是真的。",
+    "對方的態度不明朗，很可能他自己也還沒想清楚。別替他腦補答案。",
+    "對方對你有好感，態度是正面的。",
+    "對方對你是有心的，而且是真誠的。",
+  ],
+  state: [null,
+    "目前的狀況不好，正處在低點或危險的位置。",
+    "目前的狀況不順，有實際的阻礙在。",
+    "目前的狀況平平，沒有大好也沒有大壞。",
+    "目前的狀況不錯，方向是對的。",
+    "目前的狀況很好，正在往上走。",
+  ],
+  choice: [null,
+    "這一卦是凶：你心裡偏向的那個選項有嚴重的問題。",
+    "這一卦不順：你心裡偏向的那個選項有問題，先別選它。",
+    "這一卦沒有偏向，看不出哪個比較好。",
+    "這一卦是好的：照你心裡偏向的那個去選，問題不大。",
+    "這一卦很好：照你心裡偏向的那個去選。",
+  ],
+};
+
+// 回答之後接的那句建議，也要跟著問法走（評等 1–5，索引 0 不用）。
+// 沒列在這裡的問法（該不該、怎麼辦、現況如何）才用各類事情的通用建議。
+const FORM_FOLLOWUPS = {
+  outcome: [null,
+    "先做好它不會發生的準備，把力氣放到別的地方。",
+    "如果你很在意這個結果，現在就要改變做法；等下去不會自己變好。",
+    "與其等結果，不如想想你還能做什麼，讓它往好的方向偏。",
+    "把你能掌握的部分做好，結果就會出來。",
+    "接下來照原本的步調做就好，不用多想。",
+  ],
+  outcomeBad: [null,
+    "把它當成會發生來準備，先想好退路和應對。",
+    "不要抱著僥倖，針對你擔心的那一點先做準備。",
+    "你擔心的事有一半取決於你接下來怎麼處理，現在補救還來得及。",
+    "保持現在的做法，別因為擔心而做出多餘的動作。",
+    "不用為這件事焦慮，把心力放回該做的事上。",
+  ],
+  mind: [null,
+    "把注意力收回自己身上，別再為了他調整自己。",
+    "把注意力收回自己身上，別再為了他調整自己。",
+    "先看他的實際行動，不要從隻字片語裡找答案。",
+    "可以主動一點，給他回應的機會。",
+    "可以主動一點，給他回應的機會。",
+  ],
+  timing: [null,
+    "與其等，不如先處理卦裡指出的阻礙，否則等到了也留不住。",
+    "與其等，不如先處理卦裡指出的阻礙，否則等到了也留不住。",
+    "不要算日子，照常過，該做的事繼續做。",
+    "在這之前把自己準備好，機會來的時候才接得住。",
+    "在這之前把自己準備好，機會來的時候才接得住。",
+  ],
+  choice: [null, "", "", "", "", ""],
+};
+
+// 依問法組出「直說」的第一句
+function directAnswer(form, level, movingCount) {
+  switch (form.type) {
+    case "decision": return FORM_ANSWERS.decision[level] + "（卦回答的是「去做你問的這件事」好不好。）";
+    case "outcome": return (form.bad ? FORM_ANSWERS.outcomeBad : FORM_ANSWERS.outcome)[level];
+    case "mind": return `${FORM_ANSWERS.mind[level]}卦反映的是他現在的狀態，人的想法會變；想知道確切的答案，最準的還是直接問他。`;
+    case "state": return FORM_ANSWERS.state[level];
+    case "choice":
+      return "一個卦只能回答一件事，沒辦法同時比較兩個選項。" + FORM_ANSWERS.choice[level]
+        + "想比清楚的話，把兩個選項分開，各問一次「選這個會怎麼樣」。";
+    case "timing": {
+      const pace = movingCount === 0 ? "卦裡沒有動爻，表示短期內局面不會變，這件事不會很快發生。"
+        : level >= 4 ? "卦裡有動爻，事情已經在動了，而且走向是順的，不用等太久。"
+        : level === 3 ? "卦裡有動爻，事情已經在動了，但進展不快，中間可能有反覆。"
+        : "卦裡有動爻，事情在動，但過程有阻礙，會比你預期的晚，也可能不成。";
+      return `卦辭不會給出確切的日期，只看得出快慢和順逆。${pace}`;
+    }
+    case "how": return `你問的是該怎麼做，具體的做法在下面「該怎麼做」那一段。先說整體：${LEVELS[level].verdict}`;
+    case "open": return `這個問法我分不出你要的是「會不會」「該不該」還是別的，所以先給卦象整體的答案：${LEVELS[level].verdict}下次把問題寫成「我該不該……」或「……會不會成」，答案會更對題。`;
+    default: return LEVELS[level].verdict;
+  }
+}
+
 // 取出 readingGuide 標示的重點辭句（原文、白話與評等）
 function focusTexts(result, guide) {
   return guide.focus.map((f) => {
@@ -156,8 +282,17 @@ function composeReading(entry, result, guide) {
   const topic = detectTopic(entry.question, entry.topic);
   const sections = [];
 
-  // 一、直說：先給結論
-  sections.push({ title: "直說", text: `${tone.verdict}\n${TOPIC_ADVICE[topic.key][level]}` });
+  // 一、直說：先照問法直接回答，再補上這一類事情的說明
+  const form = detectForm(entry.question);
+  const asked = entry.question ? `你問：「${entry.question}」\n` : "";
+  const followTable = FORM_FOLLOWUPS[form.bad ? "outcomeBad" : form.type];
+  let follow = followTable ? followTable[level] : TOPIC_ADVICE[topic.key][level];
+  // 問健康：卦再壞也不是診斷，後面接的話要把人導向就醫，而不是叫人放棄
+  if (followTable && topic.key === "health") {
+    follow = level <= 2 ? "卦象不樂觀，但卦不是診斷，也不能決定病情。現在最該做的是照醫師的建議積極處理，不要拖。"
+      : `${follow}身體的事以醫師的診斷為準。`;
+  }
+  sections.push({ title: "直說", text: [`${asked}${directAnswer(form, level, moving.length)}`, follow].filter(Boolean).join("\n") });
 
   // 二、依據：結論是從哪一句辭來的
   let basis = `依據是${main.label}：「${main.text}」意思是：${main.plain}`;
@@ -215,10 +350,12 @@ function composeReading(entry, result, guide) {
   if (topic.key === "health") action += "\n身體的事以醫師的診斷為準，占卜不能代替檢查。";
   sections.push({ title: "該怎麼做", text: action });
 
-  return { tone, sections };
+  // 問「該怎麼做」的人要的是做法，把那一段提到結論的後面
+  if (form.type === "how") sections.splice(1, 0, sections.pop());
+  return { tone, sections, form: form.type };
 }
 
 // 讓 Node 也能載入做測試；在瀏覽器裡這段不會執行
 if (typeof module !== "undefined") {
-  module.exports = { RATINGS, ratingOf, detectTopic, composeReading };
+  module.exports = { RATINGS, ratingOf, detectTopic, detectForm, directAnswer, composeReading };
 }
