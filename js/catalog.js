@@ -33,7 +33,7 @@ function sceneBlock(hex) {
   const scene = SCENES[hex.number];
   const topics = el("details", "scene-topics", [
     el("summary", null, "各類問事的解釋"),
-    ...TOPICS.map((topic) => el("p", null, `【${topic.name}】${scene.topics[topic.key]}`)),
+    ...TOPICS.map((topic) => el("p", null, `【${topic.name}】${scene.topics[topic.key]}建議：${adviceFor(hex.number, topic.key)}`)),
   ]);
   return el("div", "scene-body", [sceneFigure(hex), el("div", "scene-text", [el("p", null, scene.picture), topics])]);
 }

@@ -165,10 +165,9 @@ function sceneFigure(hex) {
 }
 
 // ── 占卜結果裡的「卦的畫面」──
-// 整卦的畫面 → 這次重點那一爻的畫面 → 依所問的類別解釋（有變卦時加上變卦的走向）
+// 整卦的畫面 → 這次重點那一爻的畫面
 function sceneSection(entry, result, guide) {
-  const { primary, changed } = result;
-  const topic = detectTopic(entry.question, entry.topic);
+  const { primary } = result;
   const main = guide.focus.find((f) => f.main) || guide.focus[0];
   const parts = [["整卦的畫面", SCENES[primary.number].picture]];
 
@@ -179,14 +178,7 @@ function sceneSection(entry, result, guide) {
       `「${hex.lines[main.part].text}」\n${SCENES[hex.number].lines[main.part]}`]);
   }
 
-  if (topic.key !== "general") {
-    let text = SCENES[primary.number].topics[topic.key];
-    if (changed) text += `\n之後的走向看變卦「${changed.fullName}」：${SCENES[changed.number].topics[topic.key]}`;
-    parts.push([`放到「${topic.name}」上`, text]);
-  } else {
-    parts.push(["放到你問的事上", "看不出你問的是哪一類事，所以這裡只描述畫面。在問題下方選「感情」「事業」等類別，會給那一類的解釋。"]);
-  }
-
+  // 放到所問之事上的解釋與建議，在下面「卦象解讀」的「直說」裡
   return el("div", "scene", [
     el("h4", null, "卦的畫面"),
     el("div", "scene-body", [

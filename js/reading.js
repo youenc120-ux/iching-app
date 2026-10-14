@@ -292,7 +292,25 @@ function composeReading(entry, result, guide) {
     follow = level <= 2 ? "卦象不樂觀，但卦不是診斷，也不能決定病情。現在最該做的是照醫師的建議積極處理，不要拖。"
       : `${follow}身體的事以醫師的診斷為準。`;
   }
-  sections.push({ title: "直說", text: [`${asked}${directAnswer(form, level, moving.length)}`, follow].filter(Boolean).join("\n") });
+  // 結論之後，用這一卦、這一爻本身的內容說明你這件事，不只是依吉凶給一句通用的話
+  const lines = [`${asked}${directAnswer(form, level, moving.length)}`];
+  const hasScenes = typeof SCENES !== "undefined";
+  if (hasScenes) {
+    // 沒有類別時，整卦的處境在下面「處境」那一段，這裡不重複
+    if (topic.key !== "general") lines.push(`【這一卦怎麼看你這件事】${SCENES[primary.number].topics[topic.key]}`);
+    const mainFocus = guide.focus.find((f) => f.main) || guide.focus[0];
+    if (typeof mainFocus.part === "number") {
+      const hex = result[mainFocus.hex];
+      lines.push(`【關鍵那一句】${main.label}「${main.text}」\n${SCENES[hex.number].lines[mainFocus.part]}`);
+    }
+    if (changed && topic.key !== "general") {
+      lines.push(`【接下來】事情會走向「${changed.fullName}」：${SCENES[changed.number].topics[topic.key]}`);
+    }
+  }
+  const advice = typeof ADVICE !== "undefined" ? adviceFor(primary.number, topic.key) : null;
+  lines.push(`【具體建議】${[advice, follow].filter(Boolean).join("")}`);
+  if (topic.key === "general") lines.push("（在問題下方選「感情」「事業」等類別，這裡會換成那一類的具體說明和建議。）");
+  sections.push({ title: "直說", text: lines.join("\n") });
 
   // 二、依據：結論是從哪一句辭來的
   let basis = `依據是${main.label}：「${main.text}」意思是：${main.plain}`;
