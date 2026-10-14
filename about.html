@@ -18,6 +18,7 @@
   <nav class="nav">
     <a href="index.html">首頁</a>
     <a href="iching.html">卜卦</a>
+    <a href="tarot.html">塔羅</a>
     <a href="catalog.html">六十四卦</a>
     <a href="bazi.html">八字</a>
     <a href="ziwei.html">紫微斗數</a>
@@ -40,6 +41,8 @@
         <tr><td>起卦方法、變爻占法、納甲排盤規則</td><td>古籍明文，出處列於下方</td><td><span class="tone good">高</span></td></tr>
         <tr><td>八字四柱、星盤行星位置</td><td>天文與曆法計算，已用已知數據驗證</td><td><span class="tone good">高</span></td></tr>
         <tr><td>紫微斗數排盤</td><td>通行安星法，已核對主星結構；門派細節有差異</td><td><span class="tone neutral">中高</span></td></tr>
+        <tr><td>塔羅牌圖</td><td>1909 年萊德偉特原版，公有領域掃描</td><td><span class="tone good">高</span></td></tr>
+        <tr><td>塔羅牌義</td><td>偉特《塔羅圖像之鑰》與現代通行解釋，本站 整理改寫</td><td><span class="tone neutral">中</span></td></tr>
         <tr><td>白話翻譯</td><td>本站 自行意譯，未採用特定注本</td><td><span class="tone neutral">中</span></td></tr>
         <tr><td>吉凶評等、卦象解讀、用神判讀、命盤解說的結論</td><td>本站 依辭意與規則自行判定</td><td><span class="tone caution">僅供參考</span></td></tr>
       </table>
@@ -71,6 +74,15 @@
       <p>以三枚銅錢代替蓍草，相傳始於漢代，是後世最通行的簡化做法。正面記 3、反面記 2，三枚相加得 6、7、8、9。機率是老陽、老陰各 1/8，少陽、少陰各 3/8，<strong>和蓍草法並不相同</strong>：蓍草法比較不容易出現老陰。</p>
       <h3>梅花易數</h3>
       <p>相傳為宋代邵雍所傳。年月日時起卦：年支數、農曆月、日相加除八取上卦，再加時辰數除八取下卦、除六取動爻；八卦用先天數（乾一、兌二、離三、震四、巽五、坎六、艮七、坤八）。有動爻的一卦為「用」，另一卦為「體」，以五行生剋論吉凶。農曆換算使用 網站內建的 1899–2100 年農曆資料表，不受瀏覽器影響。</p>
+    </section>
+
+    <section class="card">
+      <h2>塔羅</h2>
+      <p><strong>牌圖</strong>：萊德偉特（Rider–Waite）塔羅，由潘蜜拉・柯爾曼・史密斯繪圖、亞瑟・愛德華・偉特設計，1909 年出版。本站 使用維基共享資源（Wikimedia Commons）上的 1909 年原版掃描，屬於公有領域。市面上常見的重新上色版本另有版權，本站 沒有使用。</p>
+      <p><strong>牌義</strong>：以偉特 1910 年的《塔羅圖像之鑰》（The Pictorial Key to the Tarot）為基礎，參考現代通行的解釋，整理成正位、逆位各一組，再分成整體、感情、工作、金錢四個面向。塔羅沒有像《周易》那樣的定本，不同書和不同占卜師對同一張牌的解釋差異很大，<strong>這裡的牌義是本站 整理的版本，不是唯一的標準</strong>。</p>
+      <p><strong>抽牌</strong>：用瀏覽器的密碼學亂數（crypto.getRandomValues）洗牌，每張牌被抽到的機會相同；開啟逆位時，每張牌正逆各一半機率。</p>
+      <p><strong>牌陣</strong>：單張、三張（過去／現在／未來）、二選一、凱爾特十字（偉特書中記載的十張牌陣）。整體吉凶依每個位置的份量加權計算，例如凱爾特十字的「最終結果」佔最重。</p>
+      <p><strong>時間</strong>：塔羅本身不會給日期。用花色估快慢（權杖、寶劍以天週計，聖杯以週月計，錢幣以月年計）是現代常見的做法，沒有古典依據，只能當參考。</p>
     </section>
 
     <section class="card">

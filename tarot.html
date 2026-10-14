@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="tarot">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#170b12">
+  <meta name="description" content="觀象：易經卜卦、塔羅、八字、紫微斗數、西洋星盤與合盤，排盤與解讀都在你的裝置上完成。">
+  <title>塔羅 · 觀象</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html">首頁</a>
+    <a href="iching.html">卜卦</a>
+    <a href="tarot.html" class="current">塔羅</a>
+    <a href="catalog.html">六十四卦</a>
+    <a href="bazi.html">八字</a>
+    <a href="ziwei.html">紫微斗數</a>
+    <a href="astro.html">星盤</a>
+    <a href="compat.html">合盤</a>
+    <a href="about.html">依據與來源</a>
+  </nav>
+  <header>
+    <div class="emblem" aria-hidden="true"></div>
+    <h1>塔羅占卜</h1>
+    <p class="subtitle">萊德偉特牌 · 七十八張</p>
+  </header>
+
+  <main>
+    <section class="card" id="ask">
+      <label for="question">想問的事</label>
+      <input id="question" type="text" maxlength="60" placeholder="例如：他對我是認真的嗎？">
+      <p class="hint ask-tip">一次只問一件事。問「該不該」「會不會」「他對我……嗎」都可以；要比較兩個選項，請用「二選一」牌陣。</p>
+
+      <label class="spaced">問的是哪一類</label>
+      <div class="choices" id="topics"></div>
+
+      <label class="spaced">牌陣</label>
+      <div class="tabs tarot-spreads" role="tablist" id="spreads"></div>
+      <p class="hint" id="spread-hint"></p>
+
+      <div class="options" id="choice-options" hidden>
+        <input id="option-a" type="text" maxlength="20" placeholder="選項 A，例如：留在現在的公司">
+        <input id="option-b" type="text" maxlength="20" placeholder="選項 B，例如：去新公司">
+      </div>
+
+      <label class="check"><input type="checkbox" id="allow-reversed" checked> 使用逆位（牌倒過來時意思會轉弱或反過來）</label>
+
+      <div class="actions">
+        <button class="primary" id="btn-shuffle">洗牌</button>
+      </div>
+    </section>
+
+    <section class="card" id="draw" hidden>
+      <p class="draw-status" id="draw-status"></p>
+      <div class="deck-shuffle" id="deck-shuffle" aria-hidden="true"></div>
+      <div class="deck-fan" id="deck-fan"></div>
+      <div class="actions">
+        <button id="btn-auto">隨機幫我抽</button>
+      </div>
+    </section>
+
+    <section id="result" hidden></section>
+
+    <section class="card" id="history-card">
+      <div class="history-head">
+        <h2>塔羅紀錄</h2>
+        <div class="history-tools"><button id="btn-clear" class="link">清除</button></div>
+      </div>
+      <div id="history-list-wrap"><ul id="history"></ul></div>
+      <p class="hint">紀錄只存在這台裝置的瀏覽器裡。</p>
+    </section>
+  </main>
+
+  <footer>牌圖為 1909 年萊德偉特原版（公有領域）；牌義依偉特《塔羅圖像之鑰》與現代通行解釋整理，解讀由程式依規則產生，僅供參考。</footer>
+
+  <script src="js/reading.js"></script>
+  <script src="js/tarot-cards.js"></script>
+  <script src="js/tarot-minor.js"></script>
+  <script src="js/poster.js"></script>
+  <script src="js/tarot.js"></script>
+  <script src="js/share.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

@@ -176,6 +176,26 @@
   }
 }
 
+/* 塔羅：酒紅與古金（固定深色） */
+:root[data-theme="tarot"] {
+  --bg: #140a10;
+  --bg-art: radial-gradient(760px 480px at 82% -8%, rgba(184, 71, 106, 0.30), transparent 62%),
+            radial-gradient(620px 440px at 0% 12%, rgba(216, 166, 87, 0.14), transparent 60%),
+            radial-gradient(900px 600px at 50% 110%, rgba(110, 30, 60, 0.30), transparent 60%);
+  --surface: rgba(40, 18, 30, 0.84);
+  --surface-2: rgba(64, 30, 48, 0.78);
+  --ink: #f6ebe4;
+  --muted: #bfa3a8;
+  --line: rgba(216, 166, 87, 0.22);
+  --accent: #d8a657;
+  --accent-2: #e07a9a;
+  --accent-soft: rgba(216, 166, 87, 0.14);
+  --on-accent: #2a1405;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 18px 44px -16px rgba(20, 0, 10, 0.85);
+  --nav-bg: rgba(20, 10, 16, 0.76);
+  color-scheme: dark;
+}
+
 /* ── 基礎 ── */
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 72px; }
@@ -691,6 +711,75 @@ button.corner { position: absolute; top: 20px; right: 24px; font-size: 0.78rem; 
 #result > .card { animation: rise 0.55s both; }
 #result > .card:nth-child(2) { animation-delay: 0.12s; }
 #result > .card:nth-child(3) { animation-delay: 0.24s; }
+
+/* ── 塔羅 ── */
+.nav a[href="tarot.html"]::before { background: #d8a657; }
+.f-tarot { --tint: #a8456a; }
+:root[data-theme="tarot"] .emblem { width: 44px; height: 72px; border: 2px solid var(--accent); border-radius: 7px; background: radial-gradient(circle, rgba(216, 166, 87, 0.25), transparent 70%); animation: sway 5s ease-in-out infinite; }
+:root[data-theme="tarot"] .emblem::after { content: "✦"; position: absolute; inset: 0; display: grid; place-items: center; color: var(--accent); font-size: 1.3rem; }
+
+.tarot-spreads .tab { font-size: 0.9rem; }
+.options { display: flex; gap: 8px; margin: 4px 0 12px; flex-wrap: wrap; }
+.options input { flex: 1 1 180px; min-width: 0; }
+label.check { display: flex; align-items: center; gap: 8px; margin: 14px 0 4px; color: var(--muted); font-size: 0.9rem; cursor: pointer; }
+label.check input { width: auto; margin: 0; accent-color: var(--accent); }
+
+.card-back {
+  position: relative; display: block; padding: 0; border-radius: 7px; border: 2px solid #c9974e;
+  background:
+    repeating-linear-gradient(45deg, rgba(216, 166, 87, 0.2) 0 1.5px, transparent 1.5px 8px),
+    repeating-linear-gradient(-45deg, rgba(216, 166, 87, 0.2) 0 1.5px, transparent 1.5px 8px),
+    radial-gradient(circle at 50% 50%, #6a2541, #2a0d1a 75%);
+  box-shadow: 0 6px 14px -6px rgba(0, 0, 0, 0.7), inset 0 0 0 3px #2a0d1a;
+}
+.card-back::after { content: "✦"; position: absolute; inset: 0; display: grid; place-items: center; color: #e2b86b; font-size: 0.9rem; }
+
+.draw-status { margin: 0 0 12px; text-align: center; font-weight: 700; color: var(--accent); }
+.deck-shuffle { position: relative; height: 170px; }
+.deck-shuffle .card-back { position: absolute; left: 50%; top: 10px; width: 86px; height: 148px; margin-left: -43px; }
+.deck-shuffle.shuffling .card-back { animation: riffle 0.5s ease-in-out infinite alternate; animation-delay: calc(var(--i) * -70ms); }
+@keyframes riffle { from { transform: translateX(-70px) rotate(-9deg); } to { transform: translateX(70px) rotate(9deg); } }
+
+.deck-fan { display: flex; flex-wrap: wrap; justify-content: center; padding: 6px 30px 6px 4px; row-gap: 10px; }
+.deck-fan .card-back { width: 46px; height: 79px; margin-right: -26px; cursor: pointer; transition: transform 0.18s, opacity 0.3s; animation: rise 0.4s both; animation-delay: calc(var(--i) * 6ms); }
+.deck-fan .card-back:hover { transform: translateY(-10px); z-index: 1; border-color: #f2cf8a; }
+.deck-fan .card-back.taken { transform: translateY(-18px); opacity: 0.12; cursor: default; }
+.deck-fan .card-back:disabled { background-color: transparent; }
+
+.tarot-table { display: grid; gap: 14px; justify-content: center; margin: 20px 0 6px; }
+.tarot-table.spread-one { grid-template-columns: minmax(0, 200px); }
+.tarot-table.spread-three, .tarot-table.spread-choice { grid-template-columns: repeat(3, minmax(0, 170px)); }
+.tarot-table.spread-celtic {
+  grid-template-columns: repeat(4, minmax(0, 104px));
+  grid-template-areas: ". c5 . c10" "c4 c1 c6 c9" ". c2 . c8" ". c3 . c7";
+}
+.slot { margin: 0; text-align: center; }
+.c1 { grid-area: c1; } .c2 { grid-area: c2; } .c3 { grid-area: c3; } .c4 { grid-area: c4; } .c5 { grid-area: c5; }
+.c6 { grid-area: c6; } .c7 { grid-area: c7; } .c8 { grid-area: c8; } .c9 { grid-area: c9; } .c10 { grid-area: c10; }
+.slot figcaption { margin-top: 6px; line-height: 1.35; }
+.slot-pos { display: block; font-size: 0.74rem; color: var(--muted); }
+.slot-name { display: block; font-size: 0.84rem; font-weight: 700; opacity: 0; transition: opacity 0.4s 0.4s; }
+.slot.open .slot-name { opacity: 1; }
+.flip { position: relative; aspect-ratio: 1 / 1.72; perspective: 900px; }
+.flip .face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: transform 0.7s cubic-bezier(0.3, 0.7, 0.3, 1); border-radius: 7px; overflow: hidden; }
+.flip .front { transform: rotateY(180deg); box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.8); }
+.slot.open .flip .back { transform: rotateY(-180deg); }
+.slot.open .flip .front { transform: rotateY(0); }
+.flip img, .tarot-detail img { display: block; width: 100%; height: 100%; object-fit: cover; }
+img.reversed { transform: rotate(180deg); }
+
+.tarot-detail { display: grid; grid-template-columns: 74px 1fr; gap: 14px; align-items: start; padding: 12px 0; border-top: 1px solid var(--line); }
+.tarot-detail:first-of-type { border-top: 0; }
+.tarot-detail img { height: auto; aspect-ratio: 1 / 1.72; border-radius: 5px; }
+.tarot-detail-head { margin: 0 !important; font-weight: 700; color: var(--accent); }
+.tarot-keywords { margin: 2px 0 6px !important; font-size: 0.85rem; color: var(--muted); }
+
+@media (max-width: 520px) {
+  .tarot-table.spread-three, .tarot-table.spread-choice { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+  .tarot-table.spread-celtic { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .slot-name { font-size: 0.74rem; }
+  .deck-fan .card-back { width: 38px; height: 65px; margin-right: -22px; }
+}
 
 /* ── 卦的畫面 ── */
 .scene { margin-top: 22px; }
