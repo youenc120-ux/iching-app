@@ -83,6 +83,8 @@ grid.append(...HEXAGRAMS.map((hex) => {
   return link;
 }));
 list.append(...HEXAGRAMS.map(hexCard));
+// 卡片是載入後才產生的，網址帶 #hex-N 時要自己捲過去
+document.getElementById(decodeURIComponent(location.hash.slice(1)))?.scrollIntoView({ behavior: "instant" });
 
 // 搜尋：卦名、全名或卦序符合的才顯示
 document.querySelector("#search").addEventListener("input", (event) => {

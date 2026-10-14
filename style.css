@@ -695,7 +695,7 @@ button.corner { position: absolute; top: 20px; right: 24px; font-size: 0.78rem; 
 /* ── 卦的畫面 ── */
 .scene { margin-top: 22px; }
 .scene h4 { margin: 0 0 12px; }
-.scene-body { display: grid; grid-template-columns: minmax(0, 300px) 1fr; gap: 20px; align-items: start; }
+.scene-body { display: grid; grid-template-columns: minmax(0, 360px) 1fr; gap: 20px; align-items: start; }
 .hex-card .scene-body { margin: 14px 0 6px; }
 .scene-figure { margin: 0; }
 .scene-figure figcaption { margin-top: 6px; text-align: center; font-size: 0.86rem; color: var(--muted); letter-spacing: 0.08em; }
@@ -707,6 +707,62 @@ button.corner { position: absolute; top: 20px; right: 24px; font-size: 0.78rem; 
 .scene-topics summary { cursor: pointer; color: var(--accent); font-size: 0.92rem; }
 .scene-topics p { margin: 6px 0 0; line-height: 1.7; }
 .scene-line { margin: 6px 0 0; font-size: 0.9rem; color: var(--muted); line-height: 1.7; }
+
+/* 水墨畫與動態效果層 */
+.scene-frame { position: relative; overflow: hidden; border-radius: 14px; border: 1px solid var(--line); aspect-ratio: 1188 / 797; background: #ece4d3; }
+.scene-frame img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 60%; }
+.scene-frame .scene-art { border: 0; border-radius: 0; height: 100%; }
+.scene-frame .mist, .scene-frame .fx { position: absolute; left: 0; right: 0; pointer-events: none; }
+.scene-frame .mist {
+  top: 0; bottom: 0; width: 200%; opacity: 0.55;
+  background:
+    radial-gradient(ellipse 22% 14% at 18% 38%, rgba(255, 255, 255, 0.55), transparent 70%),
+    radial-gradient(ellipse 28% 12% at 58% 64%, rgba(255, 255, 255, 0.45), transparent 70%),
+    radial-gradient(ellipse 20% 10% at 86% 30%, rgba(255, 255, 255, 0.5), transparent 70%);
+}
+.scene-frame .fx-top { top: 0; height: 58%; }
+.scene-frame .fx-bottom { bottom: 0; height: 45%; }
+.scene-frame[data-top="rain"] .fx-top { height: 100%; }
+
+.scene-frame[data-top="rain"] .fx-top {
+  background: repeating-linear-gradient(104deg, transparent 0 11px, rgba(255, 255, 255, 0.4) 11px 12px, transparent 12px 23px);
+  background-size: 46px 46px; opacity: 0.7;
+}
+.scene-frame[data-top="flash"] .fx-top { background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), transparent); opacity: 0; }
+.scene-frame[data-bottom="flash"] .fx-bottom { background: rgba(255, 255, 255, 0.85); opacity: 0; }
+.scene-frame[data-bottom="flash"] .fx-bottom { height: 100%; }
+.scene-frame[data-top="flame"] .fx-top { background: radial-gradient(ellipse 40% 50% at 50% 35%, rgba(255, 170, 70, 0.4), transparent 70%); mix-blend-mode: screen; }
+.scene-frame[data-bottom="flame"] .fx-bottom { background: radial-gradient(ellipse 45% 60% at 50% 100%, rgba(255, 130, 40, 0.42), transparent 70%); mix-blend-mode: screen; }
+.scene-frame[data-top="wind"] .fx-top, .scene-frame[data-bottom="wind"] .fx-bottom {
+  width: 200%; background: linear-gradient(90deg, transparent 0 10%, rgba(255, 255, 255, 0.35) 18%, transparent 30%, transparent 55%, rgba(255, 255, 255, 0.3) 66%, transparent 78%);
+}
+.scene-frame[data-bottom="shimmer"] .fx-bottom, .scene-frame[data-top="shimmer"] .fx-top {
+  background: repeating-linear-gradient(180deg, transparent 0 7px, rgba(255, 255, 255, 0.22) 7px 8px);
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 20%, #000 80%, transparent);
+}
+.scene-frame[data-top="rays"] .fx-top {
+  background: repeating-conic-gradient(from 160deg at 70% -10%, rgba(255, 236, 190, 0.28) 0deg 3deg, transparent 3deg 11deg);
+  -webkit-mask-image: linear-gradient(180deg, #000, transparent);
+  mask-image: linear-gradient(180deg, #000, transparent);
+}
+
+.scene-frame.playing img { animation: push-in 26s ease-in-out infinite alternate; }
+.scene-frame.playing .mist { animation: mist-drift 46s linear infinite; }
+.scene-frame.playing[data-top="rain"] .fx-top { animation: rainfall 0.55s linear infinite; }
+.scene-frame.playing[data-top="flash"] .fx-top, .scene-frame.playing[data-bottom="flash"] .fx-bottom { animation: lightning 7s linear infinite; }
+.scene-frame.playing[data-top="flame"] .fx-top, .scene-frame.playing[data-bottom="flame"] .fx-bottom { animation: firelight 1.8s ease-in-out infinite alternate; }
+.scene-frame.playing[data-top="wind"] .fx-top, .scene-frame.playing[data-bottom="wind"] .fx-bottom { animation: mist-drift 11s linear infinite; }
+.scene-frame.playing[data-top="shimmer"] .fx-top, .scene-frame.playing[data-bottom="shimmer"] .fx-bottom { animation: shimmer 3.5s ease-in-out infinite alternate; }
+.scene-frame.playing[data-top="rays"] .fx-top { animation: rays 6s ease-in-out infinite alternate; }
+
+@keyframes push-in { from { transform: scale(1); } to { transform: scale(1.09) translate(-1.5%, -1%); } }
+@keyframes mist-drift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+@keyframes rainfall { to { background-position: -12px 46px; } }
+@keyframes lightning { 0%, 88%, 100% { opacity: 0; } 89% { opacity: 0.75; } 90% { opacity: 0.1; } 91.5% { opacity: 0.55; } 93% { opacity: 0; } }
+@keyframes firelight { from { opacity: 0.6; } to { opacity: 1; transform: scale(1.04); } }
+@keyframes shimmer { from { background-position: 0 0; opacity: 0.5; } to { background-position: 0 6px; opacity: 1; } }
+@keyframes rays { from { opacity: 0.45; } to { opacity: 1; } }
 
 .sc-sky { fill: var(--accent-soft); opacity: 0.55; }
 .sc-horizon, .sc-line { stroke: var(--ink); stroke-opacity: 0.28; stroke-width: 1.4; fill: none; }

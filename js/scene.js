@@ -126,10 +126,38 @@ function sceneSvg(hex) {
     + sky + horizon + SCENE_MOTIFS[hex.lower](false) + SCENE_MOTIFS[hex.upper](true) + "</svg>";
 }
 
+// 每一卦有一張淡彩水墨畫（images/hex/NN.jpg）；畫上疊一層依上下卦而定的動態效果：
+// 水下雨、雷閃電、火光閃動、風吹霧、澤水波光、天有光芒，另外整張畫緩慢推近、薄霧飄過。
+const SCENE_FX = { 乾: "rays", 坤: "", 震: "flash", 巽: "wind", 坎: "rain", 離: "flame", 艮: "", 兌: "shimmer" };
+
+// 只有捲到畫面上的圖才播放動畫，六十四卦頁一次有很多張圖時才不會拖慢手機
+const sceneObserver = "IntersectionObserver" in window
+  ? new IntersectionObserver((entries) => entries.forEach((e) => e.target.classList.toggle("playing", e.isIntersecting)), { rootMargin: "80px" })
+  : null;
+
 function sceneFigure(hex) {
   const figure = document.createElement("figure");
   figure.className = "scene-figure";
-  figure.innerHTML = sceneSvg(hex);
+  const frame = document.createElement("div");
+  frame.className = "scene-frame";
+  // 上卦的效果在天空、下卦的效果在地面；水在上是雨，水在下就是水面的波光
+  frame.dataset.top = SCENE_FX[hex.upper];
+  frame.dataset.bottom = { 坎: "shimmer", 兌: "shimmer", 離: "flame", 震: "flash", 巽: "wind" }[hex.lower] || "";
+  const img = document.createElement("img");
+  img.src = `images/hex/${String(hex.number).padStart(2, "0")}.jpg`;
+  img.alt = `${hex.fullName}：${sceneCaption(hex)}`;
+  img.loading = "lazy";
+  img.decoding = "async";
+  // 圖片載不到（例如離線又沒快取）時改用簡單的向量圖
+  img.addEventListener("error", () => { frame.innerHTML = sceneSvg(hex); }, { once: true });
+  frame.append(img, ...["mist", "fx fx-top", "fx fx-bottom"].map((cls) => {
+    const layer = document.createElement("div");
+    layer.className = cls;
+    return layer;
+  }));
+  figure.append(frame);
+  if (sceneObserver) sceneObserver.observe(frame);
+  else frame.classList.add("playing");
   const caption = document.createElement("figcaption");
   caption.textContent = `${hex.fullName}・${sceneCaption(hex)}`;
   figure.append(caption);
