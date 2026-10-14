@@ -26,59 +26,68 @@
     <a href="compat.html">合盤</a>
     <a href="about.html">依據與來源</a>
   </nav>
-  <header>
+  <header class="tarot-header">
     <div class="emblem" aria-hidden="true"></div>
     <h1>塔羅占卜</h1>
-    <p class="subtitle">萊德偉特牌 · 七十八張</p>
+    <p class="subtitle">把心裡的問題說出來</p>
   </header>
 
   <main>
-    <section class="card" id="ask">
-      <label for="question">想問的事</label>
-      <input id="question" type="text" maxlength="60" placeholder="例如：他對我是認真的嗎？">
-      <p class="hint ask-tip">一次只問一件事。問「該不該」「會不會」「他對我……嗎」都可以；要比較兩個選項，請用「二選一」牌陣。</p>
-
-      <label class="spaced">問的是哪一類</label>
-      <div class="choices" id="topics"></div>
-
-      <label class="spaced">牌陣</label>
-      <div class="tabs tarot-spreads" role="tablist" id="spreads"></div>
-      <p class="hint" id="spread-hint"></p>
-
-      <div class="options" id="choice-options" hidden>
-        <input id="option-a" type="text" maxlength="20" placeholder="選項 A，例如：留在現在的公司">
-        <input id="option-b" type="text" maxlength="20" placeholder="選項 B，例如：去新公司">
+    <!-- 今日塔羅 -->
+    <section class="card daily-tarot" id="daily">
+      <div class="daily-head">
+        <h2>今日塔羅</h2>
+        <div class="daily-tabs" role="tablist">
+          <button class="active" data-day="0" type="button">今天</button>
+          <button data-day="1" type="button">明天</button>
+        </div>
       </div>
-
-      <label class="check"><input type="checkbox" id="allow-reversed" checked> 使用逆位（牌倒過來時意思會轉弱或反過來）</label>
-
-      <div class="actions">
-        <button class="primary" id="btn-shuffle">洗牌</button>
-      </div>
+      <div id="daily-body"></div>
     </section>
 
-    <section class="card" id="draw" hidden>
-      <p class="draw-status" id="draw-status"></p>
-      <div class="deck-shuffle" id="deck-shuffle" aria-hidden="true"></div>
-      <div class="deck-fan" id="deck-fan"></div>
-      <div class="actions">
-        <button id="btn-auto">隨機幫我抽</button>
+    <!-- 對話式占卜 -->
+    <section class="card chat" id="chat">
+      <div class="chat-head">
+        <h2>問牌</h2>
+        <div class="chat-tools">
+          <button class="link" id="btn-new" type="button">新的問題</button>
+          <button class="link" id="btn-settings" type="button">設定</button>
+        </div>
       </div>
+      <div class="chat-settings" id="settings" hidden>
+        <label class="check"><input type="checkbox" id="allow-reversed" checked> 使用逆位（牌倒過來時意思會轉弱或反過來）</label>
+        <p class="hint">牌背</p>
+        <div class="choices" id="backs"></div>
+      </div>
+      <div class="thread" id="thread" aria-live="polite"></div>
+      <form class="composer" id="composer" autocomplete="off">
+        <input id="ask-input" type="text" maxlength="60" placeholder="輸入你想問的事……" enterkeyhint="send">
+        <button class="primary" type="submit" aria-label="送出">問</button>
+      </form>
     </section>
 
-    <section id="result" hidden></section>
-
+    <!-- 紀錄（月曆） -->
     <section class="card" id="history-card">
       <div class="history-head">
-        <h2>塔羅紀錄</h2>
-        <div class="history-tools"><button id="btn-clear" class="link">清除</button></div>
+        <h2>塔羅日記</h2>
+        <div class="history-tools">
+          <button class="link" id="cal-prev" type="button" aria-label="上個月">‹</button>
+          <span id="cal-title"></span>
+          <button class="link" id="cal-next" type="button" aria-label="下個月">›</button>
+        </div>
       </div>
-      <div id="history-list-wrap"><ul id="history"></ul></div>
-      <p class="hint">紀錄只存在這台裝置的瀏覽器裡。</p>
+      <div class="calendar" id="calendar"></div>
+      <ul id="history"></ul>
+      <p class="hint">紀錄只存在這台裝置的瀏覽器裡。<button class="link" id="btn-clear" type="button">清除全部紀錄</button></p>
     </section>
   </main>
 
-  <footer>牌圖為 1909 年萊德偉特原版（公有領域）；牌義依偉特《塔羅圖像之鑰》與現代通行解釋整理，解讀由程式依規則產生，僅供參考。</footer>
+  <dialog class="card-dialog" id="card-dialog">
+    <form method="dialog"><button class="link dialog-close" aria-label="關閉">✕</button></form>
+    <div id="card-dialog-body"></div>
+  </dialog>
+
+  <footer>牌圖為 1909 年萊德偉特原版（公有領域）；牌義依偉特《塔羅圖像之鑰》與現代通行解釋整理。解讀由程式依規則產生，不是 AI，僅供參考。</footer>
 
   <script src="js/reading.js"></script>
   <script src="js/tarot-cards.js"></script>

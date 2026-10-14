@@ -717,68 +717,168 @@ button.corner { position: absolute; top: 20px; right: 24px; font-size: 0.78rem; 
 .f-tarot { --tint: #a8456a; }
 :root[data-theme="tarot"] .emblem { width: 44px; height: 72px; border: 2px solid var(--accent); border-radius: 7px; background: radial-gradient(circle, rgba(216, 166, 87, 0.25), transparent 70%); animation: sway 5s ease-in-out infinite; }
 :root[data-theme="tarot"] .emblem::after { content: "✦"; position: absolute; inset: 0; display: grid; place-items: center; color: var(--accent); font-size: 1.3rem; }
-
-.tarot-spreads .tab { font-size: 0.9rem; }
-.options { display: flex; gap: 8px; margin: 4px 0 12px; flex-wrap: wrap; }
-.options input { flex: 1 1 180px; min-width: 0; }
-label.check { display: flex; align-items: center; gap: 8px; margin: 14px 0 4px; color: var(--muted); font-size: 0.9rem; cursor: pointer; }
+.tarot-header { padding-bottom: 18px; }
+label.check { display: flex; align-items: center; gap: 8px; margin: 4px 0; color: var(--muted); font-size: 0.9rem; cursor: pointer; }
 label.check input { width: auto; margin: 0; accent-color: var(--accent); }
 
+/* 牌背：四種花樣，由 <html data-back> 決定 */
 .card-back {
-  position: relative; display: block; padding: 0; border-radius: 7px; border: 2px solid #c9974e;
+  --b1: #6a2541; --b2: #2a0d1a; --pattern: rgba(216, 166, 87, 0.22); --edge: #c9974e; --mark: #e2b86b;
+  position: relative; display: block; padding: 0; border-radius: 7px; border: 2px solid var(--edge);
   background:
-    repeating-linear-gradient(45deg, rgba(216, 166, 87, 0.2) 0 1.5px, transparent 1.5px 8px),
-    repeating-linear-gradient(-45deg, rgba(216, 166, 87, 0.2) 0 1.5px, transparent 1.5px 8px),
-    radial-gradient(circle at 50% 50%, #6a2541, #2a0d1a 75%);
-  box-shadow: 0 6px 14px -6px rgba(0, 0, 0, 0.7), inset 0 0 0 3px #2a0d1a;
+    repeating-linear-gradient(45deg, var(--pattern) 0 1.5px, transparent 1.5px 8px),
+    repeating-linear-gradient(-45deg, var(--pattern) 0 1.5px, transparent 1.5px 8px),
+    radial-gradient(circle at 50% 50%, var(--b1), var(--b2) 75%);
+  box-shadow: 0 6px 14px -6px rgba(0, 0, 0, 0.7), inset 0 0 0 3px var(--b2);
 }
-.card-back::after { content: "✦"; position: absolute; inset: 0; display: grid; place-items: center; color: #e2b86b; font-size: 0.9rem; }
-
-.draw-status { margin: 0 0 12px; text-align: center; font-weight: 700; color: var(--accent); }
-.deck-shuffle { position: relative; height: 170px; }
-.deck-shuffle .card-back { position: absolute; left: 50%; top: 10px; width: 86px; height: 148px; margin-left: -43px; }
-.deck-shuffle.shuffling .card-back { animation: riffle 0.5s ease-in-out infinite alternate; animation-delay: calc(var(--i) * -70ms); }
-@keyframes riffle { from { transform: translateX(-70px) rotate(-9deg); } to { transform: translateX(70px) rotate(9deg); } }
-
-.deck-fan { display: flex; flex-wrap: wrap; justify-content: center; padding: 6px 30px 6px 4px; row-gap: 10px; }
-.deck-fan .card-back { width: 46px; height: 79px; margin-right: -26px; cursor: pointer; transition: transform 0.18s, opacity 0.3s; animation: rise 0.4s both; animation-delay: calc(var(--i) * 6ms); }
-.deck-fan .card-back:hover { transform: translateY(-10px); z-index: 1; border-color: #f2cf8a; }
-.deck-fan .card-back.taken { transform: translateY(-18px); opacity: 0.12; cursor: default; }
-.deck-fan .card-back:disabled { background-color: transparent; }
-
-.tarot-table { display: grid; gap: 14px; justify-content: center; margin: 20px 0 6px; }
-.tarot-table.spread-one { grid-template-columns: minmax(0, 200px); }
-.tarot-table.spread-three, .tarot-table.spread-choice { grid-template-columns: repeat(3, minmax(0, 170px)); }
-.tarot-table.spread-celtic {
-  grid-template-columns: repeat(4, minmax(0, 104px));
-  grid-template-areas: ". c5 . c10" "c4 c1 c6 c9" ". c2 . c8" ". c3 . c7";
+.card-back::after { content: "✦"; position: absolute; inset: 0; display: grid; place-items: center; color: var(--mark); font-size: 0.9rem; }
+:root[data-back="night"] .card-back, .card-back.back-night {
+  --b1: #23306b; --b2: #0a0f2a; --edge: #9fb4ff; --mark: #e8ecff;
+  background: radial-gradient(1px 1px at 20% 30%, #fff, transparent 60%), radial-gradient(1px 1px at 70% 20%, #fff, transparent 60%),
+    radial-gradient(1px 1px at 40% 75%, #fff, transparent 60%), radial-gradient(1px 1px at 80% 65%, #fff, transparent 60%),
+    radial-gradient(circle at 50% 50%, var(--b1), var(--b2) 80%);
 }
-.slot { margin: 0; text-align: center; }
-.c1 { grid-area: c1; } .c2 { grid-area: c2; } .c3 { grid-area: c3; } .c4 { grid-area: c4; } .c5 { grid-area: c5; }
-.c6 { grid-area: c6; } .c7 { grid-area: c7; } .c8 { grid-area: c8; } .c9 { grid-area: c9; } .c10 { grid-area: c10; }
-.slot figcaption { margin-top: 6px; line-height: 1.35; }
-.slot-pos { display: block; font-size: 0.74rem; color: var(--muted); }
-.slot-name { display: block; font-size: 0.84rem; font-weight: 700; opacity: 0; transition: opacity 0.4s 0.4s; }
+:root[data-back="night"] .card-back::after, .card-back.back-night::after { content: "☾"; }
+:root[data-back="jade"] .card-back, .card-back.back-jade { --b1: #2f6b52; --b2: #0d2a1f; --edge: #b9d8a8; --mark: #e6f2d8; --pattern: rgba(185, 216, 168, 0.2); }
+:root[data-back="jade"] .card-back::after, .card-back.back-jade::after { content: "❀"; }
+:root[data-back="ivory"] .card-back, .card-back.back-ivory { --b1: #f6ecd6; --b2: #d9c49b; --edge: #8a6a3c; --mark: #8a3a2a; --pattern: rgba(138, 106, 60, 0.22); }
+:root[data-back="ivory"] .card-back::after, .card-back.back-ivory::after { content: "☀"; }
+.card-back.back-wine { --b1: #6a2541; --b2: #2a0d1a; --pattern: rgba(216, 166, 87, 0.22); --edge: #c9974e; --mark: #e2b86b;
+  background: repeating-linear-gradient(45deg, var(--pattern) 0 1.5px, transparent 1.5px 8px), repeating-linear-gradient(-45deg, var(--pattern) 0 1.5px, transparent 1.5px 8px), radial-gradient(circle at 50% 50%, var(--b1), var(--b2) 75%); }
+.card-back.back-wine::after { content: "✦"; }
+
+/* 今日塔羅 */
+.daily-head, .chat-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+.daily-head h2, .chat-head h2 { margin: 0; }
+.daily-tabs { display: flex; gap: 4px; padding: 3px; background: var(--surface-2); border-radius: 999px; }
+.daily-tabs button { padding: 4px 14px; font-size: 0.85rem; background: transparent; border: 0; color: var(--muted); }
+.daily-tabs button.active { background: var(--surface); color: var(--accent); font-weight: 700; }
+#daily-body { margin-top: 14px; }
+.daily-empty { display: flex; align-items: center; gap: 18px; }
+.daily-empty p { margin: 0; color: var(--muted); }
+.daily-back { flex: none; width: 76px; height: 131px; cursor: pointer; animation: glow 2.4s ease-in-out infinite alternate; }
+.daily-back:hover { transform: translateY(-4px); }
+.daily-back.lifting { transform: translateY(-14px) rotateY(90deg); transition: transform 0.45s; }
+.daily-result { display: grid; grid-template-columns: 110px 1fr; gap: 18px; align-items: start; animation: rise 0.5s both; }
+.daily-result h3 { margin: 0 0 2px; }
+.daily-result p { margin: 4px 0; line-height: 1.7; }
+.daily-card { padding: 0; border: 0; background: none; border-radius: 7px; overflow: hidden; box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.8); }
+.daily-card img { display: block; width: 100%; aspect-ratio: 1 / 1.72; object-fit: cover; }
+.daily-facet { font-size: 0.88rem; color: var(--muted); }
+
+/* 對話 */
+.chat-tools { display: flex; gap: 14px; }
+.chat-settings { margin: 12px 0 0; padding: 12px 14px; border-radius: var(--radius-sm); background: var(--surface-2); }
+.chat-settings .hint { margin: 10px 0 6px; }
+.back-swatch { display: inline-block; width: 16px; height: 26px; margin-right: 6px; vertical-align: middle; border-width: 1px; border-radius: 3px; }
+.back-swatch::after { font-size: 0.5rem; }
+.thread { display: flex; flex-direction: column; gap: 12px; margin: 16px 0; min-height: 220px; }
+.msg { display: flex; gap: 10px; align-items: flex-end; max-width: 100%; animation: rise 0.35s both; }
+.msg.user { justify-content: flex-end; }
+.msg.widget { padding-left: 42px; }
+.avatar { flex: none; display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #f2cf8a, #a8456a); color: #2a0d1a; font-size: 0.9rem; box-shadow: 0 0 14px rgba(216, 166, 87, 0.35); }
+.bubble { max-width: min(560px, 86%); padding: 10px 14px; border-radius: 18px; line-height: 1.75; }
+.bubble p { margin: 0; white-space: pre-line; }
+.msg.bot .bubble { background: var(--surface-2); border: 1px solid var(--line); border-bottom-left-radius: 6px; }
+.msg.user .bubble { background: linear-gradient(135deg, #c98a4a, #a8456a); color: #fff8ef; border-bottom-right-radius: 6px; white-space: pre-line; }
+.bubble.verdict { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent-soft), 0 10px 30px -14px rgba(216, 166, 87, 0.5); }
+.bubble.verdict .tone { float: right; margin: 0 0 4px 10px; }
+.typing { display: inline-flex; gap: 4px; padding: 6px 2px; }
+.typing i { width: 7px; height: 7px; border-radius: 50%; background: var(--muted); animation: blink 1s infinite; }
+.typing i:nth-child(2) { animation-delay: 0.15s; }
+.typing i:nth-child(3) { animation-delay: 0.3s; }
+@keyframes blink { 0%, 100% { opacity: 0.25; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-3px); } }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { padding: 7px 14px; border-radius: 999px; font-size: 0.88rem; background: transparent; border: 1px solid var(--accent); color: var(--accent); }
+.chip:hover { background: var(--accent-soft); }
+.composer { position: sticky; bottom: 10px; z-index: 5; display: flex; gap: 8px; padding: 8px; margin: 0 -8px -8px; border-radius: 999px; background: var(--nav-bg); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid var(--line); }
+.composer input { flex: 1; min-width: 0; margin: 0; border-radius: 999px; }
+.composer button { flex: none; padding: 0 20px; border-radius: 999px; }
+
+/* 洗牌：牌在圓盤上轉 */
+.wheel { position: relative; width: 190px; height: 190px; margin: 4px auto; }
+.wheel .card-back { position: absolute; left: 50%; top: 50%; width: 40px; height: 69px; margin: -34px 0 0 -20px; transform: rotate(calc(var(--i) * 30deg)) translateY(-58px); transition: transform 0.6s; }
+.wheel.spinning { animation: spin 1.7s cubic-bezier(0.45, 0, 0.3, 1); }
+.wheel.spinning .card-back { transform: rotate(calc(var(--i) * 30deg + 90deg)) translateY(-18px); }
+
+/* 切牌：三疊 */
+.piles { display: flex; gap: 18px; justify-content: center; }
+.pile { position: relative; width: 62px; height: 128px; padding: 0; background: none; border: 0; }
+.pile .card-back { position: absolute; left: 0; width: 62px; height: 106px; transition: transform 0.25s; }
+.pile .card-back:nth-child(1) { top: 0; }
+.pile .card-back:nth-child(2) { top: 3px; }
+.pile .card-back:nth-child(3) { top: 6px; }
+.pile span { position: absolute; bottom: 0; left: 0; right: 0; text-align: center; font-size: 0.8rem; color: var(--muted); }
+.pile:hover { transform: none; }
+.pile:hover .card-back:nth-child(3) { transform: translateY(-8px); }
+.pile:disabled { opacity: 0.35; }
+.pile.chosen { opacity: 1; }
+.pile.chosen .card-back:nth-child(3) { transform: translateY(-14px); }
+
+/* 抽牌 */
+.draw-box { width: 100%; }
+.draw-status { margin: 0 0 8px; font-weight: 700; color: var(--accent); }
+.deck-fan { display: flex; flex-wrap: wrap; justify-content: center; padding: 14px 30px 6px 4px; row-gap: 8px; }
+.deck-fan .card-back { width: 40px; height: 69px; margin-right: -23px; cursor: pointer; transition: transform 0.18s, opacity 0.3s; animation: rise 0.4s both; animation-delay: calc(var(--i) * 5ms); }
+.deck-fan .card-back:hover { transform: translateY(-10px); z-index: 1; }
+.deck-fan .card-back.taken { transform: translateY(-16px); opacity: 0.12; cursor: default; }
+.deck-fan.done { display: none; }
+.draw-box > .link { display: block; margin: 6px auto 0; }
+.mini-fan { display: flex; padding: 10px 26px 4px 2px; }
+.mini-fan .card-back { width: 46px; height: 79px; margin-right: -18px; cursor: pointer; transform: rotate(calc((var(--i) - 3) * 5deg)); transition: transform 0.2s, opacity 0.3s; }
+.mini-fan .card-back:hover { transform: rotate(calc((var(--i) - 3) * 5deg)) translateY(-10px); z-index: 1; }
+.mini-fan .card-back.taken { opacity: 0.15; }
+
+.slots { display: grid; gap: 10px; margin-top: 12px; grid-template-columns: repeat(var(--cols, 3), minmax(0, 120px)); }
+.slots.n1 { --cols: 1; }
+.slots.n10 { grid-template-columns: repeat(5, minmax(0, 96px)); }
+.slot { display: block; padding: 0; margin: 0; background: none; border: 0; text-align: center; color: inherit; animation: rise 0.35s both; }
+.slot:hover { transform: none; }
+.slot.open { cursor: zoom-in; }
+.slot-pos { display: block; margin-top: 6px; font-size: 0.74rem; color: var(--muted); }
+.slot-name { display: block; font-size: 0.8rem; font-weight: 700; line-height: 1.35; opacity: 0; transition: opacity 0.4s 0.4s; }
 .slot.open .slot-name { opacity: 1; }
 .flip { position: relative; aspect-ratio: 1 / 1.72; perspective: 900px; }
 .flip .face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; transition: transform 0.7s cubic-bezier(0.3, 0.7, 0.3, 1); border-radius: 7px; overflow: hidden; }
 .flip .front { transform: rotateY(180deg); box-shadow: 0 10px 24px -10px rgba(0, 0, 0, 0.8); }
 .slot.open .flip .back { transform: rotateY(-180deg); }
 .slot.open .flip .front { transform: rotateY(0); }
-.flip img, .tarot-detail img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.flip img { display: block; width: 100%; height: 100%; object-fit: cover; }
 img.reversed { transform: rotate(180deg); }
+.tarot-keywords { margin: 2px 0 6px; font-size: 0.85rem; color: var(--muted); }
 
-.tarot-detail { display: grid; grid-template-columns: 74px 1fr; gap: 14px; align-items: start; padding: 12px 0; border-top: 1px solid var(--line); }
-.tarot-detail:first-of-type { border-top: 0; }
-.tarot-detail img { height: auto; aspect-ratio: 1 / 1.72; border-radius: 5px; }
-.tarot-detail-head { margin: 0 !important; font-weight: 700; color: var(--accent); }
-.tarot-keywords { margin: 2px 0 6px !important; font-size: 0.85rem; color: var(--muted); }
+/* 點牌看牌義 */
+.card-dialog { width: min(440px, calc(100vw - 32px)); max-height: calc(100vh - 48px); padding: 22px; border: 1px solid var(--line); border-radius: var(--radius); background: #24101b; color: var(--ink); }
+.card-dialog::backdrop { background: rgba(8, 2, 6, 0.72); backdrop-filter: blur(4px); }
+.dialog-close { position: absolute; top: 12px; right: 16px; font-size: 1.1rem; }
+.dialog-card { width: 46%; margin: 0 auto 12px; border-radius: 8px; overflow: hidden; box-shadow: 0 14px 30px -12px #000; }
+.dialog-card img { display: block; width: 100%; }
+.card-dialog h3 { margin: 0; text-align: center; }
+.card-dialog .meta { text-align: center; margin: 0 0 8px; }
+.card-facets { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; margin: 10px 0; }
+.card-facets dt { color: var(--accent); font-weight: 700; }
+.card-facets dd { margin: 0; }
+
+/* 月曆 */
+#cal-title { font-weight: 700; }
+.calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin: 14px 0 10px; text-align: center; }
+.cal-week { font-size: 0.75rem; color: var(--muted); }
+.cal-day { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 0 4px; border-radius: 10px; background: transparent; border: 1px solid transparent; font-size: 0.88rem; color: var(--ink); }
+.cal-day:hover { background: var(--surface-2); transform: none; }
+.cal-day.today { border-color: var(--line); }
+.cal-day.selected { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 700; }
+.cal-dots { display: flex; gap: 3px; height: 6px; }
+.cal-dots i { width: 6px; height: 6px; border-radius: 50%; }
+.dot-reading { background: var(--accent); }
+.dot-daily { background: var(--accent-2); }
 
 @media (max-width: 520px) {
-  .tarot-table.spread-three, .tarot-table.spread-choice { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-  .tarot-table.spread-celtic { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
-  .slot-name { font-size: 0.74rem; }
-  .deck-fan .card-back { width: 38px; height: 65px; margin-right: -22px; }
+  .msg.widget { padding-left: 0; }
+  .bubble { max-width: 88%; }
+  .slots { grid-template-columns: repeat(var(--cols, 3), minmax(0, 1fr)); }
+  .slots.n10 { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
+  .deck-fan .card-back { width: 34px; height: 58px; margin-right: -20px; }
+  .daily-result { grid-template-columns: 88px 1fr; gap: 14px; }
 }
 
 /* ── 卦的畫面 ── */
