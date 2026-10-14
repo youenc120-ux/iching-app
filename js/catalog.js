@@ -28,6 +28,16 @@ function withCondition(row, hex, position) {
   return row;
 }
 
+// 卦的畫面，以及放到各類問事上的解釋（收合起來，需要時再展開）
+function sceneBlock(hex) {
+  const scene = SCENES[hex.number];
+  const topics = el("details", "scene-topics", [
+    el("summary", null, "各類問事的解釋"),
+    ...TOPICS.map((topic) => el("p", null, `【${topic.name}】${scene.topics[topic.key]}`)),
+  ]);
+  return el("div", "scene-body", [sceneFigure(hex), el("div", "scene-text", [el("p", null, scene.picture), topics])]);
+}
+
 function hexCard(hex) {
   const bars = hex.bits.map((bit) => {
     const bar = el("span", `bar ${bit ? "yang" : "yin"}`);
@@ -47,11 +57,14 @@ function hexCard(hex) {
       ]),
     ]),
     el("p", "hex-note", `${HEX_NOTES[hex.number - 1][0]}：${HEX_NOTES[hex.number - 1][1]}${HEX_NOTES[hex.number - 1][2]}`),
+    sceneBlock(hex),
     withCondition(textRow("卦辭", `${hex.name}：${hex.judgment}`, hex.judgmentPlain, ratingOf(hex, "judgment")), hex, 0),
     textRow("象曰", hex.image)
   );
   hex.lines.forEach((line, i) => {
-    card.append(withCondition(textRow(lineTitle(i, hex.bits[i] === 1), line.text, line.plain, ratingOf(hex, i)), hex, i + 1));
+    const row = withCondition(textRow(lineTitle(i, hex.bits[i] === 1), line.text, line.plain, ratingOf(hex, i)), hex, i + 1);
+    row.append(el("p", "scene-line", `畫面：${SCENES[hex.number].lines[i]}`));
+    card.append(row);
   });
   if (hex.extra) {
     card.append(textRow(hex.name === "乾" ? "用九" : "用六", hex.extra.text, hex.extra.plain, ratingOf(hex, "extra")));

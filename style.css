@@ -692,6 +692,59 @@ button.corner { position: absolute; top: 20px; right: 24px; font-size: 0.78rem; 
 #result > .card:nth-child(2) { animation-delay: 0.12s; }
 #result > .card:nth-child(3) { animation-delay: 0.24s; }
 
+/* ── 卦的畫面 ── */
+.scene { margin-top: 22px; }
+.scene h4 { margin: 0 0 12px; }
+.scene-body { display: grid; grid-template-columns: minmax(0, 300px) 1fr; gap: 20px; align-items: start; }
+.hex-card .scene-body { margin: 14px 0 6px; }
+.scene-figure { margin: 0; }
+.scene-figure figcaption { margin-top: 6px; text-align: center; font-size: 0.86rem; color: var(--muted); letter-spacing: 0.08em; }
+.scene-art { display: block; width: 100%; height: auto; border-radius: 14px; border: 1px solid var(--line); overflow: hidden; }
+.scene-part + .scene-part { margin-top: 12px; }
+.scene-part h5 { margin: 0 0 4px; font-size: 0.92rem; color: var(--accent); }
+.scene-part p, .scene-text > p { margin: 0; white-space: pre-line; line-height: 1.75; }
+.scene-topics { margin-top: 10px; }
+.scene-topics summary { cursor: pointer; color: var(--accent); font-size: 0.92rem; }
+.scene-topics p { margin: 6px 0 0; line-height: 1.7; }
+.scene-line { margin: 6px 0 0; font-size: 0.9rem; color: var(--muted); line-height: 1.7; }
+
+.sc-sky { fill: var(--accent-soft); opacity: 0.55; }
+.sc-horizon, .sc-line { stroke: var(--ink); stroke-opacity: 0.28; stroke-width: 1.4; fill: none; }
+.sc-sky-arc { stroke: var(--accent); stroke-opacity: 0.45; stroke-width: 2; fill: none; }
+.sc-sun { fill: var(--accent); opacity: 0.85; }
+.sc-ray { stroke: var(--accent); stroke-width: 2.4; stroke-linecap: round; opacity: 0.7; }
+.sc-glow { fill: var(--accent); opacity: 0.13; }
+.sc-earth { fill: var(--ink); opacity: 0.12; }
+.sc-ground { fill: var(--ink); opacity: 0.06; }
+.sc-cloud { fill: var(--muted); opacity: 0.55; }
+.sc-bolt { fill: none; stroke: var(--accent); stroke-width: 3.2; stroke-linejoin: round; stroke-linecap: round; }
+.sc-sprout { fill: none; stroke: var(--accent); stroke-opacity: 0.6; stroke-width: 2; stroke-linecap: round; }
+.sc-gust { fill: none; stroke: var(--ink); stroke-opacity: 0.4; stroke-width: 2; stroke-linecap: round; }
+.sc-leaf { fill: var(--ink); opacity: 0.22; }
+.sc-rain { stroke: var(--muted); stroke-width: 2; stroke-linecap: round; opacity: 0.8; }
+.sc-water { fill: var(--accent); opacity: 0.1; }
+.sc-wave { fill: none; stroke: var(--ink); stroke-opacity: 0.35; stroke-width: 1.8; stroke-linecap: round; }
+.sc-fire { fill: var(--accent); opacity: 0.75; }
+.sc-mountain { fill: var(--ink); fill-opacity: 0.16; stroke: var(--ink); stroke-opacity: 0.35; stroke-width: 1.4; stroke-linejoin: round; }
+.sc-lake { fill: var(--accent); opacity: 0.16; }
+
+.scene-art .sc-rain-group { animation: rain 1.1s linear infinite; }
+.scene-art .sc-wind { animation: sway 4s ease-in-out infinite; }
+.scene-art .sc-tree { animation: lean 4s ease-in-out infinite; }
+.scene-art .sc-flame { animation: flicker 1.4s ease-in-out infinite alternate; }
+.scene-art .sc-flash { animation: flash 3.2s ease-in-out infinite; }
+.scene-art .sc-wave-group { animation: sway 5s ease-in-out infinite; }
+.scene-art .sc-sun-group { animation: glow 3s ease-in-out infinite alternate; }
+
+@keyframes rain { from { transform: translateY(-6px); opacity: 0.4; } 60% { opacity: 1; } to { transform: translateY(8px); opacity: 0.2; } }
+@keyframes lean { 50% { transform: rotate(-3deg); } }
+@keyframes flicker { to { transform: scaleY(0.86) scaleX(1.06); } }
+@keyframes flash { 0%, 70%, 100% { opacity: 1; } 76% { opacity: 0.25; } 82% { opacity: 1; } 88% { opacity: 0.4; } }
+
+@media (max-width: 640px) {
+  .scene-body { grid-template-columns: 1fr; gap: 14px; }
+}
+
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes rise { from { opacity: 0; transform: translateY(14px); } }
 @keyframes fade { from { opacity: 0; } }

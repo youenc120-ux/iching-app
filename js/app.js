@@ -486,7 +486,7 @@ function showReading(reading, isNew = true) {
   }
   const composed = composeReading(entry, result, guide);
   const shareButton = posterButton(() => ichingPoster(entry, result, composed), `觀象-${result.primary.name}卦.png`);
-  summary.append(tips, readingSection(composed), el("div", "actions summary-actions", [shareButton]));
+  summary.append(tips, sceneSection(entry, result, guide), readingSection(composed), el("div", "actions summary-actions", [shareButton]));
   container.append(summary, najiaSection(entry, result), reviewSection(entry));
 
   // 辭文
