@@ -250,6 +250,26 @@
   }
 }
 
+/* 生命靈數：深青與薄荷（固定深色） */
+:root[data-theme="numero"] {
+  --bg: #0b1f22;
+  --bg-art: radial-gradient(760px 480px at 82% -8%, rgba(95, 211, 188, 0.22), transparent 62%),
+            radial-gradient(620px 440px at 0% 12%, rgba(240, 196, 120, 0.12), transparent 60%),
+            radial-gradient(900px 600px at 50% 110%, rgba(30, 90, 100, 0.3), transparent 60%);
+  --surface: rgba(18, 44, 48, 0.86);
+  --surface-2: rgba(28, 62, 68, 0.8);
+  --ink: #e8f5f2;
+  --muted: #9ab8b3;
+  --line: rgba(95, 211, 188, 0.22);
+  --accent: #5fd3bc;
+  --accent-2: #f0c478;
+  --accent-soft: rgba(95, 211, 188, 0.14);
+  --on-accent: #062420;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 18px 44px -16px rgba(0, 10, 12, 0.85);
+  --nav-bg: rgba(11, 31, 34, 0.78);
+  color-scheme: dark;
+}
+
 /* ── 基礎 ── */
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 72px; }
@@ -1072,6 +1092,34 @@ img.reversed { transform: rotate(180deg); }
   .hours { grid-template-columns: repeat(4, 1fr); }
   .yiji-row { grid-template-columns: 1fr; }
   .solar-day { font-size: 3.2rem; }
+}
+
+/* ── 生命靈數 ── */
+.nav a[href="numerology.html"]::before { background: #5fd3bc; }
+.f-numero { --tint: #2f9f8a; }
+:root[data-theme="numero"] .emblem { width: 62px; height: 62px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 3px; }
+:root[data-theme="numero"] .emblem::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 18px, var(--accent) 18px 21px), repeating-linear-gradient(0deg, transparent 0 18px, var(--accent) 18px 21px); opacity: 0.5; border-radius: 6px; }
+:root[data-theme="numero"] .emblem::after { content: "9"; position: absolute; inset: 0; display: grid; place-items: center; font-family: var(--serif); font-size: 1.8rem; font-weight: 700; color: var(--accent-2); }
+.num-hero { display: flex; gap: 20px; align-items: center; margin: 8px 0 4px; }
+.num-hero h2 { margin: 0; }
+.num-big { flex: none; display: grid; place-items: center; width: 110px; height: 110px; border-radius: 50%; font-family: var(--serif); font-size: 4.2rem; font-weight: 700; color: var(--on-accent); background: radial-gradient(circle at 35% 30%, #c8fff2, var(--accent) 55%, #1f7a6a); box-shadow: 0 0 40px rgba(95, 211, 188, 0.35); animation: rise 0.6s both; }
+.num-grid-wrap { position: relative; width: min(300px, 100%); aspect-ratio: 1; margin: 16px auto; }
+.num-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.num-lines line { stroke: var(--accent-2); stroke-width: 6; stroke-linecap: round; opacity: 0.55; }
+.num-grid { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 100%; height: 100%; }
+.num-cell { display: grid; place-items: center; border-radius: 16px; border: 1px dashed var(--line); color: var(--muted); position: relative; }
+.num-cell.on { border: 1px solid var(--accent); background: var(--accent-soft); color: var(--ink); }
+.num-cell.strong { background: rgba(240, 196, 120, 0.18); border-color: var(--accent-2); }
+.num-digit { font-family: var(--serif); font-size: 2rem; font-weight: 700; }
+.num-count { position: absolute; right: 10px; bottom: 6px; font-size: 0.8rem; color: var(--accent-2); }
+.num-months { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+.num-month { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 8px 2px; border-radius: 10px; background: var(--surface-2); font-size: 0.8rem; }
+.num-month-n { font-family: var(--serif); font-size: 1.4rem; font-weight: 700; color: var(--accent); }
+.num-month small { color: var(--muted); font-size: 0.68rem; text-align: center; }
+.num-month.now { box-shadow: inset 0 0 0 1px var(--accent); }
+@media (max-width: 520px) {
+  .num-months { grid-template-columns: repeat(4, 1fr); }
+  .num-big { width: 86px; height: 86px; font-size: 3.2rem; }
 }
 
 /* ── 卦的畫面 ── */
