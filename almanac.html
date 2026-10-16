@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="almanac">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#b3261e">
+  <meta name="description" content="觀象：農民曆、擇日、易經卜卦、求籤、塔羅、八字、紫微斗數與星盤，排盤與解讀都在你的裝置上完成。">
+  <title>農民曆 · 觀象</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html">首頁</a>
+    <a href="almanac.html" class="current">農民曆</a>
+    <a href="iching.html">卜卦</a>
+    <a href="qian.html">求籤</a>
+    <a href="tarot.html">塔羅</a>
+    <a href="catalog.html">六十四卦</a>
+    <a href="bazi.html">八字</a>
+    <a href="ziwei.html">紫微斗數</a>
+    <a href="astro.html">星盤</a>
+    <a href="compat.html">合盤</a>
+    <a href="about.html">依據與來源</a>
+  </nav>
+  <header>
+    <div class="emblem" aria-hidden="true"></div>
+    <h1>農民曆</h1>
+    <p class="subtitle">每日宜忌 · 擇日</p>
+  </header>
+
+  <main>
+    <section class="card almanac-day" id="day">
+      <div class="day-nav">
+        <button type="button" id="prev-day" aria-label="前一天">‹</button>
+        <input type="date" id="date">
+        <button type="button" id="next-day" aria-label="後一天">›</button>
+        <button type="button" class="link" id="today">今天</button>
+      </div>
+      <div id="day-body"></div>
+    </section>
+
+    <section class="card" id="personal-card">
+      <h2>對你來說</h2>
+      <div class="choices" id="people"></div>
+      <p id="personal-note" class="personal-note"></p>
+    </section>
+
+    <section class="card" id="month-card">
+      <div class="history-head">
+        <h2 id="month-title"></h2>
+        <div class="history-tools">
+          <button class="link" id="month-prev" type="button" aria-label="上個月">‹</button>
+          <button class="link" id="month-next" type="button" aria-label="下個月">›</button>
+        </div>
+      </div>
+      <div class="month-grid" id="month-grid"></div>
+      <p class="hint">紅字是黃道吉日，格子裡的小字是農曆日期與建除；點日期看當天詳情。</p>
+    </section>
+
+    <section class="card" id="pick-card">
+      <h2>擇日</h2>
+      <p class="hint">選要辦的事，從今天往後找合適的日子。會排除建除忌這件事的日子；選了人，也會排除沖到他生肖的日子。</p>
+      <div class="pick-form">
+        <label class="field"><span>要辦的事</span><select id="pick-event"></select></label>
+        <label class="field"><span>找多遠</span><select id="pick-range">
+          <option value="30">未來 30 天</option><option value="60" selected>未來 60 天</option><option value="90">未來 90 天</option><option value="180">未來半年</option>
+        </select></label>
+        <label class="field"><span>為誰挑</span><select id="pick-person"></select></label>
+      </div>
+      <div class="actions"><button class="primary" type="button" id="pick-go">找好日子</button></div>
+      <ol class="pick-list" id="pick-list"></ol>
+    </section>
+  </main>
+
+  <footer>干支、節氣、農曆由天文與曆法計算；宜忌依建除十二神的通行說法（簡化版），坊間農民曆另外綜合多種神煞，細節可能不同。重大日子請再請教專業擇日師。</footer>
+
+  <script src="js/lunar-data.js"></script>
+  <script src="js/hexagrams-1.js"></script>
+  <script src="js/hexagrams-2.js"></script>
+  <script src="js/divination.js"></script>
+  <script src="js/najia.js"></script>
+  <script src="js/birth.js"></script>
+  <script src="js/poster.js"></script>
+  <script src="js/almanac.js"></script>
+  <script src="js/almanac-page.js"></script>
+  <script src="js/share.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

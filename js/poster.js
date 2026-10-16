@@ -7,6 +7,7 @@ const POSTER_THEMES = {
   ziwei: { top: "#201744", bottom: "#0e0a20", ink: "#f1ecff", muted: "#aaa1d2", accent: "#e6ba5f", line: "rgba(160,140,255,0.3)", panel: "rgba(60,48,112,0.55)" },
   astro: { top: "#101a40", bottom: "#060a1b", ink: "#e9efff", muted: "#95a2cb", accent: "#7cc4ff", line: "rgba(124,160,255,0.3)", panel: "rgba(30,42,90,0.6)" },
   qian: { top: "#3a120c", bottom: "#160604", ink: "#f8ebd6", muted: "#c9a98d", accent: "#e8b84a", line: "rgba(232,184,74,0.3)", panel: "rgba(80,24,14,0.55)" },
+  almanac: { top: "#fbf4e4", bottom: "#efe1c2", ink: "#2a1d14", muted: "#7f6f5c", accent: "#b3261e", line: "#e2cfa8", panel: "rgba(255,255,255,0.6)" },
   tarot: { top: "#2c1220", bottom: "#12070d", ink: "#f6ebe4", muted: "#bfa3a8", accent: "#d8a657", line: "rgba(216,166,87,0.3)", panel: "rgba(70,30,50,0.55)" },
   compat: { top: "#fdf1f2", bottom: "#f6dfe6", ink: "#2a1a22", muted: "#8a6c78", accent: "#c8456f", line: "#ecd0da", panel: "rgba(255,255,255,0.6)" },
 };
