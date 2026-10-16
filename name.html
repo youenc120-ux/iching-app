@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="name">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#161c2e">
+  <meta name="description" content="觀象：姓名學、生命靈數、農民曆、易經卜卦、求籤、塔羅、八字、紫微斗數與星盤，排盤與解讀都在你的裝置上完成。">
+  <title>姓名學 · 觀象</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html">首頁</a>
+    <a href="almanac.html">農民曆</a>
+    <a href="iching.html">卜卦</a>
+    <a href="qian.html">求籤</a>
+    <a href="tarot.html">塔羅</a>
+    <a href="catalog.html">六十四卦</a>
+    <a href="bazi.html">八字</a>
+    <a href="ziwei.html">紫微斗數</a>
+    <a href="astro.html">星盤</a>
+    <a href="numerology.html">生命靈數</a>
+    <a href="name.html" class="current">姓名學</a>
+    <a href="compat.html">合盤</a>
+    <a href="about.html">依據與來源</a>
+  </nav>
+  <header>
+    <div class="emblem" aria-hidden="true"></div>
+    <h1>姓名學</h1>
+    <p class="subtitle">康熙筆劃 · 五格三才</p>
+  </header>
+
+  <main>
+    <section class="card">
+      <label for="fullname">姓名（繁體中文）</label>
+      <div class="name-row">
+        <input id="fullname" type="text" maxlength="6" placeholder="例如：陳怡君" autocomplete="name">
+        <button class="primary" type="button" id="go">分析</button>
+      </div>
+      <p class="hint">會自動辨認常見的複姓（歐陽、司馬、張簡、范姜……）。如果姓名是單姓但第二個字也像姓，請在姓和名之間加一個空格，例如「張 簡明」。</p>
+      <div id="compare"></div>
+    </section>
+    <section id="result" hidden></section>
+  </main>
+
+  <footer>筆劃依康熙字典部首原形計算，由 Unicode Unihan 資料庫產生；五格與八十一數理採熊崎氏五格剖象法的通行說法。姓名學屬於民間方法，沒有經典依據，僅供參考。</footer>
+
+  <script src="js/name-strokes.js"></script>
+  <script src="js/name.js"></script>
+  <script src="js/poster.js"></script>
+  <script src="js/name-page.js"></script>
+  <script src="js/share.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

@@ -270,6 +270,25 @@
   color-scheme: dark;
 }
 
+/* 姓名學：墨藍與印泥紅（固定深色） */
+:root[data-theme="name"] {
+  --bg: #11162a;
+  --bg-art: radial-gradient(760px 480px at 82% -8%, rgba(214, 70, 60, 0.22), transparent 62%),
+            radial-gradient(620px 440px at 0% 12%, rgba(120, 140, 220, 0.16), transparent 60%);
+  --surface: rgba(26, 32, 58, 0.86);
+  --surface-2: rgba(40, 48, 84, 0.8);
+  --ink: #edf0fa;
+  --muted: #a3abc8;
+  --line: rgba(160, 175, 230, 0.22);
+  --accent: #e65a4b;
+  --accent-2: #e8c27a;
+  --accent-soft: rgba(230, 90, 75, 0.14);
+  --on-accent: #fff;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 18px 44px -16px rgba(0, 4, 20, 0.85);
+  --nav-bg: rgba(17, 22, 42, 0.78);
+  color-scheme: dark;
+}
+
 /* ── 基礎 ── */
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 72px; }
@@ -1120,6 +1139,41 @@ img.reversed { transform: rotate(180deg); }
 @media (max-width: 520px) {
   .num-months { grid-template-columns: repeat(4, 1fr); }
   .num-big { width: 86px; height: 86px; font-size: 3.2rem; }
+}
+
+/* ── 姓名學 ── */
+.nav a[href="name.html"]::before { background: #e65a4b; }
+.f-name { --tint: #3d4f9a; }
+:root[data-theme="name"] .emblem { width: 58px; height: 58px; border-radius: 10px; background: #c23b2e; box-shadow: inset 0 0 0 3px #c23b2e, inset 0 0 0 5px #f3d9c8, 0 8px 20px -8px #000; }
+:root[data-theme="name"] .emblem::after { content: "名"; position: absolute; inset: 0; display: grid; place-items: center; color: #f3d9c8; font-family: var(--serif); font-size: 1.6rem; font-weight: 700; }
+.name-row { display: flex; gap: 8px; }
+.name-row input { flex: 1; min-width: 0; margin: 0; font-size: 1.2rem; letter-spacing: 0.1em; }
+.stroke-chars { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0 4px; }
+.stroke-char { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 8px; border-radius: 12px; background: var(--surface-2); }
+.stroke-char.surname { box-shadow: inset 0 0 0 1px var(--accent); }
+.stroke-glyph { font-family: var(--serif); font-size: 2rem; font-weight: 700; line-height: 1; }
+.stroke-char input { width: 58px; margin: 0; padding: 4px; text-align: center; }
+.stroke-char small { color: var(--muted); font-size: 0.72rem; }
+.name-verdict { display: flex; gap: 12px; align-items: center; margin: 14px 0; }
+.name-verdict p { margin: 0; }
+.grids { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.grid-cell { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 12px 6px; border-radius: 14px; background: var(--surface-2); text-align: center; }
+.grid-cell.g-人格, .grid-cell.g-總格 { box-shadow: inset 0 0 0 1px var(--accent-2); }
+.grid-head { display: flex; flex-direction: column; align-items: center; line-height: 1.2; }
+.grid-head small { color: var(--muted); font-size: 0.7rem; }
+.grid-n { font-family: var(--serif); font-size: 2rem; font-weight: 700; color: var(--accent-2); }
+.grid-meaning { margin: 0; font-size: 0.78rem; line-height: 1.4; }
+.grid-el { color: var(--muted); font-size: 0.7rem; }
+.grid-roles { display: grid; grid-template-columns: auto 1fr; gap: 6px 12px; margin: 4px 0; font-size: 0.9rem; }
+.grid-roles dt { color: var(--accent-2); }
+.grid-roles dd { margin: 0; }
+.table-scroll { overflow-x: auto; }
+.compare-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+.compare-table th, .compare-table td { padding: 6px 8px; border-bottom: 1px solid var(--line); text-align: center; white-space: nowrap; }
+.compare-table th { color: var(--muted); font-weight: 500; }
+#compare h4 { margin: 18px 0 8px; }
+@media (max-width: 520px) {
+  .grids { grid-template-columns: repeat(3, 1fr); }
 }
 
 /* ── 卦的畫面 ── */
