@@ -417,7 +417,7 @@ function renderAstro(input) {
 
   part("三大要素", ["太陽", "月亮", "上升"].map((name) => {
     const body = byName(name);
-    return `${name}${SIGNS[body.sign]}：${ROLE_TEXTS[name]}。${SIGN_TRAITS[body.sign]}`;
+    return `${name}${SIGNS[body.sign]}：${ROLE_TEXTS[name]}。${PLANET_SIGN_TEXTS[name]?.[body.sign] || SIGN_TRAITS[body.sign]}`;
   }).join("\n"));
 
   const sun = byName("太陽"), moon = byName("月亮"), asc = byName("上升");
@@ -431,7 +431,7 @@ function renderAstro(input) {
 
   part("個人行星", ["水星", "金星", "火星", "木星", "土星"].map((name) => {
     const body = byName(name);
-    return `${name}${SIGNS[body.sign]}，在第 ${body.house} 宮${body.retrograde ? "，逆行" : ""}：${ROLE_TEXTS[name]}，表現在「${HOUSE_TEXTS[body.house - 1]}」的領域。${SIGN_TRAITS[body.sign].split("缺點")[0]}`;
+    return `${name}${SIGNS[body.sign]}，在第 ${body.house} 宮${body.retrograde ? "，逆行" : ""}：${ROLE_TEXTS[name]}，表現在「${HOUSE_TEXTS[body.house - 1]}」的領域。${PLANET_SIGN_TEXTS[name]?.[body.sign] || SIGN_TRAITS[body.sign].split("缺點")[0]}`;
   }).join("\n"));
 
   // 元素與模式的分布
@@ -445,8 +445,8 @@ function renderAstro(input) {
 
   const top = chart.aspects.slice(0, 8);
   part("主要相位", top.length ? top.map((a) => {
-    const meaning = a.nature === "和諧" ? "兩者順暢配合，是天生的資源" : a.nature === "緊張" ? "兩者互相衝突，是壓力也是推動你成長的地方" : "兩者綁在一起運作，力量集中，好壞一起放大";
-    return `${a.a}${a.name}${a.b}（誤差 ${a.orb.toFixed(1)}°）：${PLANET_KEYWORDS[a.a]}與${PLANET_KEYWORDS[a.b]}，${meaning}。`;
+    const meaning = a.nature === "和諧" ? "順暢配合，是天生的資源" : a.nature === "緊張" ? "互相衝突，是壓力，也是推動你成長的地方" : "綁在一起運作，力量集中，好壞一起放大";
+    return `${a.a}${a.name}${a.b}（誤差 ${a.orb.toFixed(1)}°）：${a.a}（${PLANET_KEYWORDS[a.a]}）和${a.b}（${PLANET_KEYWORDS[a.b]}）${meaning}。`;
   }).join("\n") : "沒有在容許度內的主要相位。");
 
   const transits = transitAspects(chart);
