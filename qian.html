@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="qian">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#2a0c08">
+  <meta name="description" content="觀象：易經卜卦、求籤、塔羅、八字、紫微斗數、西洋星盤與合盤，排盤與解讀都在你的裝置上完成。">
+  <title>求籤 · 觀象</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@500;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="nav">
+    <a href="index.html">首頁</a>
+    <a href="iching.html">卜卦</a>
+    <a href="qian.html" class="current">求籤</a>
+    <a href="tarot.html">塔羅</a>
+    <a href="catalog.html">六十四卦</a>
+    <a href="bazi.html">八字</a>
+    <a href="ziwei.html">紫微斗數</a>
+    <a href="astro.html">星盤</a>
+    <a href="compat.html">合盤</a>
+    <a href="about.html">依據與來源</a>
+  </nav>
+  <header>
+    <div class="emblem" aria-hidden="true"></div>
+    <h1>媽祖靈籤</h1>
+    <p class="subtitle">六十甲子籤 · 誠心則靈</p>
+  </header>
+
+  <main>
+    <section class="card" id="ask">
+      <label for="question">要請示的事</label>
+      <input id="question" type="text" maxlength="60" placeholder="例如：我今年換工作順不順利？">
+      <p class="hint ask-tip">求籤前先在心裡說出自己的姓名、生日、住址，再把要問的事說清楚。一次只問一件事。</p>
+      <label class="spaced">問的是哪一類</label>
+      <div class="choices" id="topics"></div>
+      <label class="check"><input type="checkbox" id="strict"> 嚴格確認：抽到籤後要連續三個聖筊才算數（許多廟宇的做法）</label>
+    </section>
+
+    <section class="card ritual" id="ritual">
+      <ol class="steps" id="steps">
+        <li data-step="1">擲筊請示</li>
+        <li data-step="2">搖籤筒抽籤</li>
+        <li data-step="3">擲筊確認</li>
+      </ol>
+      <div class="altar">
+        <div class="jiao-pair" id="jiao" aria-hidden="true">
+          <div class="jiao"><i></i></div>
+          <div class="jiao"><i></i></div>
+        </div>
+        <div class="tube" id="tube" aria-hidden="true">
+          <div class="sticks"></div>
+          <div class="tube-body"><span>籤</span></div>
+          <div class="drawn-stick" id="drawn-stick"></div>
+        </div>
+      </div>
+      <p class="ritual-status" id="status">準備好之後，按下「擲筊」向媽祖請示能不能求籤。</p>
+      <div class="actions" id="ritual-actions"></div>
+      <ul class="toss-log" id="toss-log"></ul>
+    </section>
+
+    <section id="result" hidden></section>
+
+    <section class="card" id="history-card">
+      <div class="history-head">
+        <h2>求籤紀錄</h2>
+        <div class="history-tools"><button id="btn-clear" class="link" type="button">清除</button></div>
+      </div>
+      <div id="history-list-wrap"><ul id="history"></ul></div>
+      <p class="hint">紀錄只存在這台裝置的瀏覽器裡。</p>
+    </section>
+
+    <section class="card" id="browse">
+      <h2>六十首籤詩</h2>
+      <input id="search" type="search" placeholder="輸入籤號、干支或籤詩中的字，例如「12」「甲子」「月出」">
+      <div class="qian-list" id="qian-list"></div>
+    </section>
+  </main>
+
+  <footer>籤詩與傳統籤解為台灣媽祖廟通行的六十甲子籤譜，已用三間廟宇的籤譜互相比對；吉凶評等與白話解釋為本站整理，僅供參考。</footer>
+
+  <script src="js/reading.js"></script>
+  <script src="js/qian-data.js"></script>
+  <script src="js/poster.js"></script>
+  <script src="js/qian.js"></script>
+  <script src="js/share.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

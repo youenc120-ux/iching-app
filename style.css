@@ -196,6 +196,26 @@
   color-scheme: dark;
 }
 
+/* 求籤：廟宇的朱紅與金（固定深色） */
+:root[data-theme="qian"] {
+  --bg: #1a0806;
+  --bg-art: radial-gradient(760px 480px at 80% -8%, rgba(214, 64, 34, 0.32), transparent 62%),
+            radial-gradient(620px 440px at 0% 10%, rgba(232, 184, 74, 0.16), transparent 60%),
+            radial-gradient(900px 600px at 50% 110%, rgba(120, 24, 12, 0.34), transparent 60%);
+  --surface: rgba(52, 16, 10, 0.86);
+  --surface-2: rgba(78, 26, 16, 0.8);
+  --ink: #f8ebd6;
+  --muted: #c9a98d;
+  --line: rgba(232, 184, 74, 0.24);
+  --accent: #e8b84a;
+  --accent-2: #e0532f;
+  --accent-soft: rgba(232, 184, 74, 0.14);
+  --on-accent: #2a1203;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 18px 44px -16px rgba(20, 0, 0, 0.85);
+  --nav-bg: rgba(26, 8, 6, 0.78);
+  color-scheme: dark;
+}
+
 /* ── 基礎 ── */
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; scroll-padding-top: 72px; }
@@ -879,6 +899,80 @@ img.reversed { transform: rotate(180deg); }
   .slots.n10 { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; }
   .deck-fan .card-back { width: 34px; height: 58px; margin-right: -20px; }
   .daily-result { grid-template-columns: 88px 1fr; gap: 14px; }
+}
+
+/* ── 求籤 ── */
+.nav a[href="qian.html"]::before { background: #e0532f; }
+.f-qian { --tint: #c2361f; }
+:root[data-theme="qian"] .emblem { width: 46px; height: 64px; border-radius: 6px 6px 12px 12px; background: linear-gradient(90deg, #8c1d10, #c8321e 50%, #8c1d10); box-shadow: 0 0 22px rgba(224, 83, 47, 0.45); }
+:root[data-theme="qian"] .emblem::before { content: ""; position: absolute; left: 8px; right: 8px; top: -14px; height: 16px; background: repeating-linear-gradient(90deg, #e8c27a 0 3px, transparent 3px 6px); }
+:root[data-theme="qian"] .emblem::after { content: "籤"; position: absolute; inset: 0; display: grid; place-items: center; color: #f6d68a; font-family: var(--serif); font-weight: 700; }
+
+.steps { display: flex; gap: 6px; margin: 0 0 18px; padding: 0; list-style: none; counter-reset: step; }
+.steps li { flex: 1; padding: 8px 6px; border-radius: 10px; background: var(--surface-2); color: var(--muted); font-size: 0.82rem; text-align: center; counter-increment: step; }
+.steps li::before { content: counter(step) ". "; }
+.steps li.active { color: var(--on-accent); background: var(--accent); font-weight: 700; }
+.steps li.done { color: var(--accent); }
+
+.altar { display: flex; justify-content: center; align-items: flex-end; gap: 40px; min-height: 190px; padding: 10px 0; }
+
+/* 筊：半月形，平面一側較淺、凸面一側深紅發亮 */
+.jiao-pair { display: flex; gap: 14px; }
+.jiao { width: 64px; height: 32px; border-radius: 64px 64px 6px 6px; background: radial-gradient(ellipse at 40% 30%, #ff8a6a, #b3200f 55%, #6e0f06); box-shadow: 0 6px 12px -4px rgba(0, 0, 0, 0.7); position: relative; transition: transform 0.3s; }
+.jiao i { position: absolute; left: 10%; right: 10%; bottom: 4px; height: 3px; border-radius: 3px; background: rgba(0, 0, 0, 0.25); }
+.jiao.flat { background: linear-gradient(180deg, #e0a080, #c46a4c); border-radius: 6px 6px 64px 64px; }
+.jiao.flat i { top: 4px; bottom: auto; background: rgba(120, 40, 20, 0.3); }
+.jiao-pair.tossing .jiao { animation: toss 0.9s cubic-bezier(0.3, 0, 0.5, 1); }
+.jiao-pair.tossing .jiao:nth-child(2) { animation-delay: 0.06s; }
+@keyframes toss { 0% { transform: translateY(0) rotate(0); } 45% { transform: translateY(-110px) rotate(540deg); } 80% { transform: translateY(0) rotate(900deg); } 90% { transform: translateY(-10px) rotate(940deg); } 100% { transform: translateY(0) rotate(1080deg); } }
+
+/* 籤筒 */
+.tube { position: relative; width: 78px; height: 150px; }
+.tube-body { position: absolute; bottom: 0; left: 0; right: 0; height: 104px; border-radius: 8px 8px 14px 14px; background: linear-gradient(90deg, #7a1a0e, #c8321e 45%, #7a1a0e); box-shadow: inset 0 -10px 18px rgba(0, 0, 0, 0.35), 0 10px 20px -8px #000; display: grid; place-items: center; color: #f6d68a; font-family: var(--serif); font-size: 1.6rem; font-weight: 700; }
+.tube-body::before { content: ""; position: absolute; top: 10px; left: 0; right: 0; height: 4px; background: #e8b84a; opacity: 0.7; }
+.sticks { position: absolute; bottom: 90px; left: 10px; right: 10px; height: 40px; }
+.sticks i { position: absolute; bottom: 0; left: calc(var(--i) * 6.5px); width: 5px; height: calc(30px + (var(--i) * 7 % 11) * 1px); border-radius: 2px 2px 0 0; background: linear-gradient(180deg, #c23b22 0 6px, #e6c48a 6px); transform: rotate(calc((var(--i) - 4) * 2.5deg)); transform-origin: bottom center; }
+.tube.shaking { animation: shake 0.18s ease-in-out infinite alternate; }
+@keyframes shake { from { transform: rotate(-12deg) translateX(-4px); } to { transform: rotate(10deg) translateX(4px); } }
+.drawn-stick { position: absolute; left: 50%; bottom: 100px; width: 22px; margin-left: -11px; height: 0; overflow: hidden; border-radius: 3px 3px 0 0; background: linear-gradient(180deg, #c23b22 0 22px, #f1d9a6 22px); color: #6e1408; font-family: var(--serif); font-weight: 700; font-size: 0.8rem; line-height: 1.05; writing-mode: vertical-rl; text-align: center; padding-top: 26px; transition: height 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.2), bottom 0.6s; z-index: 1; }
+.tube.drawn .drawn-stick { height: 120px; bottom: 112px; box-shadow: 0 0 18px rgba(232, 184, 74, 0.6); }
+
+.ritual-status { min-height: 3.4em; margin: 6px 0 4px; text-align: center; font-weight: 700; color: var(--ink); white-space: pre-line; }
+.ritual .actions { justify-content: center; }
+.toss-log { display: flex; flex-wrap: wrap; gap: 6px; justify-content: center; margin: 10px 0 0; padding: 0; list-style: none; }
+.toss { padding: 3px 10px; border-radius: 999px; font-size: 0.78rem; background: var(--surface-2); color: var(--muted); }
+.toss.yes { color: var(--accent); border: 1px solid var(--accent); }
+
+/* 籤紙：直書 */
+.qian-slip { width: min(340px, 100%); margin: 18px auto 6px; padding: 16px 18px; background: linear-gradient(180deg, #f6e6c0, #ecd29c); color: #2a1408; border-radius: 8px; border: 1px solid #a8261a; box-shadow: inset 0 0 0 6px #f6e6c0, inset 0 0 0 8px #a8261a, 0 18px 40px -16px #000; animation: rise 0.7s both; }
+.slip-head, .slip-foot { display: flex; justify-content: space-between; align-items: center; color: #a8261a; font-family: var(--serif); font-weight: 700; }
+.slip-head { font-size: 1.15rem; padding: 4px 6px 10px; border-bottom: 1px solid rgba(168, 38, 26, 0.4); }
+.slip-foot { font-size: 0.82rem; padding: 10px 6px 4px; border-top: 1px solid rgba(168, 38, 26, 0.4); }
+.slip-grade { font-size: 1rem; }
+.slip-poem { display: flex; flex-direction: row-reverse; justify-content: center; gap: 18px; padding: 16px 0; }
+.slip-poem p { margin: 0; writing-mode: vertical-rl; font-family: var(--serif); font-size: 1.4rem; font-weight: 700; letter-spacing: 0.18em; line-height: 1; }
+
+.qian-cats { display: grid; grid-template-columns: auto 1fr auto 1fr; gap: 6px 10px; margin: 6px 0; font-size: 0.9rem; }
+.qian-cats dt { color: var(--muted); }
+.qian-cats dd { margin: 0; }
+.qian-cats .asked { color: var(--accent); font-weight: 700; }
+.qian-glossary { margin-top: 8px; font-size: 0.86rem; color: var(--muted); }
+.qian-glossary summary { cursor: pointer; color: var(--accent); }
+
+.qian-list { margin-top: 12px; }
+.qian-item { border-top: 1px solid var(--line); padding: 10px 2px; }
+.qian-item summary { display: flex; gap: 10px; align-items: center; cursor: pointer; list-style: none; flex-wrap: wrap; }
+.qian-item summary::-webkit-details-marker { display: none; }
+.qian-item-no { font-weight: 700; min-width: 7.5em; }
+.qian-item-first { color: var(--muted); font-family: var(--serif); }
+.qian-item-poem { font-family: var(--serif); font-size: 1.05rem; }
+.qian-item p { margin: 8px 0 0; }
+
+@media (max-width: 520px) {
+  .altar { gap: 24px; }
+  .jiao { width: 54px; height: 27px; }
+  .qian-cats { grid-template-columns: auto 1fr; }
+  .slip-poem p { font-size: 1.25rem; }
 }
 
 /* ── 卦的畫面 ── */
