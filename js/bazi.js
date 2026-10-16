@@ -327,6 +327,30 @@ function renderBazi(birth) {
       el("div", "luck-year", lean),
     ]);
   });
+  // 今年的流月：以「節」為界，寅月（立春）到丑月（小寒），月干由年干推出（五虎遁）
+  const MONTH_GOD_TEXTS = {
+    比肩: "同輩、競爭多，凡事想自己來", 劫財: "花費與人情開銷大，防衝動破財", 食神: "心情放鬆，適合創作、享受與休息", 傷官: "表現慾強，容易說錯話、與上司起摩擦",
+    偏財: "機會與偏財多，交際應酬也多", 正財: "適合踏實工作、存錢、處理實務", 七殺: "壓力與挑戰大，要果斷、防衝突", 正官: "責任、規範與升遷機會，宜守規矩",
+    偏印: "想法多、適合進修與獨處，防想太多", 正印: "有貴人與長輩幫忙，適合學習、休養",
+  };
+  const yearIdx = (((firstYear - 4) % 60) + 60) % 60;
+  let jie = nearestJie(Date.UTC(firstYear, 0, 20), true); // 立春
+  const months = Array.from({ length: 12 }, (_, k) => {
+    const start = new Date(jie + 8 * 3600000);
+    jie = nearestJie(jie + 5 * 86400000, true);
+    const stem = ((yearIdx % 5) * 2 + 2 + k) % 10, branch = (k + 2) % 12;
+    const god = tenGod(chart.dayStem, stem);
+    const element = STEM_ELEMENTS[stem];
+    const lean = chart.favorable.length ? (chart.favorable.includes(element) ? "順" : "守") : "平";
+    const clash = (branch + 6) % 12 === chart.pillars[2].branch;
+    const isNow = now >= start && now < new Date(jie + 8 * 3600000);
+    return el("div", `month-luck${isNow ? " current" : ""}`, [
+      el("div", "luck-age", `${start.getUTCMonth() + 1}/${start.getUTCDate()} 起`),
+      el("div", "pillar-char small", pairText(stem, branch)),
+      el("div", "luck-god", `${god}・${lean}`),
+      el("p", "month-text", MONTH_GOD_TEXTS[god] + (clash ? "；月支沖日支，生活與感情容易變動" : "") + "。"),
+    ]);
+  });
   const startYears = Math.floor(chart.startAge);
   const startMonths = Math.round((chart.startAge - startYears) * 12);
   const today = baziDaily(chart, now);
@@ -337,6 +361,9 @@ function renderBazi(birth) {
     el("h3", null, "往後五年"),
     el("div", "luck-row five", years),
     el("p", "hint", "「順」表示流年天干是你的喜用五行，「守」表示不是，「平」表示命局平衡、沒有明顯偏向。"),
+    el("h3", null, `${firstYear} 流月`),
+    el("div", "month-row", months),
+    el("p", "hint", "每個月以節氣交接的那天開始（例如立春、驚蟄），不是農曆初一；十神是月干對你日主的關係。"),
     el("div", "guide", [el("h4", null, `今天（${today.day}日，${today.god}）`), el("p", null, today.text)]),
     el("p", "hint", "這裡的強弱與喜用是用五行比重估算的簡易判斷，格局只取月令本氣，神煞只列最常用的幾個；沒有細論調候、通根透干與刑沖合害。年、月以節氣為界；晚上 11 點後出生，日柱算隔天。"),
   ]));

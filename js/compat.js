@@ -167,7 +167,8 @@ function renderCompat() {
 
   const bazi = compatBazi(a, b);
   const astro = compatAstro(a, b);
-  const overall = Math.round((bazi.score + astro.score) / 2);
+  const ziwei = compatZiwei(a, b);
+  const overall = Math.round((bazi.score + astro.score + ziwei.score) / 3);
   const tier = overall >= 72 ? "good" : overall >= 58 ? "neutral" : overall >= 45 ? "caution" : "bad";
 
   root.append(el("section", "card", [
@@ -175,7 +176,7 @@ function renderCompat() {
       el("div", "compat-number", String(overall)),
       el("div", null, [
         el("h2", null, `${a.birth.name} × ${b.birth.name}`),
-        el("p", "meta", `八字 ${bazi.score} 分 · 星盤 ${astro.score} 分`),
+        el("p", "meta", `八字 ${bazi.score} 分 · 紫微 ${ziwei.score} 分 · 星盤 ${astro.score} 分`),
         el("span", `tone ${tier}`, overall >= 85 ? "非常合" : overall >= 72 ? "合得來" : overall >= 58 ? "普通" : overall >= 45 ? "偏不合" : "不合"),
       ]),
     ]),
@@ -190,9 +191,38 @@ function renderCompat() {
       el("p", null, item.text),
     ])),
   ]);
-  root.append(section("八字合盤", bazi), section("星盤合盤", astro));
-  root.append(el("p", "hint", "分數只是把上面列出的加分項和扣分項加總，方便一眼比較，不是精密的量測。八字只看了日干、日支、年支與五行；星盤只看了太陽、月亮、金星、火星、上升之間的相位。兩個人合不合，最終還是看實際相處。"));
+  root.append(section("八字合盤", bazi), section("紫微合盤", ziwei), section("星盤合盤", astro));
+  root.append(el("p", "hint", "分數只是把上面列出的加分項和扣分項加總，方便一眼比較，不是精密的量測。八字只看了日干、日支、年支與五行；紫微只看了夫妻宮與命宮的對照、生年化祿化忌的位置；星盤只看了太陽、月亮、金星、火星、上升之間的相位。兩個人合不合，最終還是看實際相處。"));
   root.hidden = false;
+}
+
+// 紫微合盤：一個人的夫妻宮描述他會被什麼樣的人吸引；對方的命宮主星若正好是這些星，就是「心中理想的對象」。
+// 另外看生年化祿、化忌的星是不是在對方的命宮：祿是天生的好感與付出，忌是執著、虧欠與糾纏。
+function compatZiwei(a, b) {
+  const items = [];
+  const add = (title, text, delta) => items.push({ title, text, delta });
+  const charts = [a, b].map((p) => ziweiChart(p.birth));
+  const majorsOf = (chart, name) => {
+    const palace = chart.palaces.find((p) => p.name === name);
+    return (palace.major.length ? palace.major : chart.palaces[mod12(palace.branch + 6)].major).map((s) => s.name);
+  };
+  [[0, 1], [1, 0]].forEach(([x, y]) => {
+    const X = [a, b][x].birth.name, Y = [a, b][y].birth.name;
+    const spouse = majorsOf(charts[x], "夫妻"), life = majorsOf(charts[y], "命宮");
+    const common = spouse.filter((s) => life.includes(s));
+    const want = spouse.map((s) => STAR_IN_PALACE[s]?.夫妻).filter(Boolean)[0] || "";
+    if (common.length) add(`${Y}符合${X}的夫妻宮`, `${X}的夫妻宮是${spouse.join("、")}，${Y}的命宮主星正好有${common.join("、")}。也就是說，${Y}本人很像${X}命中會被吸引、會遇到的那種對象。${want}`, 15);
+    else add(`${X}的夫妻宮`, `${X}的夫妻宮是${spouse.join("、") || "空宮"}（${want}）；${Y}的命宮是${life.join("、") || "空宮"}，不是${X}夫妻宮描述的典型對象，相處上需要多一點磨合。`, -3);
+    const lifePalace = charts[y].palaces.find((p) => p.name === "命宮");
+    const lifeStars = [...lifePalace.major, ...lifePalace.minor].map((s) => s.name);
+    for (const t of charts[x].transforms.filter(Boolean)) {
+      if (!lifeStars.includes(t.star)) continue;
+      if (t.type === "祿") add(`${X}的化祿星在${Y}的命宮`, `${X}生年化祿的${t.star}，正好坐在${Y}的命宮：${X}對${Y}有天生的好感，願意付出，和${Y}在一起覺得有收穫。`, 10);
+      if (t.type === "忌") add(`${X}的化忌星在${Y}的命宮`, `${X}生年化忌的${t.star}，正好坐在${Y}的命宮：${X}對${Y}有放不下的執著，可能是很深的緣分，也可能是虧欠與糾纏，吵架時特別容易鑽牛角尖。`, -8);
+    }
+  });
+  const total = items.reduce((s, i) => s + i.delta, 0);
+  return { score: Math.max(20, Math.min(98, 60 + total)), items };
 }
 
 if (typeof document !== "undefined" && document.querySelector("#person-a")) {

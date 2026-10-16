@@ -311,7 +311,41 @@ function renderZiwei(birth) {
   const yearPalace = chart.palaces[yearBranchNow];
   part(`今年（${now}）流年`, `今年是${BRANCHES[yearBranchNow]}年，流年命宮落在本命的${yearPalace.name}：今年的際遇會圍繞${PALACE_TOPICS[yearPalace.name]}。\n${palaceDetail(yearPalace)}`);
 
-  reading.append(el("p", "hint", "這裡排了十四主星、常用的輔星煞星、生年四化與亮度，流年只看流年命宮；沒有納入小限、流年四化、飛星與雜曜。各門派對壬年化科、閏月等細節的排法並不一致。"));
+  // 四化飛到哪一宮：任一天干都會讓四顆星化祿、權、科、忌，找出那四顆星在本命盤的哪一宮
+  const flyFrom = (stem) => TRANSFORMS[stem].map((star, i) => {
+    const palace = chart.palaces.find((p) => [...p.major, ...p.minor].some((s) => s.name === star));
+    return palace ? { star, type: TRANSFORM_NAMES[i], palace } : null;
+  }).filter(Boolean);
+
+  // 流年四化：今年的天干讓四顆星化，落在本命哪一宮，也就是今年那方面的事會怎麼動
+  const yearStemNow = ((now - 4) % 10 + 10) % 10;
+  const yearlyName = (palace) => PALACE_NAMES[mod12(yearPalace.branch - palace.branch)];
+  part(`今年（${STEMS[yearStemNow]}${BRANCHES[yearBranchNow]}年）流年四化`, flyFrom(yearStemNow).map((t) =>
+    `${t.star}化${t.type}入本命${t.palace.name}（今年的流年${yearlyName(t.palace)}）：${STAR_TRANSFORM[t.star + t.type] || ""}${TRANSFORM_IN_PALACE[t.type](`今年${PALACE_TOPICS[t.palace.name]}`)}`).join("\n")
+    + "\n流年化忌落的宮位，是今年最需要提防、最容易卡關的事；化祿落的宮位，是今年比較有收穫的地方。");
+
+  // 大限四化：用目前大限宮位的天干
+  if (currentDecade) {
+    part(`大限四化（${STEMS[currentDecade.stem]}干）`, flyFrom(currentDecade.stem).map((t) =>
+      `${t.star}化${t.type}入${t.palace.name}：${TRANSFORM_IN_PALACE[t.type](`這十年${PALACE_TOPICS[t.palace.name]}`)}`).join("\n"));
+  }
+
+  // 宮干飛化：重點宮位自己的天干化祿、化忌飛到哪裡（化到本宮內的星叫「自化」）
+  const flyLines = ["命宮", "夫妻", "財帛", "官祿"].flatMap((name) => {
+    const from = byName(name);
+    return flyFrom(from.stem).filter((t) => t.type === "祿" || t.type === "忌").map((t) => {
+      const fromTopic = PALACE_TOPICS[name], toTopic = PALACE_TOPICS[t.palace.name];
+      if (t.palace === from) {
+        return t.type === "祿" ? `${name}自化祿（${t.star}）：${fromTopic}上的好處來得快、去得也快，容易得而復失。`
+          : `${name}自化忌（${t.star}）：${fromTopic}上容易自己放手、有始無終，或自己跟自己過不去。`;
+      }
+      return t.type === "祿" ? `${name}化祿入${t.palace.name}（${t.star}）：你在「${fromTopic}」上的心力與福分，會流向「${toTopic}」。`
+        : `${name}化忌入${t.palace.name}（${t.star}）：「${fromTopic}」的執著與虧欠，會落在「${toTopic}」上，是要特別留心的地方。`;
+    });
+  });
+  part("宮干飛化（重點宮位）", flyLines.join("\n"));
+
+  reading.append(el("p", "hint", "這裡排了十四主星、常用的輔星煞星、亮度、生年四化、流年四化、大限四化，以及命、夫妻、財帛、官祿四宮的宮干飛化（祿與忌）；沒有納入小限、流月與雜曜。各門派對壬年化科、閏月等細節的排法並不一致。"));
   root.append(reading);
   root.hidden = false;
 }
