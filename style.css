@@ -1183,6 +1183,38 @@ img.reversed { transform: rotate(180deg); }
 .month-text { margin: 4px 0 0; font-size: 0.76rem; line-height: 1.45; color: var(--muted); }
 @media (max-width: 520px) { .month-row { grid-template-columns: repeat(2, 1fr); } }
 
+/* ── 首頁「今日」 ── */
+.today-card .today-head { display: flex; gap: 18px; align-items: center; margin-bottom: 14px; }
+.today-day { font-family: var(--serif); font-size: 3.6rem; font-weight: 700; line-height: 1; color: var(--accent); }
+.today-solar, .today-lunar, .today-tags { margin: 0; }
+.today-solar { color: var(--muted); font-size: 0.9rem; }
+.today-lunar { font-family: var(--serif); font-size: 1.25rem; font-weight: 700; }
+.today-tags { color: var(--accent); font-size: 0.85rem; font-weight: 700; }
+.today-card .yiji-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.today-card .yiji-row h4 { display: inline-grid; place-items: center; width: 30px; height: 30px; margin: 0 0 6px; border-radius: 50%; color: #fff; font-family: var(--serif); }
+.today-card .yiji-row h4.yi { background: #2f7d4f; }
+.today-card .yiji-row h4.ji { background: #6b6259; }
+.today-card .yiji { display: flex; flex-wrap: wrap; gap: 6px; }
+.today-card .yiji span { padding: 2px 9px; border-radius: 8px; font-size: 0.85rem; background: var(--surface-2); }
+.today-facts { margin: 12px 0 6px; color: var(--muted); font-size: 0.88rem; }
+.today-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 16px; align-items: stretch; }
+.today-grid > .card { margin: 0; }
+.today-tarot h2 { margin-top: 0; }
+.today-tarot-body { display: flex; gap: 16px; align-items: flex-start; }
+.today-tarot-card { flex: none; width: 92px; border-radius: 7px; overflow: hidden; box-shadow: 0 10px 22px -10px rgba(0, 0, 0, 0.6); }
+.today-tarot-card img { display: block; width: 100%; aspect-ratio: 1 / 1.72; object-fit: cover; }
+.today-tarot-card.empty { box-shadow: none; }
+.today-tarot-card .card-back { width: 92px; height: 158px; }
+.today-tarot-body h3 { margin: 0; }
+.today-tarot-body p { margin: 4px 0; font-size: 0.9rem; }
+.quick-actions { display: flex; gap: 10px; flex-wrap: wrap; margin: 16px 0; }
+.quick { flex: 1 1 120px; padding: 12px; border-radius: 999px; text-align: center; font-weight: 700; text-decoration: none; color: var(--on-accent); background: var(--accent); }
+.quick:hover { filter: brightness(1.08); }
+@media (max-width: 640px) {
+  .today-grid { grid-template-columns: 1fr; }
+  .today-card .yiji-row { grid-template-columns: 1fr; }
+}
+
 /* ── 卦的畫面 ── */
 .scene { margin-top: 22px; }
 .scene h4 { margin: 0 0 12px; }

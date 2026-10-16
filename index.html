@@ -33,15 +33,27 @@
   <header>
     <div class="taiji" aria-hidden="true"></div>
     <h1>觀象</h1>
-    <p class="subtitle">易經 · 八字 · 紫微斗數 · 星盤</p>
+    <p class="subtitle">易經 · 求籤 · 塔羅 · 八字 · 紫微 · 星盤 · 農民曆</p>
   </header>
 
   <main>
+    <section class="card today-card" id="today-card"></section>
+
+    <div class="today-grid">
     <section class="card daily">
       <p class="meta" id="today-date"></p>
       <h2>今日一卦 <span class="daily-ganzhi" id="today-ganzhi"></span></h2>
       <div class="daily-hex" id="today-hex"></div>
     </section>
+    <section class="card today-tarot" id="today-tarot"></section>
+    </div>
+
+    <div class="quick-actions">
+      <a class="quick" href="iching.html">起一卦</a>
+      <a class="quick" href="qian.html">求一支籤</a>
+      <a class="quick" href="tarot.html">問塔羅</a>
+      <a class="quick" href="almanac.html#pick-card">挑好日子</a>
+    </div>
 
     <section class="feature-grid">
       <a class="feature f-iching" href="iching.html"><span class="feature-mark">卦</span><h3>易經卜卦</h3><p>金錢卦、蓍草法、梅花易數起卦，附六爻納甲與直白的解讀。</p></a>
@@ -80,6 +92,9 @@
   <script src="js/najia.js"></script>
   <script src="js/birth.js"></script>
   <script src="js/bazi.js"></script>
+  <script src="js/almanac.js"></script>
+  <script src="js/tarot-cards.js"></script>
+  <script src="js/tarot-minor.js"></script>
   <script src="js/home.js"></script>
   <script src="js/share.js"></script>
   <script src="js/pwa.js"></script>
