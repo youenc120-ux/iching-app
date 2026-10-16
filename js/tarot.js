@@ -133,9 +133,15 @@ const cardLevel = (p) => cardOf(p).levels[p.reversed ? 1 : 0];
 const cardLabel = (p) => `${cardOf(p).name}${p.reversed ? "（逆位）" : "（正位）"}`;
 const isMajor = (p) => cardOf(p).img.startsWith("m");
 
+// 牌組：水墨（本站繪製）、萊德偉特 1909 原版、或每張隨機混合。每張抽到的牌記住自己的牌組，重看紀錄時畫面才會一樣。
+const DECKS = [["ink", "水墨"], ["classic", "萊德偉特原版"], ["mix", "隨機混合"]];
+const DECK_DIRS = { ink: "tarot-ink", classic: "tarot" };
+let deckChoice = (() => { try { return localStorage.getItem("tarot-deck") || "ink"; } catch { return "ink"; } })();
+const pickDeck = () => (deckChoice === "mix" ? (randomInt(2) ? "ink" : "classic") : deckChoice);
+
 function cardImage(p) {
   const img = el("img", p.reversed ? "reversed" : "");
-  img.src = `images/tarot/${cardOf(p).img}.jpg`;
+  img.src = `images/${DECK_DIRS[p.deck] || DECK_DIRS[deckChoice] || "tarot-ink"}/${cardOf(p).img}.jpg`;
   img.alt = cardLabel(p);
   return img;
 }
@@ -380,7 +386,7 @@ function drawWidget(deck, need, labels) {
       if (picked.length >= need || back.classList.contains("taken")) return;
       back.classList.add("taken");
       back.disabled = true;
-      const p = { card: cardIndex, reversed: allowReversed && randomInt(2) === 1 };
+      const p = { card: cardIndex, reversed: allowReversed && randomInt(2) === 1, deck: pickDeck() };
       picked.push(p);
       slots.append(cardSlot(p, labels[picked.length - 1]));
       status.textContent = `憑直覺抽 ${need} 張（${picked.length}／${need}）`;
@@ -429,7 +435,7 @@ function drawOneWidget(session) {
       back.style.setProperty("--i", i);
       back.addEventListener("click", () => {
         box.querySelectorAll("button").forEach((b) => { b.disabled = true; b.classList.toggle("taken", b !== back); });
-        resolve({ card: cardIndex, reversed: $("#allow-reversed").checked && randomInt(2) === 1 });
+        resolve({ card: cardIndex, reversed: $("#allow-reversed").checked && randomInt(2) === 1, deck: pickDeck() });
       });
       return back;
     }));
@@ -626,7 +632,7 @@ function renderDaily() {
       back.classList.add("lifting");
       await pause(450);
       const next = readJSON(TAROT_DAILY_KEY, {});
-      next[key] = { card: randomInt(TAROT.length), reversed: $("#allow-reversed").checked && randomInt(2) === 1 };
+      next[key] = { card: randomInt(TAROT.length), reversed: $("#allow-reversed").checked && randomInt(2) === 1, deck: pickDeck() };
       writeJSON(TAROT_DAILY_KEY, next);
       renderDaily();
       renderCalendar();
@@ -817,6 +823,16 @@ $("#backs").append(...BACKS.map(([key, label]) => {
   b.type = "button";
   b.dataset.back = key;
   b.addEventListener("click", () => applyBack(key));
+  return b;
+}));
+$("#decks").append(...DECKS.map(([key, label]) => {
+  const b = el("button", key === deckChoice ? "active" : "", label);
+  b.type = "button";
+  b.addEventListener("click", () => {
+    deckChoice = key;
+    try { localStorage.setItem("tarot-deck", key); } catch { /* 忽略 */ }
+    $("#decks").querySelectorAll("button").forEach((x) => x.classList.toggle("active", x === b));
+  });
   return b;
 }));
 applyBack((() => { try { return localStorage.getItem(TAROT_BACK_KEY) || "wine"; } catch { return "wine"; } })());
