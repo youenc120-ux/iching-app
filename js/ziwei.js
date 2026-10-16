@@ -233,22 +233,43 @@ function renderZiwei(birth) {
     return { stars: opposite(palace).major, borrowed: true };
   };
 
+  // 一個宮位的完整說明：主星在這個宮位的意思、亮度、同宮的輔星煞星、落在這裡的四化。
+  // 同一顆星在命宮講個性、在夫妻宮講對象、在財帛宮講賺錢方式，所以每個人的盤讀起來會不同。
+  const palaceDetail = (palace) => {
+    const { stars, borrowed } = starsOf(palace);
+    const topic = PALACE_TOPICS[palace.name];
+    const lines = [];
+    if (!stars.length) lines.push("本宮和對宮都沒有主星，這方面的事比較沒有定數，受當時的環境影響很大。");
+    else if (borrowed) lines.push(`本宮沒有主星，借對宮的${stars.map((s) => s.name).join("、")}來看，力量打折：這方面的事你比較被動，常受外在環境左右。`);
+    const names = stars.map((s) => s.name);
+    if (palace.name === "命宮" && stars.length === 2 && PAIR_TEXTS[names.join("")]) {
+      lines.push(PAIR_TEXTS[names.join("")]);
+    } else {
+      for (const s of stars) {
+        const text = palace.name === "命宮" ? STAR_TEXTS[s.name] : STAR_IN_PALACE[s.name]?.[palace.name];
+        lines.push(text ? `${s.name}：${text}` : `${s.name}帶來${STAR_BRIEF[s.name]}的特質，放在${topic}上，這方面的事會帶著這種色彩。`);
+      }
+    }
+    if (!borrowed) {
+      for (const s of stars) {
+        if (s.bright === "廟" || s.bright === "旺") lines.push(STAR_BRIGHT[s.name][0]);
+        else if (s.bright === "陷" || s.bright === "不") lines.push(STAR_BRIGHT[s.name][1]);
+      }
+    }
+    const lucky = palace.minor.filter((s) => LUCKY_STARS.includes(s.name));
+    const harsh = palace.minor.filter((s) => HARSH_STARS.includes(s.name));
+    const others = palace.minor.filter((s) => !LUCKY_STARS.includes(s.name) && !HARSH_STARS.includes(s.name));
+    if (lucky.length) lines.push(`同宮的${lucky.map((s) => `${s.name}（${MINOR_ESSENCE[s.name]}）`).join("、")}是助力，${topic}上比較有人幫、有資源。`);
+    if (harsh.length) lines.push(`同宮的${harsh.map((s) => `${s.name}（${MINOR_ESSENCE[s.name]}）`).join("、")}是煞星，${topic}上容易有這種波折。`);
+    if (others.length) lines.push(`另有${others.map((s) => `${s.name}（${MINOR_ESSENCE[s.name]}）`).join("、")}。`);
+    for (const s of [...palace.major, ...palace.minor].filter((x) => x.transform)) {
+      lines.push(`生年${s.name}化${s.transform}落在這裡：${STAR_TRANSFORM[s.name + s.transform] || ""}${TRANSFORM_IN_PALACE[s.transform](topic)}`);
+    }
+    return lines.join("\n");
+  };
+
   const life = byName("命宮");
-  const lifeStars = starsOf(life);
-  let lifeText = lifeStars.borrowed
-    ? `你的命宮在${BRANCHES[life.branch]}，沒有主星（空宮），要借對宮遷移宮的星來看。空宮的人個性比較不固定，容易受環境和身邊的人影響。\n`
-    : `你的命宮在${BRANCHES[life.branch]}，主星是${life.major.map((s) => s.name).join("、")}。\n`;
-  lifeText += lifeStars.stars.map((s) => STAR_TEXTS[s.name]).join("\n");
-  const helpers = life.minor.map((s) => s.name);
-  const good = helpers.filter((n) => ["文昌", "文曲", "左輔", "右弼", "天魁", "天鉞", "祿存", "天馬"].includes(n));
-  const bad = helpers.filter((n) => ["擎羊", "陀羅", "火星", "鈴星", "地空", "地劫"].includes(n));
-  if (good.length) lifeText += `\n命宮有${good.join("、")}同宮，是助力，做事比較有人幫、有資源。`;
-  if (bad.length) lifeText += `\n命宮有${bad.join("、")}同宮，是煞星，個性裡有衝、急或想法與現實落差的一面，人生波折也比較多。`;
-  const strong = lifeStars.stars.filter((s) => s.bright === "廟" || s.bright === "旺").map((s) => s.name);
-  const weak = lifeStars.stars.filter((s) => s.bright === "陷" || s.bright === "不").map((s) => s.name);
-  if (!lifeStars.borrowed && strong.length) lifeText += `\n${strong.join("、")}在這個宮位是廟旺，星的優點能充分發揮。`;
-  if (!lifeStars.borrowed && weak.length) lifeText += `\n${weak.join("、")}在這個宮位落陷或不得地，星的優點打折、缺點比較明顯，要靠後天努力補。`;
-  part("命宮", lifeText);
+  part("命宮", `你的命宮在${BRANCHES[life.branch]}，看的是${PALACE_TOPICS.命宮}。\n${palaceDetail(life)}`);
 
   // 三方四正：命宮、財帛、官祿、遷移四個宮位合起來看一個人的整體格局
   const quartet = ["命宮", "財帛", "官祿", "遷移"].map(byName);
@@ -269,30 +290,26 @@ function renderZiwei(birth) {
   part("身宮", `身宮在${bodyPalace.name}。身宮代表中年以後的重心與你實際花最多力氣的地方：`
     + ({ 命宮: "命身同宮，個性固定、主觀強，一輩子照自己的意思活。", 夫妻: "重心在感情與伴侶，另一半對你的影響很大。", 財帛: "重心在賺錢與理財，務實、重視經濟安全感。", 遷移: "重心在外面的世界，適合外出發展、常變動。", 官祿: "重心在事業與成就，工作佔去人生大半。", 福德: "重心在精神享受與興趣，重視自己過得開不開心。" }[bodyPalace.name] || "重心落在這個宮位的事情上。"));
 
-  for (const name of ["官祿", "財帛", "夫妻"]) {
-    const palace = byName(name);
-    const { stars, borrowed } = starsOf(palace);
-    const list = stars.map((s) => s.name).join("、") || "無";
-    part(name, `${PALACE_TEXTS[name]}\n${borrowed ? `本宮無主星，借對宮的${list}來看。` : `主星是${list}。`}`
-      + stars.map((s) => `\n${STAR_TEXTS[s.name]}`).join(""));
+  for (const name of ["夫妻", "財帛", "官祿", "遷移"]) {
+    part(name, `${PALACE_TEXTS[name]}\n${palaceDetail(byName(name))}`);
   }
 
-  part("生年四化", chart.transforms.filter(Boolean).map((t) => `${t.star}化${t.type}，落在${t.palace}。${TRANSFORM_TEXTS[t.type]}`).join("\n"));
+  part("生年四化", chart.transforms.filter(Boolean).map((t) =>
+    `${t.star}化${t.type}，落在${t.palace}：${STAR_TRANSFORM[t.star + t.type] || TRANSFORM_TEXTS[t.type]}${TRANSFORM_IN_PALACE[t.type](PALACE_TOPICS[t.palace])}`).join("\n"));
 
+  // 大限與流年：所走到的宮位，用同一套宮位說明，再點出這段時間的重心
   const currentDecade = chart.palaces.find((p) => age >= p.decade[0] && age <= p.decade[1]);
   if (currentDecade) {
-    const { stars, borrowed } = starsOf(currentDecade);
-    part("目前的大限", `虛歲 ${currentDecade.decade[0]} 到 ${currentDecade.decade[1]} 歲，大限走到本命的${currentDecade.name}，`
-      + `這十年的主題會圍繞著這個宮位代表的事情。${borrowed ? "宮內無主星，借對宮" : "宮內主星是"}${stars.map((s) => s.name).join("、") || "無"}。`);
+    const next = chart.palaces.find((p) => p.decade[0] === currentDecade.decade[1] + 1);
+    part("目前的大限", `虛歲 ${currentDecade.decade[0]} 到 ${currentDecade.decade[1]} 歲，大限走到本命的${currentDecade.name}：`
+      + `這十年的重心在${PALACE_TOPICS[currentDecade.name]}。\n${palaceDetail(currentDecade)}`
+      + (next ? `\n下一個大限（虛歲 ${next.decade[0]} 起）走到${next.name}，重心會轉到${PALACE_TOPICS[next.name]}。` : ""));
   }
 
   // 流年：今年地支所在的宮位就是流年命宮
   const yearBranchNow = mod12(now - 4);
   const yearPalace = chart.palaces[yearBranchNow];
-  const yearStars = starsOf(yearPalace);
-  part(`今年（${now}）流年`, `今年是${BRANCHES[yearBranchNow]}年，流年命宮落在本命的${yearPalace.name}，今年的重心和際遇會圍繞這個宮位的事。`
-    + `${yearStars.borrowed ? "宮內無主星，借對宮" : "宮內主星是"}${yearStars.stars.map((s) => s.name).join("、") || "無"}。`
-    + (yearPalace.minor.some((s) => ["擎羊", "陀羅", "火星", "鈴星", "地空", "地劫"].includes(s.name)) ? "宮內有煞星，今年在這方面容易有波折，行事保守為宜。" : ""));
+  part(`今年（${now}）流年`, `今年是${BRANCHES[yearBranchNow]}年，流年命宮落在本命的${yearPalace.name}：今年的際遇會圍繞${PALACE_TOPICS[yearPalace.name]}。\n${palaceDetail(yearPalace)}`);
 
   reading.append(el("p", "hint", "這裡排了十四主星、常用的輔星煞星、生年四化與亮度，流年只看流年命宮；沒有納入小限、流年四化、飛星與雜曜。各門派對壬年化科、閏月等細節的排法並不一致。"));
   root.append(reading);
