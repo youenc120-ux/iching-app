@@ -178,6 +178,10 @@ function birthForm(container, options, onSubmit) {
 
   let editingId = null;
   let found = null; // 搜尋選到的地點
+  // 頂端一排人名：點一下就換人；存過的人不用再看整張表單
+  const chips = el("div", "person-chips");
+  const body = el("div", "birth-body");
+  const setFolded = (value) => container.classList.toggle("folded", value);
 
   function fillPlaces() {
     place.replaceChildren(...[
@@ -196,6 +200,23 @@ function birthForm(container, options, onSubmit) {
     who.replaceChildren(...people.map((person) => option(person.id, person.name)), option("", "＋ 新增一個人"));
     who.value = editingId || "";
     deleteButton.hidden = !editingId;
+    const chip = (text, className, onClick) => {
+      const button = Object.assign(el("button", `person-chip${className ? " " + className : ""}`, text), { type: "button" });
+      button.addEventListener("click", onClick);
+      return button;
+    };
+    chips.replaceChildren(
+      ...people.map((person) => chip(person.name, person.id === editingId ? "active" : "", () => {
+        load(person);
+        submit();
+      })),
+      chip("＋ 新增", "add", () => { load(null); setFolded(false); name.focus(); }),
+      editingId ? chip(container.classList.contains("folded") ? "修改資料" : "收起", "edit", () => {
+        setFolded(!container.classList.contains("folded"));
+        fillPeople();
+      }) : null,
+    );
+    chips.hidden = !people.length;
   }
 
   // 把某個人的資料放進欄位；person 為 null 表示清空準備新增
@@ -238,6 +259,7 @@ function birthForm(container, options, onSubmit) {
       savePerson(person);
       editingId = person.id;
       name.value = person.name;
+      setFolded(true);
       fillPeople();
       onSubmit(resolveBirth(person));
     } catch (err) {
@@ -292,8 +314,9 @@ function birthForm(container, options, onSubmit) {
     if (options.onDelete) options.onDelete();
   });
 
-  container.append(
-    el("div", "fields", [field("已儲存的人", who), field("名字或稱呼", name)]),
+  container.append(chips, body);
+  body.append(
+    el("div", "fields", [field("名字或稱呼", name)]),
     el("div", "fields", [field("出生日期（國曆）", date), field("出生時間", time), field("性別", gender), field("出生地", place)]),
     custom,
     el("div", "search-row", [searchInput, searchButton]),

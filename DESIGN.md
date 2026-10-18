@@ -86,10 +86,11 @@ The ground is a deep night sky: #0d0b1e under soft purple and blue glows that st
 - Quoted classical text: LXGW WenKai TC (楷書).
 
 ## Layout
-- Content column is 760px wide.
-- Bottom tab bar on phones: 今日, 卜卦, 求籤, 塔羅, 全部. 全部 opens a bottom sheet.
-- At 1100px and wider the grouped navigation sits in the top bar.
-- The top bar and tab bar are frosted glass.
+- Content column 760px. Top bar: gold 觀象 wordmark plus a horizontally scrolling pill menu of all 13 pages (current page = gold pill, centred on load). No bottom tab bar (the user asked for the top menu).
+- Home: greeting, today card, then swipeable rails (scroll-snap) of large cover cards that use the ink paintings and tarot art (問一件事 = big 4:5 cards; 看命盤 and 日子與查閱 = small 3:4 cards), personal 今日運勢, and a rail with 今日一卦 / 今日塔羅. On ≥900px rails become even grids.
+- One step per screen: [data-flow] containers (卜卦, 求籤) show one .flow-step at a time with a progress bar, 「第 n 步，共 3 步」, 上一步／下一步; choosing a category auto-advances. When #result appears the steps hide and 「再問一件事」 returns to step 1 (js/flow.js).
+- Conclusion first: in #result only the first card and the 解讀 card stay open; other cards fold behind their heading. Inside a reading, the first two parts and any 「建議」 part stay open; the rest fold. The 卜卦 直說 text is split at its 【小標】 into separate parts.
+- 命盤 pages: saved people appear as chips at the top of the birth-data card; once a chart is drawn the form folds away (「修改資料」 reopens it, 「＋ 新增」 starts a new person).
 
 ## Do's and Don'ts
 - Do keep gold for good, selected and primary states only.

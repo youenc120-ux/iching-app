@@ -12,7 +12,6 @@
   --radius-sm: 14px;
   --ease: cubic-bezier(0.16, 1, 0.3, 1);
   --bar-h: 56px;
-  --tab-h: 62px;
 
   /* 五行色（在深色底上看得清楚的亮色） */
   --wood: #6fd3a0;
@@ -125,115 +124,45 @@ footer { padding: 28px 16px 40px; color: var(--muted); font-size: 0.8rem; line-h
   z-index: 30;
   display: flex;
   align-items: center;
-  gap: 24px;
+  gap: 6px;
   height: var(--bar-h);
-  padding: 0 16px;
+  padding: 0 0 0 16px;
   background: var(--bar-bg);
   color: var(--bar-ink);
   -webkit-backdrop-filter: blur(16px) saturate(1.3);
   backdrop-filter: blur(16px) saturate(1.3);
   border-bottom: 1px solid var(--line);
 }
-.brand { display: flex; align-items: center; gap: 10px; color: inherit; text-decoration: none; }
-.brand-seal { display: none; }
-.brand-name { font-family: var(--serif); font-weight: 700; font-size: 1.3rem; letter-spacing: 0.32em; color: var(--accent); }
+.brand { flex: none; font-family: var(--serif); font-weight: 700; font-size: 1.25rem; letter-spacing: 0.28em; color: var(--accent); text-decoration: none; }
 
-/* 全部功能：手機上是從底部拉起的面板，寬螢幕直接排在頂端 */
-.nav { color: var(--ink); }
-.nav-group { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
-.nav-label { color: var(--muted); font-size: 0.74rem; letter-spacing: 0.16em; }
-.nav a { color: inherit; text-decoration: none; white-space: nowrap; }
-.menu-head { display: flex; justify-content: space-between; align-items: center; font-family: var(--serif); font-weight: 700; font-size: 1.1rem; }
-.menu-close { padding: 6px 12px; font-family: var(--sans); font-size: 0.86rem; font-weight: 400; }
-
-.nav[popover] {
-  position: fixed;
-  inset: auto 0 0 0;
-  width: 100%;
-  max-width: none;
-  height: auto;
-  max-height: 86vh;
-  margin: 0;
-  padding: 18px 16px calc(20px + env(safe-area-inset-bottom));
-  border: 0;
-  border-radius: 24px 24px 0 0;
-  background: var(--solid);
-  border-top: 1px solid var(--line);
-  box-shadow: 0 -12px 40px -12px rgba(0, 0, 0, 0.7);
-  overflow: auto;
-}
-.nav[popover]:popover-open, .nav[popover].open { display: grid; gap: 14px; animation: sheet 0.36s var(--ease); }
-.nav[popover]::backdrop { background: rgba(5, 4, 14, 0.6); }
-.nav[popover] .nav-group { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-.nav[popover] .nav-label { grid-column: 1 / -1; }
-.nav[popover] a { display: grid; place-items: center; min-height: 48px; padding: 6px; border-radius: var(--radius-sm); background: var(--surface-2); border: 1px solid var(--line); font-size: 0.95rem; }
-.nav[popover] a.current { background: var(--gold); border-color: transparent; color: var(--on-seal); font-weight: 700; }
-@keyframes sheet { from { transform: translateY(100%); } }
-
-/* 底部頁籤：今日、卜卦、求籤、塔羅、全部 */
-.tabbar {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 30;
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  height: calc(var(--tab-h) + env(safe-area-inset-bottom));
-  padding-bottom: env(safe-area-inset-bottom);
-  background: rgba(13, 11, 30, 0.85);
-  -webkit-backdrop-filter: blur(16px);
-  backdrop-filter: blur(16px);
-  border-top: 1px solid var(--line);
-}
-.tabbar a, .tabbar button {
+/* 選單：頂端一排，手機上左右滑，目前這一頁是金色 */
+.nav {
   display: flex;
-  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 24px), transparent);
+  mask-image: linear-gradient(90deg, transparent 0, #000 14px, #000 calc(100% - 24px), transparent);
+  padding: 0 14px;
+}
+.nav::-webkit-scrollbar { display: none; }
+.nav a {
+  flex: none;
+  display: inline-flex;
   align-items: center;
-  justify-content: center;
-  gap: 2px;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: none;
+  min-height: 36px;
+  padding: 0 14px;
+  border-radius: 999px;
   color: var(--muted);
-  font-size: 0.7rem;
-  letter-spacing: 0.06em;
+  font-size: 0.92rem;
   text-decoration: none;
-  line-height: 1.2;
+  white-space: nowrap;
+  transition: background 0.2s, color 0.2s;
 }
-.tabbar button:hover { border-color: transparent; }
-.tabbar button:active, .tabbar a:active { transform: scale(0.94); }
-.ti { width: 30px; height: 30px; padding: 3px; border-radius: 9px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-.tabbar .current { color: var(--accent); font-weight: 700; }
-.tabbar .current .ti { background: var(--accent-soft); color: var(--accent); stroke-width: 1.8; }
-body { padding-bottom: calc(var(--tab-h) + env(safe-area-inset-bottom)); }
-
-@media (min-width: 1100px) {
-  body { padding-bottom: 0; }
-  .tabbar, .menu-head { display: none; }
-  .topbar { gap: 32px; padding: 0 28px; }
-  .nav[popover] {
-    position: static;
-    display: flex;
-    gap: 22px;
-    width: auto;
-    max-height: none;
-    margin: 0;
-    padding: 0;
-    border-radius: 0;
-    background: none;
-    box-shadow: none;
-    overflow: visible;
-    color: var(--bar-ink);
-    animation: none;
-  }
-  .nav[popover] .nav-group { display: flex; gap: 2px; }
-  .nav[popover] .nav-label { margin-right: 6px; color: var(--bar-muted); font-size: 0.7rem; }
-  .nav[popover] a { display: inline-block; min-height: 0; padding: 4px 11px; border: 0; border-radius: 999px; background: none; font-size: 0.9rem; color: var(--bar-ink); }
-  .nav[popover] a:hover { background: rgba(255, 255, 255, 0.08); }
-  .nav[popover] a.current { background: var(--gold); color: var(--on-seal); }
-}
+.nav a:hover { color: var(--ink); background: rgba(255, 255, 255, 0.08); }
+.nav a.current { background: var(--gold); color: var(--on-seal); font-weight: 700; }
+@media (min-width: 1100px) { .nav { justify-content: center; flex: 1; mask-image: none; -webkit-mask-image: none; } }
 
 /* ── 頁首：一方印，加上頁名 ── */
 .page-head { display: flex; align-items: center; gap: 14px; padding-top: 22px; padding-bottom: 18px; }
@@ -717,12 +646,11 @@ label.check input { width: auto; margin: 0; accent-color: var(--accent); }
 .chips { display: flex; flex-wrap: wrap; gap: 8px; }
 .chip { padding: 7px 14px; border-radius: 999px; font-size: 0.88rem; background: transparent; border: 1px solid rgba(241, 208, 138, 0.6); color: var(--accent); }
 .chip:hover { background: var(--accent-soft); }
-.composer { position: sticky; bottom: calc(var(--tab-h) + env(safe-area-inset-bottom) + 8px); z-index: 5; display: flex; gap: 8px; padding: 6px; margin: 0 -6px -6px; border-radius: 999px; background: var(--solid); border: 1px solid var(--line); box-shadow: var(--lift); }
+.composer { position: sticky; bottom: calc(env(safe-area-inset-bottom) + 10px); z-index: 5; display: flex; gap: 8px; padding: 6px; margin: 0 -6px -6px; border-radius: 999px; background: var(--solid); border: 1px solid var(--line); box-shadow: var(--lift); }
 .composer input { border-radius: 999px; }
 .composer button { border-radius: 999px; }
 .composer input { flex: 1; min-width: 0; margin: 0; }
 .composer button { flex: none; padding: 0 20px; }
-@media (min-width: 1100px) { .composer { bottom: 10px; } }
 
 /* 洗牌：牌在圓盤上轉 */
 .wheel { position: relative; width: 190px; height: 190px; margin: 4px auto; }
@@ -1014,44 +942,74 @@ img.reversed { transform: rotate(180deg); }
 .today-card .yiji-row > div { display: flex; align-items: flex-start; gap: 10px; }
 .today-card .yiji-row h4 { margin: 0; }
 .today-facts { margin: 12px 0 6px; color: var(--muted); font-size: 0.88rem; }
-.today-grid { display: grid; grid-template-columns: 3fr 2fr; gap: 16px; align-items: stretch; }
-.today-grid > .card { margin: 0; }
-.today-tarot h2 { margin-top: 0; }
-.today-tarot-body { display: flex; gap: 16px; align-items: flex-start; }
-.today-tarot-card { flex: none; width: 92px; border-radius: 7px; overflow: hidden; box-shadow: 0 10px 22px -10px rgba(0, 0, 0, 0.6); }
+.today-tarot h3, .daily h3 { margin: 0 0 8px; }
+.today-tarot-body { display: flex; gap: 14px; align-items: flex-start; }
+.today-tarot-card { flex: none; width: 76px; border-radius: 7px; overflow: hidden; box-shadow: 0 10px 22px -10px rgba(0, 0, 0, 0.6); }
 .today-tarot-card img { display: block; width: 100%; aspect-ratio: 1 / 1.72; object-fit: cover; }
 .today-tarot-card.empty { box-shadow: none; }
-.today-tarot-card .card-back { width: 92px; height: 158px; }
-.today-tarot-body h3 { margin: 0; }
-.today-tarot-body p { margin: 4px 0; font-size: 0.9rem; }
-.quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 0 0 14px; }
-.quick { display: grid; place-items: center; min-height: 54px; padding: 8px; border-radius: 18px; text-align: center; font-weight: 700; letter-spacing: 0.06em; text-decoration: none; color: var(--on-seal); background: var(--gold); transition: transform 0.15s var(--ease), background 0.2s; }
-.quick + .quick { background: var(--surface); color: var(--ink); border: 1px solid var(--line); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
-.quick:hover { filter: brightness(1.08); }
-.quick + .quick:hover { background: var(--surface-2); filter: none; }
-.quick:active { transform: scale(0.97); }
+.today-tarot-card .card-back { width: 76px; height: 131px; }
+.today-tarot-body h3 { margin: 0; font-size: 1rem; }
+.today-tarot-body p { margin: 4px 0; font-size: 0.88rem; line-height: 1.65; }
+
+/* 打招呼 */
+.hello { padding: 18px 2px 4px; }
+.hello p { margin: 0; }
+.hello-date { color: var(--muted); font-size: 0.86rem; letter-spacing: 0.06em; }
+.hello-greet { font-family: var(--serif); font-size: 1.7rem; font-weight: 700; letter-spacing: 0.06em; }
+.home .today-card { margin-top: 12px; }
+.home .today-solar { display: none; }
+
+/* 左右滑的一排卡片 */
+.rail-block { margin: 26px 0 18px; }
+.rail-title { margin: 0 0 12px; font-size: 1.15rem; }
+.rail {
+  display: flex;
+  gap: 12px;
+  margin: 0 -16px;
+  padding: 2px 16px 10px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0 16px;
+  scrollbar-width: none;
+}
+.rail::-webkit-scrollbar { display: none; }
+.rail > * { flex: none; scroll-snap-align: start; }
+
+/* 大圖卡：水墨畫或塔羅牌當封面，字壓在下方的暗色漸層上 */
+.cover {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  color: #fff;
+  text-decoration: none;
+  background: #1b1638;
+  box-shadow: var(--lift);
+  transition: transform 0.25s var(--ease);
+}
+.cover img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s var(--ease); }
+.cover::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(13, 11, 30, 0) 35%, rgba(13, 11, 30, 0.55) 62%, rgba(13, 11, 30, 0.94)); }
+.cover-text { position: absolute; left: 0; right: 0; bottom: 0; z-index: 1; display: flex; flex-direction: column; gap: 2px; padding: 16px 18px 18px; }
+.cover-text b { font-family: var(--serif); font-size: 1.45rem; letter-spacing: 0.08em; }
+.cover-text small { color: rgba(239, 234, 255, 0.82); font-size: 0.86rem; line-height: 1.5; }
+.cover:hover img { transform: scale(1.05); }
+.cover:active { transform: scale(0.98); }
+.rail-big .cover { width: min(78vw, 340px); aspect-ratio: 4 / 5; }
+.rail-small .cover { width: min(44vw, 200px); aspect-ratio: 3 / 4; }
+.rail-small .cover-text { padding: 12px 14px 14px; }
+.rail-small .cover-text b { font-size: 1.12rem; }
+.rail-small .cover-text small { font-size: 0.78rem; }
+.rail-cards > .card { width: min(84vw, 360px); margin: 0; }
+@media (min-width: 900px) {
+  .rail { margin: 0; padding: 2px 0 10px; overflow: visible; display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; }
+  .rail-big .cover, .rail-small .cover, .rail-cards > .card { width: auto; }
+}
 
 /* 今日運勢：每個人一列，名字、十神、提示，格式固定 */
 .person-day h5 { display: flex; align-items: baseline; gap: 10px; color: var(--ink); font-size: 1rem; letter-spacing: 0.04em; }
 .person-day h5 span { color: var(--accent); font-size: 0.82rem; letter-spacing: 0.08em; }
 .person-day + .person-day { padding-top: 16px; border-top: 1px solid var(--line); }
-
-/* 首頁索引：分組的一列一列，左邊是各方法的印 */
-.index-list { margin: 26px 0 14px; }
-.index-group { margin: 22px 0 8px; font-family: var(--sans); font-size: 0.78rem; font-weight: 700; letter-spacing: 0.2em; color: var(--muted); }
-.index-list ul { margin: 0; padding: 0; list-style: none; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
-.index-list li + li { border-top: 1px solid var(--line); }
-.index-row { display: flex; align-items: center; gap: 14px; padding: 12px 16px; color: inherit; text-decoration: none; transition: background 0.2s; }
-.index-row:hover { background: var(--surface-2); }
-.index-row .seal { font-size: 1.05rem; }
-.index-text { display: flex; flex-direction: column; min-width: 0; line-height: 1.45; }
-.index-text b { font-family: var(--serif); font-size: 1.02rem; }
-.index-text small { color: var(--muted); font-size: 0.82rem; }
-.index-row::after { content: ""; flex: none; width: 7px; height: 7px; margin-left: auto; border-top: 1.5px solid var(--muted); border-right: 1.5px solid var(--muted); transform: rotate(45deg); }
-@media (max-width: 640px) {
-  .today-grid { grid-template-columns: 1fr; }
-  .today-card .yiji-row { grid-template-columns: 1fr; }
-}
 
 /* ── 卦的畫面 ── */
 .scene { margin-top: 22px; }
@@ -1178,7 +1136,6 @@ img.reversed { transform: rotate(180deg); }
 @media (max-width: 520px) {
   .card { padding: 18px 16px; }
   .page-head { padding-top: 18px; padding-bottom: 14px; }
-  .quick-actions { grid-template-columns: repeat(2, 1fr); }
   .today-day { font-size: 4rem; }
   .text.focus { margin: 0 -16px; padding: 14px 16px; }
   .hex { padding: 0 14px; }
@@ -1210,3 +1167,62 @@ h1.sr-only + main { padding-top: 16px; }
   .lunar-date { font-size: 1.3rem; }
   .day-big { gap: 6px 16px; }
 }
+
+/* ── 一步一頁 ── */
+.flow { position: relative; padding-top: 18px; }
+.flow-bar { height: 3px; margin: -2px 0 14px; border-radius: 999px; background: rgba(255, 255, 255, 0.1); overflow: hidden; }
+.flow-bar i { display: block; height: 100%; background: var(--gold); border-radius: inherit; transition: width 0.45s var(--ease); }
+.flow-head { margin-bottom: 14px; }
+.flow-count { display: block; color: var(--muted); font-size: 0.8rem; letter-spacing: 0.08em; }
+.flow-title { margin: 2px 0 0; font-size: 1.45rem; }
+.flow-step { animation: step-in 0.4s var(--ease) both; }
+.flow-step #question { min-height: 56px; font-size: 1.1rem; border-radius: 16px; }
+.flow-step .choices { gap: 10px; }
+.flow-step .choices button { min-height: 46px; padding: 8px 18px; font-size: 1rem; }
+.flow-nav { display: flex; justify-content: space-between; gap: 10px; margin-top: 22px; }
+.flow-nav .flow-next { margin-left: auto; min-width: 9em; min-height: 48px; }
+.flow-back { min-height: 48px; }
+.flow .tabs { margin-top: 0; }
+.flow button.corner { position: static; display: block; margin: 16px 0 0; }
+.flow-again { display: flex; align-items: center; gap: 6px; margin: 4px 0 12px; padding: 8px 16px; border-radius: 999px; font-size: 0.92rem; }
+.flow-again::before { content: ""; width: 7px; height: 7px; border-left: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor; transform: rotate(45deg); }
+@keyframes step-in { from { opacity: 0; transform: translateX(18px); } }
+
+/* ── 結果收合：點標題展開 ── */
+.fold-handle { position: relative; cursor: pointer; padding-right: 28px; }
+.fold-handle::after {
+  content: "";
+  position: absolute;
+  right: 6px;
+  top: 50%;
+  width: 8px;
+  height: 8px;
+  margin-top: -6px;
+  border-right: 1.6px solid var(--muted);
+  border-bottom: 1.6px solid var(--muted);
+  transform: rotate(45deg);
+  transition: transform 0.25s var(--ease);
+}
+.foldable.folded > .fold-handle::after, .foldable.folded > * > .fold-handle::after { transform: rotate(-45deg); margin-top: -3px; }
+.card.foldable.folded > *:not(.fold-handle):not(:has(.fold-handle)) { display: none; }
+.card.foldable.folded { padding-top: 16px; padding-bottom: 16px; }
+.card.foldable.folded > .fold-handle { margin: 0; }
+.reading-part.foldable.folded > *:not(h5) { display: none; }
+.reading-part.foldable > h5 { display: block; padding: 10px 28px 10px 0; margin: 0; border-top: 1px solid var(--line); }
+.reading-part.foldable { margin-top: 6px; }
+
+/* 解讀的第一段：放大當結論 */
+.reading-head + .reading-part p, .reading-card .reading-part:first-of-type p { font-size: 1.1rem; line-height: 1.85; }
+
+/* ── 命盤頁：頂端一排人名 ── */
+.person-chips { display: flex; gap: 8px; margin: 0 -22px 4px; padding: 2px 22px 8px; overflow-x: auto; scrollbar-width: none; }
+.person-chips::-webkit-scrollbar { display: none; }
+.person-chip { flex: none; min-height: 40px; padding: 6px 16px; border-radius: 999px; font-size: 0.95rem; }
+.person-chip.active { background: var(--gold); border-color: transparent; color: var(--on-seal); font-weight: 700; }
+.person-chip.add, .person-chip.edit { color: var(--accent); border-style: dashed; }
+#birth-form.folded .birth-body { display: none; }
+#birth-form .birth-body { animation: step-in 0.35s var(--ease) both; }
+@media (max-width: 520px) { .person-chips { margin: 0 -16px 4px; padding: 2px 16px 8px; } }
+@media (max-width: 640px) { .today-card .yiji-row { grid-template-columns: 1fr; gap: 8px; } }
+/* 起卦那一步的按鈕放大，拇指好按 */
+.flow .actions button { flex: 1 1 auto; min-height: 50px; }

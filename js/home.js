@@ -66,12 +66,12 @@
     const img = el("img", drawn.reversed ? "reversed" : "");
     img.src = `images/${drawn.deck === "classic" ? "tarot" : "tarot-ink"}/${card.img}.jpg`;
     img.alt = card.name;
-    tarotBox.append(el("h2", null, "今日塔羅"), el("div", "today-tarot-body", [
+    tarotBox.append(el("h3", null, "今日塔羅"), el("div", "today-tarot-body", [
       el("div", "today-tarot-card", [img]),
       el("div", null, [el("h3", null, `${card.name}${drawn.reversed ? "（逆位）" : ""}`), el("p", "tarot-keywords", side.keywords), el("p", null, side.general), go]),
     ]));
   } else {
-    tarotBox.append(el("h2", null, "今日塔羅"), el("div", "today-tarot-body", [
+    tarotBox.append(el("h3", null, "今日塔羅"), el("div", "today-tarot-body", [
       el("div", "today-tarot-card empty", [el("div", "card-back")]),
       el("div", null, [el("p", null, "今天還沒抽牌。一天一張，看看今天的能量。"), go]),
     ]));
@@ -79,6 +79,15 @@
 
   // 已儲存的人的今日運勢
   const people = loadPeople();
+
+  // 打招呼：依時間說早安、午安或晚安，有存人的話加上第一個人的名字
+  const hour = now.getHours();
+  const greeting = hour < 5 ? "夜深了" : hour < 11 ? "早安" : hour < 14 ? "午安" : hour < 18 ? "下午好" : "晚安";
+  const me = people[0] && people[0].name !== "我" ? `，${people[0].name}` : "";
+  document.querySelector("#hello").append(
+    el("p", "hello-date", `${month} 月 ${day} 日　星期${WEEKDAYS[today.weekday]}`),
+    el("p", "hello-greet", `${greeting}${me}`),
+  );
   const box = document.querySelector("#today-people");
   if (!people.length) {
     box.append(el("p", "hint", "到八字、紫微斗數或星盤頁填一次出生資料，這裡就會出現你個人的今日提示。"));

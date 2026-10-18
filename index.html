@@ -16,76 +16,60 @@
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="index.html" aria-label="觀象 首頁"><span class="brand-seal" aria-hidden="true"><b>觀</b><b>象</b></span><span class="brand-name">觀象</span></a>
-    <nav class="nav" id="menu" popover aria-label="全部功能">
-      <div class="menu-head"><span>全部功能</span><button type="button" class="menu-close" popovertarget="menu" popovertargetaction="hide" aria-label="關閉">關閉</button></div>
-      <div class="nav-group"><span class="nav-label">問事</span><a href="iching.html">卜卦</a><a href="qian.html">求籤</a><a href="tarot.html">塔羅</a></div>
-      <div class="nav-group"><span class="nav-label">日子</span><a href="index.html" class="current" aria-current="page">今日</a><a href="almanac.html">農民曆</a></div>
-      <div class="nav-group"><span class="nav-label">命盤</span><a href="bazi.html">八字</a><a href="ziwei.html">紫微斗數</a><a href="astro.html">星盤</a><a href="numerology.html">生命靈數</a><a href="name.html">姓名學</a><a href="compat.html">合盤</a></div>
-      <div class="nav-group"><span class="nav-label">查閱</span><a href="catalog.html">六十四卦</a><a href="about.html">依據與來源</a></div>
-    </nav>
+    <a class="brand" href="index.html" aria-label="觀象 首頁">觀象</a>
+    <nav class="nav" aria-label="功能"><a href="index.html" class="current" aria-current="page">首頁</a><a href="almanac.html">農民曆</a><a href="iching.html">卜卦</a><a href="qian.html">求籤</a><a href="tarot.html">塔羅</a><a href="bazi.html">八字</a><a href="ziwei.html">紫微斗數</a><a href="astro.html">星盤</a><a href="compat.html">合盤</a><a href="numerology.html">生命靈數</a><a href="name.html">姓名學</a><a href="catalog.html">六十四卦</a><a href="about.html">依據與來源</a></nav>
   </header>
-  <nav class="tabbar" aria-label="常用">
-    <a href="index.html" class="current" aria-current="page"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="15" rx="1.5"/><path d="M4 9.5h16M8.5 3v4M15.5 3v4"/><rect x="10" y="12.5" width="4" height="4" fill="currentColor" stroke="none"/></svg><span>今日</span></a>
-    <a href="iching.html"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 6.5h14M5 12h5.5M13.5 12H19M5 17.5h14"/></svg><span>卜卦</span></a>
-    <a href="qian.html"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><path d="M7.5 10h9l-1.2 10H8.7z"/><path d="M10.5 10V3.5M13.5 10V6"/></svg><span>求籤</span></a>
-    <a href="tarot.html"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><rect x="6.5" y="3.5" width="11" height="17" rx="1.5"/><path d="M12 8.2l1.1 2.7 2.7 1.1-2.7 1.1-1.1 2.7-1.1-2.7-2.7-1.1 2.7-1.1z"/></svg><span>塔羅</span></a>
-    <button type="button" popovertarget="menu"><svg class="ti" viewBox="0 0 24 24" aria-hidden="true"><rect x="4.5" y="4.5" width="6" height="6" rx="1"/><rect x="13.5" y="4.5" width="6" height="6" rx="1"/><rect x="4.5" y="13.5" width="6" height="6" rx="1"/><rect x="13.5" y="13.5" width="6" height="6" rx="1"/></svg><span>全部</span></button>
-  </nav>
   <h1 class="sr-only">觀象・今日</h1>
 
-  <main>
+  <main class="home">
+    <section class="hello" id="hello"></section>
     <section class="card today-card" id="today-card"></section>
 
-    <div class="quick-actions">
-      <a class="quick" href="iching.html">起一卦</a>
-      <a class="quick" href="qian.html">求一支籤</a>
-      <a class="quick" href="tarot.html">問塔羅</a>
-      <a class="quick" href="almanac.html#pick-card">挑好日子</a>
-    </div>
-
+    <section class="rail-block" aria-labelledby="rail-ask">
+      <h2 class="rail-title" id="rail-ask">問一件事</h2>
+      <div class="rail rail-big">
+        <a class="cover t-iching" href="iching.html"><img src="images/hex/01.jpg" alt="" loading="lazy"><span class="cover-text"><b>易經卜卦</b><small>金錢卦、蓍草、梅花易數，一爻一爻起</small></span></a>
+        <a class="cover t-qian" href="qian.html"><img src="images/hex/20.jpg" alt="" loading="lazy"><span class="cover-text"><b>媽祖靈籤</b><small>擲筊請示、搖籤筒，六十甲子籤</small></span></a>
+        <a class="cover t-tarot" href="tarot.html"><img src="images/tarot-ink/m00.jpg" alt="" loading="lazy"><span class="cover-text"><b>塔羅</b><small>像聊天一樣問牌，還能追問</small></span></a>
+      </div>
+    </section>
 
     <section class="card people-card">
       <h2>今日運勢</h2>
       <div id="today-people"></div>
     </section>
 
-    <div class="today-grid">
-    <section class="card daily">
-      <h2>今日一卦 <span class="daily-ganzhi" id="today-ganzhi"></span></h2>
-      <div class="daily-hex" id="today-hex"></div>
-    </section>
-    <section class="card today-tarot" id="today-tarot"></section>
-    </div>
-
-
-    <section class="index-list" aria-label="全部功能">
-      <h2 class="index-group">問事</h2>
-      <ul>
-        <li><a class="index-row t-iching" href="iching.html"><span class="seal">卦</span><span class="index-text"><b>易經卜卦</b><small>金錢卦、蓍草法、梅花易數，附六爻納甲</small></span></a></li>
-        <li><a class="index-row t-qian" href="qian.html"><span class="seal">籤</span><span class="index-text"><b>求籤</b><small>擲筊請示、搖籤，媽祖六十甲子籤</small></span></a></li>
-        <li><a class="index-row t-tarot" href="tarot.html"><span class="seal">牌</span><span class="index-text"><b>塔羅</b><small>用聊天的方式問牌，可追問</small></span></a></li>
-      </ul>
-      <h2 class="index-group">日子</h2>
-      <ul>
-        <li><a class="index-row t-almanac" href="almanac.html"><span class="seal">曆</span><span class="index-text"><b>農民曆</b><small>每日宜忌、沖煞、吉時，依事挑日子</small></span></a></li>
-      </ul>
-      <h2 class="index-group">命盤</h2>
-      <ul>
-        <li><a class="index-row t-bazi" href="bazi.html"><span class="seal">命</span><span class="index-text"><b>八字</b><small>四柱、十神、五行、大運流年流月</small></span></a></li>
-        <li><a class="index-row t-ziwei" href="ziwei.html"><span class="seal">紫</span><span class="index-text"><b>紫微斗數</b><small>十二宮、四化、大限流年、飛化</small></span></a></li>
-        <li><a class="index-row t-astro" href="astro.html"><span class="seal">星</span><span class="index-text"><b>星盤</b><small>本命行星、上升、宮位、相位、行運</small></span></a></li>
-        <li><a class="index-row t-numerology" href="numerology.html"><span class="seal">數</span><span class="index-text"><b>生命靈數</b><small>主命數、九宮格連線、流年流月</small></span></a></li>
-        <li><a class="index-row t-name" href="name.html"><span class="seal">名</span><span class="index-text"><b>姓名學</b><small>康熙筆劃、五格、八十一數理、三才</small></span></a></li>
-        <li><a class="index-row t-compat" href="compat.html"><span class="seal">合</span><span class="index-text"><b>合盤</b><small>八字、紫微、星盤看兩個人</small></span></a></li>
-      </ul>
-      <h2 class="index-group">查閱</h2>
-      <ul>
-        <li><a class="index-row t-catalog" href="catalog.html"><span class="seal">典</span><span class="index-text"><b>六十四卦</b><small>卦辭、爻辭原文與白話</small></span></a></li>
-        <li><a class="index-row t-about" href="about.html"><span class="seal">據</span><span class="index-text"><b>依據與來源</b><small>每種方法的出處與限制</small></span></a></li>
-      </ul>
+    <section class="rail-block" aria-labelledby="rail-daily">
+      <h2 class="rail-title" id="rail-daily">今天的一卦一牌</h2>
+      <div class="rail rail-cards">
+        <section class="card daily">
+          <h3>今日一卦 <span class="daily-ganzhi" id="today-ganzhi"></span></h3>
+          <div class="daily-hex" id="today-hex"></div>
+        </section>
+        <section class="card today-tarot" id="today-tarot"></section>
+      </div>
     </section>
 
+    <section class="rail-block" aria-labelledby="rail-chart">
+      <h2 class="rail-title" id="rail-chart">看命盤</h2>
+      <div class="rail rail-small">
+        <a class="cover t-bazi" href="bazi.html"><img src="images/hex/52.jpg" alt="" loading="lazy"><span class="cover-text"><b>八字</b><small>四柱、十神、大運流年</small></span></a>
+        <a class="cover t-ziwei" href="ziwei.html"><img src="images/hex/38.jpg" alt="" loading="lazy"><span class="cover-text"><b>紫微斗數</b><small>十二宮、四化、大限</small></span></a>
+        <a class="cover t-astro" href="astro.html"><img src="images/tarot-ink/m17.jpg" alt="" loading="lazy"><span class="cover-text"><b>星盤</b><small>行星、上升、相位、行運</small></span></a>
+        <a class="cover t-compat" href="compat.html"><img src="images/hex/31.jpg" alt="" loading="lazy"><span class="cover-text"><b>合盤</b><small>兩個人合不合</small></span></a>
+        <a class="cover t-numerology" href="numerology.html"><img src="images/hex/26.jpg" alt="" loading="lazy"><span class="cover-text"><b>生命靈數</b><small>主命數與流年</small></span></a>
+        <a class="cover t-name" href="name.html"><img src="images/hex/60.jpg" alt="" loading="lazy"><span class="cover-text"><b>姓名學</b><small>五格三才、比較名字</small></span></a>
+      </div>
+    </section>
+
+    <section class="rail-block" aria-labelledby="rail-more">
+      <h2 class="rail-title" id="rail-more">日子與查閱</h2>
+      <div class="rail rail-small">
+        <a class="cover t-almanac" href="almanac.html"><img src="images/hex/14.jpg" alt="" loading="lazy"><span class="cover-text"><b>農民曆</b><small>宜忌、吉時、挑好日子</small></span></a>
+        <a class="cover t-catalog" href="catalog.html"><img src="images/hex/04.jpg" alt="" loading="lazy"><span class="cover-text"><b>六十四卦</b><small>原文與白話</small></span></a>
+        <a class="cover t-about" href="about.html"><img src="images/hex/48.jpg" alt="" loading="lazy"><span class="cover-text"><b>依據與來源</b><small>每種方法的出處</small></span></a>
+      </div>
+    </section>
 
     <section class="card">
       <h2>關於觀象</h2>
@@ -110,6 +94,7 @@
   <script src="js/tarot-minor.js"></script>
   <script src="js/home.js"></script>
   <script src="js/share.js"></script>
+  <script src="js/flow.js"></script>
   <script src="js/pwa.js"></script>
 </body>
 </html>

@@ -6,11 +6,9 @@ if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
   });
 }
 
-// 「全部」面板用瀏覽器內建的 popover；舊瀏覽器不支援時，改用加上 .open 的方式開關。
+// 手機上選單比螢幕寬，要左右滑。載入時把目前這一頁捲到中間，才看得出自己在哪一頁。
 (() => {
-  const menu = document.querySelector("#menu");
-  if (!menu || "popover" in HTMLElement.prototype) return;
-  for (const button of document.querySelectorAll("[popovertarget=menu]")) {
-    button.addEventListener("click", () => menu.classList.toggle("open", button.getAttribute("popovertargetaction") !== "hide" && !menu.classList.contains("open")));
-  }
+  const nav = document.querySelector(".nav");
+  const current = nav && nav.querySelector(".current");
+  if (current) nav.scrollLeft = current.offsetLeft - (nav.clientWidth - current.offsetWidth) / 2;
 })();

@@ -302,9 +302,17 @@ function readingSection(reading) {
     el("h4", null, "卦象解讀"),
     el("span", `tone ${reading.tone.tier}`, reading.tone.label),
   ]);
-  const body = reading.sections.map((section, i) => {
+  // 一段裡用【小標】分開的內容拆成各自一段，結論留在最前面
+  const parts = reading.sections.flatMap((section) => {
+    const [lead, ...rest] = section.text.split(/\n(?=【)/);
+    return [{ title: section.title, text: lead }, ...rest.map((chunk) => {
+      const match = chunk.match(/^【([^】]+)】\s*([\s\S]*)$/);
+      return match ? { title: match[1], text: match[2] } : { title: section.title, text: chunk };
+    })];
+  });
+  const body = parts.map((section, i) => {
     const block = el("div", "reading-part", [el("h5", null, section.title), el("p", null, section.text)]);
-    block.style.setProperty("--n", i);
+    block.style.setProperty("--n", Math.min(i, 4));
     return block;
   });
   return el("div", "reading", [head, ...body]);
@@ -486,7 +494,8 @@ function showReading(reading, isNew = true) {
   }
   const composed = composeReading(entry, result, guide);
   const shareButton = posterButton(() => ichingPoster(entry, result, composed), `觀象-${result.primary.name}卦.png`);
-  summary.append(tips, sceneSection(entry, result, guide), readingSection(composed), el("div", "actions summary-actions", [shareButton]));
+  // 先給答案，再看卦的畫面與解卦依據
+  summary.append(readingSection(composed), sceneSection(entry, result, guide), tips, el("div", "actions summary-actions", [shareButton]));
   container.append(summary, najiaSection(entry, result), reviewSection(entry));
 
   // 辭文
