@@ -1,10 +1,10 @@
 // 把結果存成圖片：共用的畫布、主題配色、文字換行與分享／下載。各頁只負責畫自己的內容。
 
 const SITE_NAME = "觀象";
-// 圖片和網站同一套：石色宣紙、墨字、朱印
-const POSTER_PAPER = { top: "#f3f5f3", bottom: "#e6e9e6", ink: "#1b1a18", muted: "#5f6462", accent: "#b02a1d", line: "#d3d8d4", panel: "rgba(255,255,255,0.7)" };
+// 圖片和網站同一套：星夜底、金色重點
+const POSTER_PAPER = { top: "#241b52", bottom: "#0d0b1e", ink: "#efeaff", muted: "#b4acd8", accent: "#f1d08a", line: "rgba(255,255,255,0.18)", panel: "rgba(255,255,255,0.07)" };
 const POSTER_THEMES = Object.fromEntries(["iching","bazi","ziwei","astro","qian","almanac","numero","name","tarot","compat"].map((key) => [key, POSTER_PAPER]));
-const POSTER_ELEMENT_COLORS = { 木: "#2f7d52", 火: "#c4452c", 土: "#a0701f", 金: "#6f7887", 水: "#2c6cb8" };
+const POSTER_ELEMENT_COLORS = { 木: "#6fd3a0", 火: "#ff8a6e", 土: "#e8c070", 金: "#c3cad8", 水: "#7cb8ff" };
 const POSTER_SERIF = '"Noto Serif TC", "Songti TC", "PMingLiU", serif';
 const POSTER_SANS = '"Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif';
 

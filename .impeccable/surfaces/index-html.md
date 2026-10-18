@@ -7,6 +7,8 @@ related_targets: ["style.css"]
 
 ## Direction contract
 
+NOTE: superseded on 2026-10-18 — the user rejected the seal look and chose 「星夜金」 (night sky + gold); see DESIGN.md.
+
 THESIS: 觀象 owns "the verdict is stamped": every decided thing (吉凶, 宜忌, today's answer, where you are) arrives as a carved seal impression, the way a reading was authorised on paper. It refuses the category default of a dark mystic starfield with glowing gradients and thirteen differently-coloured theme skins.
 
 OWN-WORLD: seal-carving studio. Cool 宣紙 ground (light) / 墨 ground (night), white sheets with hairline rules, ink-black top bar. 印泥 vermilion owns 吉/宜/selection/primary action; solid ink owns 凶/忌. Per-method mineral pigment (石綠, 石青, 胭脂, 花青, 赭石, 紫) colours only that page's header seal. Square seals with 3px corners, Noto Serif TC 900 for seal glyphs, Song serif headings, 楷書 (LXGW WenKai TC) for classical text, system sans for prose. Drawn SVG tab icons.
