@@ -219,7 +219,7 @@ function renderZiwei(birth) {
   root.append(el("section", "card", [el("h2", null, `${input.name || ""}的命盤`),
     note ? el("p", "hint", note) : null,
     board,
-    el("p", "hint", "框線發亮的是命宮，底色較深的是目前所在的大限。星名右下的小字是亮度（廟、旺、得地、利益、平和、不得地、落陷），彩色標籤是生年四化。"),
+    el("p", "hint", "紅框的是命宮，淡紅底的是目前所在的大限。星名右下的小字是亮度（廟、旺、得地、利益、平和、不得地、落陷），彩色標籤是生年四化。"),
     el("div", "actions summary-actions", [posterButton(() => ziweiPoster(input, chart), `觀象-紫微-${input.name || "命盤"}.png`)])]));
 
   // 解讀

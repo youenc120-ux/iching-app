@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-18T00:00:00Z",
+  "title": "Design System: 觀象",
+  "extensions": {
+    "colorMeta": {
+      "seal-vermilion": { "role": "primary", "displayName": "Seal Vermilion", "canonical": "#b02a1d", "tonalRamp": ["#3a0e09", "#5c160f", "#7f1f15", "#b02a1d", "#d0503f", "#e3897c", "#f0bcb4", "#f9e6e3"] },
+      "stone-paper": { "role": "neutral", "displayName": "Stone Paper", "canonical": "#eceeec", "tonalRamp": ["#1f2120", "#363937", "#535755", "#757a77", "#9a9f9c", "#c0c4c1", "#dadedb", "#eceeec"] },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#1b1a18", "tonalRamp": ["#1b1a18", "#2e2c29", "#45423e", "#5f6462", "#7e7a73", "#a49e93", "#cbc6bd", "#ece8e0"] }
+    },
+    "typographyMeta": {
+      "seal": { "displayName": "Seal", "purpose": "Glyphs inside seals and stamps only." },
+      "display-numeral": { "displayName": "Day numeral", "purpose": "Today's date on the home sheet and the almanac." },
+      "classical": { "displayName": "Classical hand", "purpose": "Quoted source text: 卦辭, 爻辭, 籤詩." },
+      "body": { "displayName": "Body", "purpose": "Readings and explanations." }
+    },
+    "shadows": [
+      { "name": "sheet", "value": "0 1px 2px rgba(27, 26, 24, 0.05)", "purpose": "Resting paper sheets." },
+      { "name": "lift", "value": "0 1px 2px rgba(27, 26, 24, 0.06), 0 10px 24px -14px rgba(27, 26, 24, 0.28)", "purpose": "Floating composer, dialog, bottom sheet." },
+      { "name": "seal-keyline", "value": "inset 0 0 0 2px var(--hue), inset 0 0 0 3px rgba(255, 255, 255, 0.5)", "purpose": "The carved border inside every seal." }
+    ],
+    "motion": [
+      { "name": "ease", "value": "cubic-bezier(0.16, 1, 0.3, 1)", "purpose": "All entrances and presses." },
+      { "name": "stamp", "value": "0.5s stamp var(--ease) both", "purpose": "落印: a seal stamps in (scale 1.32→1, −7°→0, blur 3px→0)." },
+      { "name": "sheet", "value": "0.36s sheet var(--ease)", "purpose": "Bottom sheet rises from the tab bar." }
+    ],
+    "breakpoints": [
+      { "name": "phone", "value": "520px" },
+      { "name": "two-column", "value": "640px" },
+      { "name": "desktop-nav", "value": "1100px" }
+    ]
+  },
+  "components": [
+    { "name": "Seal", "kind": "custom", "html": "<span class=\"seal\">卦</span>", "css": ".seal{display:inline-grid;place-items:center;width:1.9em;height:1.9em;border-radius:3px;background:#b02a1d;color:#fff;font-family:'Noto Serif TC',serif;font-weight:900;line-height:1;box-shadow:inset 0 0 0 2px #b02a1d,inset 0 0 0 3px rgba(255,255,255,.5)}" },
+    { "name": "Primary Button", "kind": "button", "html": "<button class=\"primary\">一次起完</button>", "css": "button.primary{background:#b02a1d;border:1px solid #b02a1d;color:#fff;font-weight:700;letter-spacing:.06em;border-radius:8px;padding:10px 18px}" },
+    { "name": "Tone Stamps", "kind": "chip", "html": "<span class=\"tone good\">吉</span> <span class=\"tone bad\">凶</span>", "css": ".tone{display:inline-block;padding:1px 8px;border-radius:3px;font-family:'Noto Serif TC',serif;font-weight:700;font-size:.8rem;letter-spacing:.08em}.tone.good{background:#b02a1d;color:#fff}.tone.bad{background:#1b1a18;color:#eceeec}" },
+    { "name": "Input", "kind": "input", "html": "<input placeholder=\"例如：我該不該接這份工作？\">", "css": "input{min-height:46px;padding:10px 13px;background:#f3f5f3;border:1px solid #dadedb;border-radius:8px;font:inherit}input:focus{outline:none;border-color:#b02a1d;box-shadow:0 0 0 3px #f6e3de}" },
+    { "name": "Top Bar", "kind": "nav", "html": "<header class=\"topbar\"><span class=\"brand-seal\"><b>觀</b><b>象</b></span></header>", "css": ".topbar{display:flex;align-items:center;height:52px;padding:0 16px;background:#1b1a18;color:#ece9e2}.brand-seal{display:grid;place-items:center;width:24px;height:38px;border-radius:3px;background:#b02a1d;color:#fff;font-weight:900;font-size:15px}" }
+  ],
+  "narrative": {
+    "northStar": "The Seal on the Paper",
+    "keyCharacteristics": [
+      "Vermilion means good, favourable, selected or \"do this\"; solid ink means bad or \"avoid\". This follows the two-colour logic of the printed almanac.",
+      "Square seals with 3px corners and a thin inner white keyline, set in Noto Serif TC Black.",
+      "Classical text (卦辭, 爻辭, 籤詩) is set in 楷書 (LXGW WenKai TC). Modern prose uses the system sans; headings use Song serif.",
+      "One authored motion, 落印: a seal stamps in.",
+      "Phone first. The bottom tabs are 今日, 卜卦, 求籤, 塔羅 and 全部; at 1100px and wider the grouped navigation moves into the top bar."
+    ],
+    "rules": [
+      { "section": "Colors", "name": "The Two Inks Rule", "body": "Good is vermilion and bad is ink, everywhere. Green never means \"good\", and red never means \"bad\"." },
+      { "section": "Colors", "name": "The Pigment Rule", "body": "A section pigment appears only inside a seal. It never tints the page, a card or the text." },
+      { "section": "Typography", "name": "The Classical Hand Rule", "body": "Any quotation of a source text is set in 楷書. Plain-language explanation is never set in 楷書." },
+      { "section": "Components", "name": "The 落印 Rule", "body": "The only authored entrance is stamp. It runs for 0.5s with cubic-bezier(0.16, 1, 0.3, 1); it scales from 1.32 to 1, rotates from −7° to 0 and clears a 3px blur. It applies to page seals, the current tab, 宜 and 忌, verdict tones and score seals. With reduced motion, the seal is already stamped." }
+    ],
+    "dos": [
+      "Do stamp every verdict as a seal; let plain prose carry the explanation.",
+      "Do keep the ground cool stone-grey; if it drifts toward cream, it is wrong.",
+      "Do set quoted source text in 楷書."
+    ],
+    "donts": [
+      "Don't give a page its own background colour or dark skin; pigments live only in seals.",
+      "Don't use green for good or red for bad.",
+      "Don't add glows, gradient text, coloured side stripes or kicker labels above headings.",
+      "Don't use emoji or Unicode glyphs as icons; draw SVG at the tab-bar stroke weight."
+    ]
+  }
+}

@@ -292,7 +292,7 @@ function scrollToEnd(node) {
 }
 
 function addRow(node, who = "bot") {
-  const row = el("div", `msg ${who}`, [who === "bot" ? el("span", "avatar", "✦") : null, node]);
+  const row = el("div", `msg ${who}`, [who === "bot" ? el("span", "avatar", "牌") : null, node]);
   thread().append(row);
   scrollToEnd(row);
   return row;

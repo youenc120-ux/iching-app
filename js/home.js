@@ -5,14 +5,8 @@
   const now = new Date();
   const year = now.getFullYear(), month = now.getMonth() + 1, day = now.getDate();
 
-  // 今日干支與農曆
+  // 今日干支
   const gz = ganzhiDate(now);
-  const lunar = lunarOf(year, month, day);
-  const lunarDay = lunar.day <= 10 ? `初${"一二三四五六七八九十"[lunar.day - 1]}`
-    : lunar.day < 20 ? `十${"一二三四五六七八九"[lunar.day - 11]}`
-    : lunar.day === 20 ? "二十" : lunar.day < 30 ? `廿${"一二三四五六七八九"[lunar.day - 21]}` : "三十";
-  const lunarMonth = `${lunar.leap ? "閏" : ""}${["正", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"][lunar.month - 1]}月`;
-  document.querySelector("#today-date").textContent = `${year} 年 ${month} 月 ${day} 日 · 農曆${lunarMonth}${lunarDay}`;
   document.querySelector("#today-ganzhi").textContent = `${gz.year}年 ${gz.month}月 ${gz.day}日`;
 
   // 今日一卦：用日期算出固定的一卦一爻，同一天每個人看到的都一樣
@@ -93,8 +87,8 @@
       try {
         const daily = baziDaily(baziChart(resolveBirth(person)), now);
         const clash = personalNote(today, personPillars(person));
-        box.append(el("div", "reading-part", [
-          el("h5", null, `${person.name} · ${daily.god}日`),
+        box.append(el("div", "reading-part person-day", [
+          el("h5", null, [el("b", null, person.name), el("span", null, `${daily.god}日`)]),
           el("p", null, daily.text),
           clash && clash.tone !== "neutral" ? el("p", `personal-note ${clash.tone}`, clash.text) : null,
         ]));

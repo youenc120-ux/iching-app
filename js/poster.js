@@ -1,19 +1,10 @@
 // 把結果存成圖片：共用的畫布、主題配色、文字換行與分享／下載。各頁只負責畫自己的內容。
 
 const SITE_NAME = "觀象";
-const POSTER_THEMES = {
-  iching: { top: "#fbf6ec", bottom: "#f0e4d0", ink: "#1f1b16", muted: "#7b7265", accent: "#b8322a", line: "#e2d6c0", panel: "rgba(255,255,255,0.55)" },
-  bazi: { top: "#f4f8f1", bottom: "#dfecd9", ink: "#18211c", muted: "#68756c", accent: "#2c7f5b", line: "#cfdcc8", panel: "rgba(255,255,255,0.6)" },
-  ziwei: { top: "#201744", bottom: "#0e0a20", ink: "#f1ecff", muted: "#aaa1d2", accent: "#e6ba5f", line: "rgba(160,140,255,0.3)", panel: "rgba(60,48,112,0.55)" },
-  astro: { top: "#101a40", bottom: "#060a1b", ink: "#e9efff", muted: "#95a2cb", accent: "#7cc4ff", line: "rgba(124,160,255,0.3)", panel: "rgba(30,42,90,0.6)" },
-  qian: { top: "#3a120c", bottom: "#160604", ink: "#f8ebd6", muted: "#c9a98d", accent: "#e8b84a", line: "rgba(232,184,74,0.3)", panel: "rgba(80,24,14,0.55)" },
-  almanac: { top: "#fbf4e4", bottom: "#efe1c2", ink: "#2a1d14", muted: "#7f6f5c", accent: "#b3261e", line: "#e2cfa8", panel: "rgba(255,255,255,0.6)" },
-  numero: { top: "#123136", bottom: "#081719", ink: "#e8f5f2", muted: "#9ab8b3", accent: "#5fd3bc", line: "rgba(95,211,188,0.3)", panel: "rgba(28,62,68,0.6)" },
-  name: { top: "#1b2240", bottom: "#0c1020", ink: "#edf0fa", muted: "#a3abc8", accent: "#e65a4b", line: "rgba(160,175,230,0.3)", panel: "rgba(40,48,84,0.6)" },
-  tarot: { top: "#2c1220", bottom: "#12070d", ink: "#f6ebe4", muted: "#bfa3a8", accent: "#d8a657", line: "rgba(216,166,87,0.3)", panel: "rgba(70,30,50,0.55)" },
-  compat: { top: "#fdf1f2", bottom: "#f6dfe6", ink: "#2a1a22", muted: "#8a6c78", accent: "#c8456f", line: "#ecd0da", panel: "rgba(255,255,255,0.6)" },
-};
-const POSTER_ELEMENT_COLORS = { 木: "#3f9d6b", 火: "#e0563f", 土: "#c9973a", 金: "#8e98a8", 水: "#3d82d9" };
+// 圖片和網站同一套：石色宣紙、墨字、朱印
+const POSTER_PAPER = { top: "#f3f5f3", bottom: "#e6e9e6", ink: "#1b1a18", muted: "#5f6462", accent: "#b02a1d", line: "#d3d8d4", panel: "rgba(255,255,255,0.7)" };
+const POSTER_THEMES = Object.fromEntries(["iching","bazi","ziwei","astro","qian","almanac","numero","name","tarot","compat"].map((key) => [key, POSTER_PAPER]));
+const POSTER_ELEMENT_COLORS = { 木: "#2f7d52", 火: "#c4452c", 土: "#a0701f", 金: "#6f7887", 水: "#2c6cb8" };
 const POSTER_SERIF = '"Noto Serif TC", "Songti TC", "PMingLiU", serif';
 const POSTER_SANS = '"Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif';
 
