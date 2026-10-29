@@ -1286,3 +1286,13 @@ h1.sr-only + main { padding-top: 16px; }
 .palm-float.big img { object-fit: contain; }
 .palm-go { width: 100%; min-height: 52px; margin-top: 16px; font-size: 1.05rem; }
 .palm-result-art { width: min(100%, 260px); margin: 8px auto 0; }
+/* 手相自動判斷 */
+.palm-auto { margin-top: 14px; padding: 14px; border-radius: 18px; background: rgba(241, 208, 138, 0.07); border: 1px solid rgba(241, 208, 138, 0.25); }
+.palm-auto > button.primary { width: 100%; min-height: 50px; }
+.palm-auto-status { margin: 10px 0 0; }
+.palm-auto-status:empty { display: none; }
+.palm-overlay { display: block; width: 100%; height: auto; max-height: 420px; margin-top: 12px; object-fit: contain; border-radius: 16px; }
+.palm-auto-list { margin: 12px 0; padding: 0; list-style: none; }
+.palm-auto-list li { display: grid; grid-template-columns: 5.2em 1fr auto; gap: 8px; align-items: baseline; padding: 7px 0; border-top: 1px solid var(--line); font-size: 0.92rem; }
+.palm-auto-list b { color: var(--muted); font-weight: 500; }
+.palm-auto-list small { color: var(--accent); font-size: 0.75rem; }

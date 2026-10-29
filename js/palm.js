@@ -47,6 +47,7 @@ function palmSvg(lines, mirror, className = "palm-svg") {
   const mirror = () => state.hand === "left";
   const next = () => setTimeout(() => { const b = document.querySelector(".flow-next"); if (b && !b.hidden) b.click(); }, 260);
   const redraws = [];
+  const syncs = []; // 自動判斷後把每個選項的選取狀態重新標一次
 
   // 一格選項：示意圖 + 名稱 + 怎麼認
   function optionGrid(group, options, { multi = false, auto = true } = {}) {
@@ -71,6 +72,7 @@ function palmSvg(lines, mirror, className = "palm-svg") {
         if (!multi && auto) next();
       });
       button.sync = sync;
+      syncs.push(sync);
       sync();
       return button;
     });
@@ -84,6 +86,7 @@ function palmSvg(lines, mirror, className = "palm-svg") {
   for (const [key, label] of [["right", "右手"], ["left", "左手"]]) {
     const b = palmEl("button", state.hand === key ? "active" : "", label);
     b.type = "button";
+    syncs.push(() => b.classList.toggle("active", state.hand === key));
     b.addEventListener("click", () => {
       state.hand = key;
       handChoice.querySelectorAll("button").forEach((x) => x.classList.toggle("active", x === b));
@@ -113,14 +116,79 @@ function palmSvg(lines, mirror, className = "palm-svg") {
     const url = URL.createObjectURL(file);
     preview.src = floatImg.src = url;
     preview.hidden = false;
-    floating.hidden = false;
     photoButton.textContent = "換一張照片";
+    autoBox.hidden = false;
+    autoResult.replaceChildren();
+    autoStatus.textContent = "";
+    if (overlay) { overlay.remove(); overlay = null; }
+  });
+
+  // ── 自動判斷 ──
+  const autoBox = palmEl("div", "palm-auto");
+  autoBox.hidden = true;
+  const autoButton = palmEl("button", "primary", "自動判斷這張照片");
+  autoButton.type = "button";
+  const autoStatus = palmEl("p", "hint palm-auto-status");
+  const autoResult = palmEl("div", "palm-auto-result");
+  let overlay = null;
+  autoBox.append(
+    palmEl("p", "hint", "會在這支手機上辨識手掌、量手型、比對掌紋。第一次使用要下載辨識模型（約 17MB，建議用 Wi-Fi），照片本身不會傳出去。掌紋判斷只是估計，結果會畫在照片上，不對的地方可以在後面的步驟改。"),
+    autoButton, autoStatus, autoResult,
+  );
+  const sureLabel = (x) => (x > 0.25 ? "把握高" : x > 0.1 ? "把握中" : "把握低");
+  autoButton.addEventListener("click", async () => {
+    autoButton.disabled = true;
+    autoResult.replaceChildren();
+    autoStatus.textContent = "辨識中…第一次要先下載模型，請稍等。";
+    try {
+      if (!preview.complete) await new Promise((resolve) => preview.addEventListener("load", resolve, { once: true }));
+      const found = await palmAuto(preview);
+      state.hand = found.hand;
+      state.shape = found.shape;
+      Object.assign(state, found.picks);
+      state.marks = new Set(found.marks);
+      syncs.forEach((sync) => sync());
+      redraws.forEach((draw) => draw());
+      const pick = (line) => line.options.find((o) => o.key === state[line.key]);
+      const chosen = [...PALM_LINES.map(pick), PALM_MARRIAGE.options.find((o) => o.key === state.marriage),
+        ...PALM_MARKS.filter((m) => state.marks.has(m.key) && m.key !== "many" && m.key !== "few")];
+      if (overlay) overlay.remove();
+      overlay = palmOverlay(preview, found, state.marks.has("duan") ? chosen.filter((o) => !PALM_LINES.slice(1, 3).some((l) => l.options.includes(o))) : chosen);
+      preview.hidden = true;
+      preview.after(overlay);
+      floatImg.src = overlay.toDataURL("image/jpeg", 0.85);
+      const row = (title, label, sure) => palmEl("li", null, [palmEl("b", null, title), palmEl("span", null, label), sure != null ? palmEl("small", null, sureLabel(sure)) : null]);
+      autoResult.append(
+        palmEl("ul", "palm-auto-list", [
+          row("手", found.hand === "left" ? "左手" : "右手"),
+          row("手型", PALM_HANDS.find((h) => h.key === found.shape).label, found.shapeSure),
+          ...PALM_LINES.map((line) => row(line.title, pick(line).label, found.sure[line.key])),
+          row("婚姻線", PALM_MARRIAGE.options.find((o) => o.key === state.marriage).label, found.sure.marriage),
+          row("特殊掌紋", found.marks.length ? found.marks.map((k) => PALM_MARKS.find((m) => m.key === k).label).join("、") : "沒有"),
+          row("斷掌", "請自己看：感情線和智慧線是不是合成一條"),
+        ]),
+        (() => {
+          const view = palmEl("button", "primary", "直接看解讀");
+          view.type = "button";
+          view.addEventListener("click", () => go.click());
+          const check = palmEl("button", null, "一步一步確認");
+          check.type = "button";
+          check.addEventListener("click", next);
+          return palmEl("div", "actions", [view, check]);
+        })(),
+      );
+      autoStatus.textContent = "照片上的金線是判斷出來的位置，跟你手上的線對一下；「把握低」的那幾項最好自己確認。";
+    } catch (err) {
+      autoStatus.textContent = err && err.message && /找不到|抓不到/.test(err.message) ? err.message : "辨識失敗：可能是網路連不上模型，或這支手機的瀏覽器不支援。可以照步驟自己選。";
+    } finally {
+      autoButton.disabled = false;
+    }
   });
   stepHand.append(
     palmEl("p", "hint", "習慣上看慣用手（大多是右手）：慣用手代表你現在和後天的狀態，另一隻手是天生的底子。民間也有「男左女右」的看法，兩隻手都可以看。"),
     handChoice,
     palmEl("p", "hint palm-tip", "在光線充足的地方，手掌攤平、微微彎一下手指，線會比較清楚。照片只留在這支手機上，不會上傳。"),
-    photoButton, photoInput, preview,
+    photoButton, photoInput, preview, autoBox,
   );
 
   // ── 手型 ──
@@ -141,6 +209,7 @@ function palmSvg(lines, mirror, className = "palm-svg") {
       shapeGrid.querySelectorAll(".palm-option").forEach((b) => b.classList.toggle("active", b === button));
       next();
     });
+    syncs.push(() => button.classList.toggle("active", state.shape === shape.key));
     button.classList.toggle("active", state.shape === shape.key);
     shapeGrid.append(button);
   }
@@ -226,7 +295,9 @@ function palmSvg(lines, mirror, className = "palm-svg") {
     root.scrollIntoView({ block: "start" });
   }
 
-  // 照片縮圖只在選擇步驟時顯示
+  // 照片縮圖只在第二步以後的選擇步驟顯示（第一步已經有大張照片）
   const result = document.querySelector("#result");
-  new MutationObserver(() => { floating.hidden = !result.hidden || !preview.src; }).observe(result, { attributes: true, attributeFilter: ["hidden"] });
+  const syncFloat = () => { floating.hidden = !result.hidden || !stepHand.hidden || !preview.getAttribute("src"); };
+  new MutationObserver(syncFloat).observe(result, { attributes: true, attributeFilter: ["hidden"] });
+  new MutationObserver(syncFloat).observe(stepHand, { attributes: true, attributeFilter: ["hidden"] });
 })();
