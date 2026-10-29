@@ -11,8 +11,9 @@ const PALM_SCALE = 2; // 對齊後的影像是示意圖座標的兩倍大（400�
 // 判斷掌紋的參數（用合成手掌測試調出來的）：找線時往旁邊看多遠（示意圖單位）、多暗才算是線（手掌上前幾 % 暗的地方）、
 // 長線加分多少、整組線可以移動多遠、事業線與婚姻線吻合度低於多少就算「沒有」
 const PALM_TUNE = { radius: 2, percentile: 0.92, mult: 2.2, lengthBonus: 0.15, shift: 6, step: 2, fateNone: 0.75, marriageNone: 0.8 };
-// 示意圖上對應的三個點：手腕、食指根、小指根
-const PALM_ANCHORS = [[100, 250], [131, 108], [54.5, 110]];
+// 示意圖上對應的三個點：手腕、食指根、小指根。
+// 示意圖的線畫得比真實手掌高，用一張真實手掌照片校正後，指根對到示意圖 y≈96 時，主線位置才對得上。
+const PALM_ANCHORS = [[100, 250], [131, 96], [54.5, 98]];
 const PALM_OUTLINE = "M45 104 L155 104 Q161 140 159 170 Q157 206 147 226 Q133 247 100 247 Q66 247 54 225 Q42 197 42 152 Q42 122 45 104 Z";
 
 let palmLandmarker = null;
@@ -239,5 +240,35 @@ function palmOverlay(img, result, lines) {
       ctx.stroke();
     }
   }
+  return canvas;
+}
+
+// 掌紋加強圖：把比周圍暗的細紋（掌紋）加深、其他地方淡掉，畫成米色紙上的深色線，方便對照
+function palmEnhance(img, A) {
+  const W0 = img.naturalWidth || img.width, H0 = img.naturalHeight || img.height;
+  const corners = [[24, 70], [182, 70], [24, 258], [182, 258]].map((p) => palmApply(A, p));
+  const xs = corners.map((p) => p[0]), ys = corners.map((p) => p[1]);
+  const x0 = Math.max(0, Math.min(...xs)), y0 = Math.max(0, Math.min(...ys));
+  const x1 = Math.min(W0, Math.max(...xs)), y1 = Math.min(H0, Math.max(...ys));
+  const scale = Math.min(1, 900 / Math.max(x1 - x0, y1 - y0));
+  const w = Math.max(1, Math.round((x1 - x0) * scale)), h = Math.max(1, Math.round((y1 - y0) * scale));
+  const canvas = Object.assign(document.createElement("canvas"), { width: w, height: h, className: "palm-overlay palm-enhanced" });
+  const ctx = canvas.getContext("2d", { willReadFrequently: true });
+  ctx.drawImage(img, x0, y0, x1 - x0, y1 - y0, 0, 0, w, h);
+  const data = ctx.getImageData(0, 0, w, h);
+  const px = data.data;
+  const gray = new Float32Array(w * h);
+  for (let i = 0; i < w * h; i++) gray[i] = 0.2 * px[i * 4] + 0.5 * px[i * 4 + 1] + 0.3 * px[i * 4 + 2];
+  const bg = palmBlur(gray, w, h, Math.max(4, Math.round(w / 80)));
+  const diff = new Float32Array(w * h);
+  const sample = [];
+  for (let i = 0; i < w * h; i++) { diff[i] = Math.max(0, bg[i] - gray[i]); if (i % 7 === 0) sample.push(diff[i]); }
+  sample.sort((a, b) => a - b);
+  const top = sample[Math.floor(sample.length * 0.985)] || 1;
+  for (let i = 0; i < w * h; i++) {
+    const t = Math.min(1, diff[i] / top) ** 0.8;
+    px[i * 4] = 244 - t * 214; px[i * 4 + 1] = 236 - t * 207; px[i * 4 + 2] = 223 - t * 203; px[i * 4 + 3] = 255;
+  }
+  ctx.putImageData(data, 0, 0);
   return canvas;
 }
