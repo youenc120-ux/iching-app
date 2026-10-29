@@ -243,32 +243,57 @@ function palmOverlay(img, result, lines) {
   return canvas;
 }
 
-// 掌紋加強圖：把比周圍暗的細紋（掌紋）加深、其他地方淡掉，畫成米色紙上的深色線，方便對照
+// 掌紋加強圖：局部對比強化（每一小塊各自拉開明暗），保留照片的樣子，但掌紋會變得清楚很多。
+// A 是 palmAuto 給的對齊矩陣，只取手掌範圍；沒有 A（手機找不到手時）就用膚色範圍，再不行就用整張照片。
 function palmEnhance(img, A) {
   const W0 = img.naturalWidth || img.width, H0 = img.naturalHeight || img.height;
-  const corners = [[24, 70], [182, 70], [24, 258], [182, 258]].map((p) => palmApply(A, p));
-  const xs = corners.map((p) => p[0]), ys = corners.map((p) => p[1]);
-  const x0 = Math.max(0, Math.min(...xs)), y0 = Math.max(0, Math.min(...ys));
-  const x1 = Math.min(W0, Math.max(...xs)), y1 = Math.min(H0, Math.max(...ys));
-  const scale = Math.min(1, 900 / Math.max(x1 - x0, y1 - y0));
+  let box = A ? palmBox([[24, 70], [182, 70], [24, 258], [182, 258]].map((p) => palmApply(A, p)), W0, H0) : palmSkinBox(img, W0, H0);
+  if (!box) box = [0, 0, W0, H0];
+  const [x0, y0, x1, y1] = box;
+  const scale = Math.min(1, 1400 / Math.max(x1 - x0, y1 - y0));
   const w = Math.max(1, Math.round((x1 - x0) * scale)), h = Math.max(1, Math.round((y1 - y0) * scale));
   const canvas = Object.assign(document.createElement("canvas"), { width: w, height: h, className: "palm-overlay palm-enhanced" });
   const ctx = canvas.getContext("2d", { willReadFrequently: true });
   ctx.drawImage(img, x0, y0, x1 - x0, y1 - y0, 0, 0, w, h);
   const data = ctx.getImageData(0, 0, w, h);
   const px = data.data;
-  const gray = new Float32Array(w * h);
-  for (let i = 0; i < w * h; i++) gray[i] = 0.2 * px[i * 4] + 0.5 * px[i * 4 + 1] + 0.3 * px[i * 4 + 2];
-  const bg = palmBlur(gray, w, h, Math.max(4, Math.round(w / 80)));
-  const diff = new Float32Array(w * h);
-  const sample = [];
-  for (let i = 0; i < w * h; i++) { diff[i] = Math.max(0, bg[i] - gray[i]); if (i % 7 === 0) sample.push(diff[i]); }
-  sample.sort((a, b) => a - b);
-  const top = sample[Math.floor(sample.length * 0.985)] || 1;
+  let gray = new Float32Array(w * h);
+  for (let i = 0; i < w * h; i++) gray[i] = 0.15 * px[i * 4] + 0.55 * px[i * 4 + 1] + 0.3 * px[i * 4 + 2];
+  gray = palmBlur(gray, w, h, Math.max(1, Math.round(w / 500))); // 去掉最細的皮膚紋理
+  const R = Math.max(3, Math.round(w / 25));
+  const mean = palmBlur(gray, w, h, R);
+  const sq = new Float32Array(w * h);
+  for (let i = 0; i < w * h; i++) { const t = gray[i] - mean[i]; sq[i] = t * t; }
+  const variance = palmBlur(sq, w, h, R);
   for (let i = 0; i < w * h; i++) {
-    const t = Math.min(1, diff[i] / top) ** 0.8;
-    px[i * 4] = 244 - t * 214; px[i * 4 + 1] = 236 - t * 207; px[i * 4 + 2] = 223 - t * 203; px[i * 4 + 3] = 255;
+    const z = (gray[i] - mean[i]) / (Math.sqrt(variance[i]) + 6);
+    const o = Math.max(0, Math.min(255, 150 + 55 * z));
+    px[i * 4] = o; px[i * 4 + 1] = o * 0.97; px[i * 4 + 2] = o * 0.92; px[i * 4 + 3] = 255;
   }
   ctx.putImageData(data, 0, 0);
   return canvas;
+}
+
+const palmBox = (points, W, H) => {
+  const xs = points.map((p) => p[0]), ys = points.map((p) => p[1]);
+  const box = [Math.max(0, Math.min(...xs)), Math.max(0, Math.min(...ys)), Math.min(W, Math.max(...xs)), Math.min(H, Math.max(...ys))];
+  return box[2] - box[0] > 20 && box[3] - box[1] > 20 ? box : null;
+};
+
+// 找出照片裡膚色的範圍（手機找不到手時的備案）
+function palmSkinBox(img, W, H) {
+  const s = Math.min(1, 200 / Math.max(W, H));
+  const w = Math.round(W * s), h = Math.round(H * s);
+  const ctx = Object.assign(document.createElement("canvas"), { width: w, height: h }).getContext("2d", { willReadFrequently: true });
+  ctx.drawImage(img, 0, 0, w, h);
+  const p = ctx.getImageData(0, 0, w, h).data;
+  let minX = w, minY = h, maxX = 0, maxY = 0, n = 0;
+  for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) {
+    const i = (y * w + x) * 4, r = p[i], g = p[i + 1], b = p[i + 2];
+    if (r > 95 && g > 40 && b > 20 && r > g && r > b && r - Math.min(g, b) > 15 && Math.abs(r - g) > 12) {
+      n++; if (x < minX) minX = x; if (x > maxX) maxX = x; if (y < minY) minY = y; if (y > maxY) maxY = y;
+    }
+  }
+  if (n < w * h * 0.05) return null;
+  return palmBox([[minX / s, minY / s], [maxX / s, maxY / s]], W, H);
 }

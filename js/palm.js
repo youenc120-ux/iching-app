@@ -110,7 +110,26 @@ function palmSvg(lines, mirror, className = "palm-svg") {
   const floatImg = palmEl("img");
   floatImg.alt = "";
   floating.append(floatImg);
-  floating.addEventListener("click", () => floating.classList.toggle("big"));
+  // 放大檢視：全螢幕、放大兩倍半，可以用手指拖著看手掌每個地方
+  const viewer = palmEl("dialog", "palm-viewer");
+  const viewerScroll = palmEl("div", "palm-viewer-scroll");
+  const viewerImg = palmEl("img");
+  viewerImg.alt = "放大的手掌照片";
+  const viewerClose = palmEl("button", "palm-viewer-close", "關閉");
+  viewerClose.type = "button";
+  viewerClose.addEventListener("click", () => viewer.close());
+  viewerScroll.append(viewerImg);
+  viewer.append(viewerScroll, viewerClose);
+  document.body.append(viewer);
+  const openViewer = (src) => {
+    viewerImg.src = src;
+    viewer.showModal();
+    requestAnimationFrame(() => {
+      viewerScroll.scrollLeft = (viewerScroll.scrollWidth - viewerScroll.clientWidth) / 2;
+      viewerScroll.scrollTop = (viewerScroll.scrollHeight - viewerScroll.clientHeight) * 0.6;
+    });
+  };
+  floating.addEventListener("click", () => openViewer(floatImg.src));
   document.body.append(floating);
   photoInput.addEventListener("change", () => {
     const file = photoInput.files && photoInput.files[0];
@@ -122,21 +141,45 @@ function palmSvg(lines, mirror, className = "palm-svg") {
     autoBox.hidden = false;
     autoResult.replaceChildren();
     autoStatus.textContent = "";
-    if (overlay) { overlay.remove(); overlay = null; }
+    if (overlay) { overlay.remove(); overlay = null; toggle.remove(); }
+    // 一選好照片就先做掌紋加強圖（不需要下載模型）
+    preview.addEventListener("load", () => {
+      try { showEnhanced(null); } catch { /* 做不出來就看原圖 */ }
+    }, { once: true });
   });
 
   // ── 自動判斷 ──
   const autoBox = palmEl("div", "palm-auto");
   autoBox.hidden = true;
-  const autoButton = palmEl("button", "primary", "自動判斷＋加強掌紋");
+  const autoButton = palmEl("button", "primary", "自動判斷左右手與手型");
   autoButton.type = "button";
   const autoStatus = palmEl("p", "hint palm-auto-status");
   const autoResult = palmEl("div", "palm-auto-result");
   let overlay = null;
   autoBox.append(
-    palmEl("p", "hint", "會在這支手機上辨識手掌、量手型、比對掌紋。第一次使用要下載辨識模型（約 17MB，建議用 Wi-Fi），照片本身不會傳出去。會自動判斷左右手和手型，並把掌紋加強成清楚的線條圖，方便你一步一步對照。"),
+    palmEl("p", "hint", "會在這支手機上辨識手掌、量手型、比對掌紋。第一次使用要下載辨識模型（約 17MB，建議用 Wi-Fi），照片本身不會傳出去。上面已經把照片的掌紋加強了。按下面的按鈕，還會自動判斷左右手和手型，並把加強圖對準手掌。"),
     autoButton, autoStatus, autoResult,
   );
+  // 把加強圖放在照片的位置，下面有「看原圖／看加強圖」切換
+  const toggle = palmEl("button", "link palm-toggle", "看原圖");
+  toggle.type = "button";
+  toggle.addEventListener("click", () => {
+    const showingEnhanced = !overlay.hidden;
+    overlay.hidden = showingEnhanced;
+    preview.hidden = !showingEnhanced;
+    toggle.textContent = showingEnhanced ? "看加強圖" : "看原圖";
+  });
+  const showEnhanced = (anchors) => {
+    if (overlay) overlay.remove();
+    overlay = palmEnhance(preview, anchors);
+    preview.hidden = true;
+    preview.after(overlay);
+    overlay.after(toggle);
+    overlay.title = "點一下放大";
+    overlay.addEventListener("click", () => openViewer(floatImg.src));
+    toggle.textContent = "看原圖";
+    floatImg.src = overlay.toDataURL("image/jpeg", 0.9);
+  };
   autoButton.addEventListener("click", async () => {
     autoButton.disabled = true;
     autoResult.replaceChildren();
@@ -151,11 +194,7 @@ function palmSvg(lines, mirror, className = "palm-svg") {
       for (const key of confident) state[key] = found.picks[key];
       syncs.forEach((sync) => sync());
       redraws.forEach((draw) => draw());
-      if (overlay) overlay.remove();
-      overlay = palmEnhance(preview, found.anchors);
-      preview.hidden = true;
-      preview.after(overlay);
-      floatImg.src = overlay.toDataURL("image/jpeg", 0.85);
+      showEnhanced(found.anchors);
       const label = (line, key) => line.options.find((o) => o.key === key).label;
       const row = (title, text) => palmEl("li", null, [palmEl("b", null, title), palmEl("span", null, text)]);
       const lineRows = [...PALM_LINES, PALM_MARRIAGE].map((line) => {
@@ -180,7 +219,14 @@ function palmSvg(lines, mirror, className = "palm-svg") {
       );
       autoStatus.textContent = "上面是把你的掌紋加強後的樣子，深色的就是線。接下來每一步，右下角都會有這張圖，點一下可以放大，照著它選會比看原照片清楚。";
     } catch (err) {
-      autoStatus.textContent = err && err.message && /找不到|抓不到/.test(err.message) ? err.message : "辨識失敗：可能是網路連不上模型，或這支手機的瀏覽器不支援。可以照步驟自己選。";
+      // 找不到手或模型載不下來時，照樣把照片的掌紋加強，左右手和手型請自己選
+      const reason = err && err.message && /找不到|抓不到/.test(err.message) ? "這張照片沒能自動找到手的位置" : "這支手機沒能載入辨識模型（可能是網路或瀏覽器不支援）";
+      try {
+        showEnhanced(null);
+        autoStatus.textContent = `${reason}，所以左右手和手型請自己選；不過已經把照片的掌紋加強了，深色的細線就是掌紋，接下來每一步右下角都有這張圖可以放大對照。`;
+      } catch {
+        autoStatus.textContent = `${reason}。可以照步驟自己選。`;
+      }
     } finally {
       autoButton.disabled = false;
     }
