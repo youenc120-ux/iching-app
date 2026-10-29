@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="palm">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d0b1e">
+  <meta name="description" content="觀象：生命靈數、農民曆、易經卜卦、求籤、塔羅、八字、紫微斗數與星盤，排盤與解讀都在你的裝置上完成。">
+  <title>手相 · 觀象</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html" aria-label="觀象 首頁">觀象</a>
+    <nav class="nav" aria-label="功能"><a href="index.html">首頁</a><a href="almanac.html">農民曆</a><a href="iching.html">卜卦</a><a href="qian.html">求籤</a><a href="tarot.html">塔羅</a><a href="bazi.html">八字</a><a href="ziwei.html">紫微斗數</a><a href="astro.html">星盤</a><a href="compat.html">合盤</a><a href="numerology.html">生命靈數</a><a href="name.html">姓名學</a><a href="palm.html" class="current" aria-current="page">手相</a><a href="catalog.html">六十四卦</a><a href="about.html">依據與來源</a></nav>
+  </header>
+  <header class="page-head">
+    <span class="seal page-seal" aria-hidden="true">掌</span>
+    <div><h1>手相</h1><p class="subtitle">對照自己的手掌，一條線一條線看</p></div>
+  </header>
+
+  <main>
+    <section class="card flow" id="ask" data-flow data-again="重新看一次">
+      <div class="flow-step" id="step-hand" data-title="看哪一隻手"></div>
+      <div class="flow-step" id="step-shape" data-title="你的手型"></div>
+      <div class="flow-step" id="step-life" data-title="生命線"></div>
+      <div class="flow-step" id="step-head" data-title="智慧線"></div>
+      <div class="flow-step" id="step-heart" data-title="感情線"></div>
+      <div class="flow-step" id="step-fate" data-title="事業線"></div>
+      <div class="flow-step" id="step-marriage" data-title="婚姻線"></div>
+      <div class="flow-step" id="step-marks" data-title="特別的掌紋"></div>
+    </section>
+
+    <section id="result" hidden></section>
+  </main>
+
+  <footer>手相是整理自己的一種角度，不能預測未來。健康、法律、財務的決定，請找專業人士。</footer>
+
+  <script src="js/palm-data.js"></script>
+  <script src="js/palm.js"></script>
+  <script src="js/share.js"></script>
+  <script src="js/flow.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

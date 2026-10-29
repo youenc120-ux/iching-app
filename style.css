@@ -1226,3 +1226,63 @@ h1.sr-only + main { padding-top: 16px; }
 @media (max-width: 640px) { .today-card .yiji-row { grid-template-columns: 1fr; gap: 8px; } }
 /* 起卦那一步的按鈕放大，拇指好按 */
 .flow .actions button { flex: 1 1 auto; min-height: 50px; }
+
+/* ── 手相 ── */
+:root[data-theme="palm"], .t-palm { --hue: #f2b8a0; }
+.palm-svg { display: block; width: 100%; height: auto; }
+.palm-hand > * { fill: #241e49; stroke: rgba(239, 234, 255, 0.42); stroke-width: 1.4; }
+.palm-line { fill: none; stroke: var(--accent); stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 3px rgba(241, 208, 138, 0.45)); }
+.palm-line.dashed { stroke-dasharray: 5 4; }
+.palm-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.palm-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 8px 12px;
+  border-radius: 18px;
+  text-align: center;
+  line-height: 1.4;
+}
+.palm-option .palm-art { display: block; width: 100%; max-width: 132px; margin-bottom: 4px; }
+.palm-option b { font-size: 0.98rem; }
+.palm-option small { color: var(--muted); font-size: 0.78rem; }
+.palm-option.active { border-color: var(--accent); background: var(--accent-soft); box-shadow: 0 0 0 1px var(--accent) inset; }
+.palm-option.active b { color: var(--accent); }
+.palm-shapes .palm-art { max-width: 96px; }
+.palm-hand-choice { margin: 4px 0 6px; }
+.palm-hand-choice button { min-height: 46px; padding: 8px 26px; font-size: 1rem; }
+.palm-tip { margin-top: 14px; }
+.palm-photo-button {
+  display: grid;
+  place-items: center;
+  min-height: 52px;
+  padding: 10px 16px;
+  border: 1px dashed rgba(241, 208, 138, 0.55);
+  border-radius: 16px;
+  color: var(--accent);
+  font-size: 0.95rem;
+  text-align: center;
+  cursor: pointer;
+}
+.palm-preview { display: block; width: 100%; max-height: 340px; margin-top: 12px; object-fit: contain; border-radius: 16px; background: rgba(0, 0, 0, 0.3); }
+.palm-float {
+  position: fixed;
+  right: 12px;
+  bottom: calc(14px + env(safe-area-inset-bottom));
+  z-index: 25;
+  width: 84px;
+  height: 112px;
+  padding: 0;
+  overflow: hidden;
+  border: 2px solid var(--accent);
+  border-radius: 14px;
+  background: #000;
+  box-shadow: var(--lift);
+  transition: width 0.3s var(--ease), height 0.3s var(--ease);
+}
+.palm-float img { width: 100%; height: 100%; object-fit: cover; }
+.palm-float.big { width: min(70vw, 300px); height: min(93vw, 400px); }
+.palm-float.big img { object-fit: contain; }
+.palm-go { width: 100%; min-height: 52px; margin-top: 16px; font-size: 1.05rem; }
+.palm-result-art { width: min(100%, 260px); margin: 8px auto 0; }

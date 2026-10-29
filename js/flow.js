@@ -56,7 +56,7 @@
 
     // 結果出現時只看結果
     if (result) {
-      const again = Object.assign(document.createElement("button"), { type: "button", className: "flow-again", textContent: "再問一件事" });
+      const again = Object.assign(document.createElement("button"), { type: "button", className: "flow-again", textContent: flow.dataset.again || "再問一件事" });
       result.before(again);
       const sync = () => {
         const done = !result.hidden;
