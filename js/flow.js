@@ -100,6 +100,7 @@
       makeToggle(card, card.querySelector(":scope > h2, :scope > .history-head h2, :scope > div > h2"), false);
     });
     result.querySelectorAll(".reading, .reading-card").forEach((box) => {
+      if (box.classList.contains("no-fold")) return; // 這一頁的每段都重要，不收合
       box.querySelectorAll(".reading-part").forEach((part, i) => {
         const handle = part.querySelector(":scope > h5");
         // 結論和「具體建議」一直打開，其餘先收起來

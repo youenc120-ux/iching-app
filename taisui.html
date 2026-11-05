@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="taisui">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d0b1e">
+  <meta name="description" content="觀象：農民曆、擇日、易經卜卦、求籤、塔羅、八字、紫微斗數與星盤，排盤與解讀都在你的裝置上完成。">
+  <title>犯太歲・車關 · 觀象</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html" aria-label="觀象 首頁">觀象</a>
+    <nav class="nav" aria-label="功能"><a href="index.html">首頁</a><a href="almanac.html">農民曆</a><a href="taisui.html" class="current" aria-current="page">犯太歲</a><a href="iching.html">卜卦</a><a href="qian.html">求籤</a><a href="tarot.html">塔羅</a><a href="bazi.html">八字</a><a href="ziwei.html">紫微斗數</a><a href="astro.html">星盤</a><a href="compat.html">合盤</a><a href="numerology.html">生命靈數</a><a href="name.html">姓名學</a><a href="palm.html">手相</a><a href="catalog.html">六十四卦</a><a href="about.html">依據與來源</a></nav>
+  </header>
+  <header class="page-head">
+    <span class="seal page-seal" aria-hidden="true">歲</span>
+    <div><h1>犯太歲・車關</h1><p class="subtitle">流年太歲、流年星、車關與血光</p></div>
+  </header>
+
+  <main>
+    <section class="card" id="ts-app">
+      <h2>看哪一年、哪一位</h2>
+      <div class="tabs" id="ts-years" role="tablist"></div>
+      <div id="ts-pick"></div>
+    </section>
+
+    <section id="result" hidden></section>
+
+    <section class="card">
+      <h2>今年十二生肖一覽</h2>
+      <p class="hint">犯太歲看生肖和流年地支的刑、沖、害、破；流年星是傳統的歲前十二神。點上面的生肖可以看詳細說明。</p>
+      <div class="ts-table" id="ts-table"></div>
+    </section>
+  </main>
+
+  <footer>犯太歲與車關是民俗說法，不能預測意外。真正保平安的是安全駕駛與好的生活習慣。</footer>
+
+  <script src="js/lunar-data.js"></script>
+  <script src="js/hexagrams-1.js"></script>
+  <script src="js/hexagrams-2.js"></script>
+  <script src="js/divination.js"></script>
+  <script src="js/najia.js"></script>
+  <script src="js/birth.js"></script>
+  <script src="js/almanac.js"></script>
+  <script src="js/taisui.js"></script>
+  <script src="js/share.js"></script>
+  <script src="js/flow.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

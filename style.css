@@ -1304,3 +1304,21 @@ h1.sr-only + main { padding-top: 16px; }
 .palm-viewer-scroll img { display: block; width: 250%; max-width: none; height: auto; }
 @media (min-width: 900px) { .palm-viewer-scroll img { width: 140%; } }
 .palm-viewer-close { position: fixed; top: calc(12px + env(safe-area-inset-top)); right: 12px; min-height: 44px; padding: 8px 18px; border-radius: 999px; background: rgba(13, 11, 30, 0.85); color: #fff; border: 1px solid rgba(255, 255, 255, 0.3); }
+
+/* ── 犯太歲・車關 ── */
+:root[data-theme="taisui"], .t-taisui { --hue: #ffb37a; }
+#ts-years { margin: 4px 0 16px; }
+.ts-animals { display: grid; grid-template-columns: repeat(6, 1fr); gap: 8px; margin: 6px 0 4px; }
+.ts-animal { min-height: 52px; padding: 0; border-radius: 14px; font-family: var(--serif); font-size: 1.2rem; }
+.ts-animal.active { background: var(--gold); border-color: transparent; color: var(--on-seal); font-weight: 700; }
+.ts-badges { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.ts-summary h2 { font-size: 1.5rem; margin: 4px 0 10px; }
+.ts-table { margin-top: 6px; }
+.ts-row { display: grid; grid-template-columns: 3em 1fr 4.2em 3.6em; gap: 8px; align-items: center; padding: 9px 4px; border-top: 1px solid var(--line); font-size: 0.92rem; }
+.ts-row.ts-head { border-top: 0; color: var(--muted); font-size: 0.78rem; letter-spacing: 0.08em; }
+.ts-row.current { background: var(--accent-soft); border-radius: 10px; }
+.ts-cell-animal { font-family: var(--serif); font-size: 1.1rem; }
+.ts-star.good { color: var(--accent); }
+.ts-star.bad { color: var(--rose); }
+.ts-star.caution { color: var(--amber); }
+@media (max-width: 520px) { .ts-animals { grid-template-columns: repeat(4, 1fr); } }
