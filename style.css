@@ -1335,5 +1335,8 @@ h1.sr-only + main { padding-top: 16px; }
 .ts-month.bad { border-color: rgba(255, 143, 163, 0.45); }
 .ts-month-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; }
 .ts-month-head b { font-family: var(--serif); font-size: 1.05rem; }
-.ts-month-head small { color: var(--muted); margin-right: auto; }
+.ts-month-head small { color: var(--muted); }
 .ts-month p { margin: 4px 0 0; font-size: 0.9rem; color: var(--muted); }
+.ts-month.now { box-shadow: 0 0 0 2px var(--accent) inset; }
+.ts-month-head .ts-month-branch { margin-right: 0; }
+.ts-month-head > small:not(.ts-month-branch) { margin-right: auto; }

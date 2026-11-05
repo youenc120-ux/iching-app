@@ -68,9 +68,10 @@ function tsMonths(year) {
   const starts = [];
   let prev = null;
   for (let day = 0; day < 400; day++) {
-    const noon = Date.UTC(year, 0, 20, 4) + day * 86400000; // 從一月二十日（台灣中午）起逐日找節氣交界
-    const branch = (Math.floor(((solarLongitudeAt(noon) + 45) % 360) / 30) + 2) % 12;
-    if (prev !== null && branch !== prev) starts.push({ branch, start: noon });
+    // 看每天台灣時間晚上 11:59 的太陽位置：節氣當天不論幾點交節，都算新的月份（和農民曆印的日期一致）
+    const date = Date.UTC(year, 0, 20, 4) + day * 86400000;
+    const branch = (Math.floor(((solarLongitudeAt(date + 43140000) + 45) % 360) / 30) + 2) % 12;
+    if (prev !== null && branch !== prev) starts.push({ branch, start: date });
     prev = branch;
   }
   const first = starts.findIndex((m) => m.branch === 2); // 立春起寅月
@@ -78,6 +79,8 @@ function tsMonths(year) {
   return list.slice(0, 12).map((m, i) => ({ branch: m.branch, start: new Date(m.start), end: new Date(list[i + 1].start - 86400000) }));
 }
 
+// 節氣月大約對應的農曆月份（寅月約為正月）
+const TS_LUNAR_MONTH = ["十一月", "十二月", "正月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月"];
 const tsDate = (d) => `${d.getUTCMonth() + 1}/${d.getUTCDate()}`;
 
 // ── 流年神煞（《三命通會》等書的通行查法）──
@@ -327,10 +330,12 @@ function tsTemple(year, person) {
 
     const months = el("section", "card ts-months-card no-fold", [
       el("h2", null, "每個月的運勢"),
-      el("p", "hint", "月份以節氣分（例如寅月從立春到驚蟄前），日期是國曆，前後可能差一天。看的是流月和你生肖的六合、三合、沖刑害，以及流月神煞。"),
-      el("div", "ts-months", r.months.map((m) => el("div", `ts-month ${m.grade}`, [
+      el("p", "hint", "命理的月份以節氣分：寅月從立春那天開始，到驚蟄前一天，大約是農曆正月，其餘類推；日期是國曆，和農民曆印的節氣日一致。看的是流月和你生肖的六合、三合、沖刑害，以及流月神煞。"),
+      el("div", "ts-months", r.months.map((m) => el("div", `ts-month ${m.grade}${now >= m.start && now <= new Date(m.end.getTime() + 86400000) ? " now" : ""}`, [
         el("div", "ts-month-head", [
-          el("b", null, `${BRANCHES[m.branch]}月`),
+          el("b", null, `農曆${TS_LUNAR_MONTH[m.branch]}前後`),
+          el("small", "ts-month-branch", `${BRANCHES[m.branch]}月`),
+          now >= m.start && now <= new Date(m.end.getTime() + 86400000) ? el("span", "tone good", "本月") : null,
           el("small", null, `${md(m.start)}～${md(m.end)}`),
           el("span", `tone ${m.grade === "good" ? "good" : m.grade === "bad" ? "bad" : "neutral"}`, m.grade === "good" ? "順" : m.grade === "bad" ? "要注意" : "平"),
           m.car ? el("span", "tone bad ts-car", "交通小心") : null,
