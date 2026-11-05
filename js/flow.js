@@ -96,7 +96,7 @@
   const fold = () => {
     if (!result) return;
     [...result.querySelectorAll(":scope > .card")].forEach((card, i) => {
-      if (i === 0 || card.classList.contains("reading-card") || card.classList.contains("foldable")) return;
+      if (i === 0 || card.classList.contains("reading-card") || card.classList.contains("no-fold") || card.classList.contains("foldable")) return;
       makeToggle(card, card.querySelector(":scope > h2, :scope > .history-head h2, :scope > div > h2"), false);
     });
     result.querySelectorAll(".reading, .reading-card").forEach((box) => {

@@ -106,5 +106,26 @@
       }
     }
     box.append(el("p", "hint", "個人提示依八字推算：今天的日干對你的日主是哪一種十神。只是一天的大致傾向。"));
+
+    // 今年誰犯太歲、誰要防車關（詳細在犯太歲頁）
+    if (typeof taisuiReading === "function") {
+      const lon = solarLongitudeAt(now.getTime());
+      const tsYear = year - (month <= 2 && lon >= 270 && lon < 315 ? 1 : 0);
+      const warn = people.map((person) => {
+        try {
+          const info = tsPersonInfo(person);
+          const r = taisuiReading(info.yearBranch, tsYear, info);
+          const items = [r.relations.length ? r.relations.map((x) => `${x}太歲`).join("、") : null, r.level === "high" || r.level === "mid" ? "要防車關" : null].filter(Boolean);
+          return items.length ? `${person.name}（屬${r.animal}）：${items.join("，")}` : null;
+        } catch { return null; }
+      }).filter(Boolean);
+      const more = el("a", "link", "看犯太歲與每月運勢 ›");
+      more.href = "taisui.html";
+      box.append(el("div", "reading-part person-day ts-home", [
+        el("h5", null, [el("b", null, `${tsYear} 犯太歲・車關`)]),
+        el("p", null, warn.length ? warn.join("\n") : "家裡今年沒有人犯太歲，也沒有明顯的車關。"),
+        more,
+      ]));
+    }
   }
 })();

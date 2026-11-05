@@ -1322,3 +1322,18 @@ h1.sr-only + main { padding-top: 16px; }
 .ts-star.bad { color: var(--rose); }
 .ts-star.caution { color: var(--amber); }
 @media (max-width: 520px) { .ts-animals { grid-template-columns: repeat(4, 1fr); } }
+.ts-boundary { margin-top: 4px; }
+.ts-boundary-hint { margin-top: 12px; }
+.ts-family { display: grid; gap: 8px; }
+.ts-family-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; padding: 12px 14px; border-radius: 16px; text-align: left; }
+.ts-family-row b { font-size: 1.02rem; }
+.ts-family-row small { color: var(--muted); margin-right: auto; }
+.ts-family-row.current { border-color: var(--accent); background: var(--accent-soft); }
+.ts-months { display: grid; gap: 8px; }
+.ts-month { padding: 10px 12px; border-radius: 14px; background: var(--surface-2); border: 1px solid var(--line); }
+.ts-month.good { border-color: rgba(241, 208, 138, 0.45); }
+.ts-month.bad { border-color: rgba(255, 143, 163, 0.45); }
+.ts-month-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; }
+.ts-month-head b { font-family: var(--serif); font-size: 1.05rem; }
+.ts-month-head small { color: var(--muted); margin-right: auto; }
+.ts-month p { margin: 4px 0 0; font-size: 0.9rem; color: var(--muted); }
