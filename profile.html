@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="profile">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d0b1e">
+  <meta name="description" content="觀象：易經卜卦、八字、紫微斗數、西洋星盤與合盤，排盤與解讀都在你的裝置上完成。">
+  <title>我的命盤總覽 · 觀象</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+  <script src="js/prefs.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html" aria-label="觀象 首頁">觀象</a>
+    <nav class="nav" aria-label="功能"><a href="index.html">首頁</a><a href="profile.html" class="current" aria-current="page">我的命盤</a><a href="almanac.html">農民曆</a><a href="taisui.html">犯太歲</a><a href="iching.html">卜卦</a><a href="qian.html">求籤</a><a href="tarot.html">塔羅</a><a href="bazi.html">八字</a><a href="ziwei.html">紫微斗數</a><a href="astro.html">星盤</a><a href="compat.html">合盤</a><a href="numerology.html">生命靈數</a><a href="name.html">姓名學</a><a href="palm.html">手相</a><a href="catalog.html">六十四卦</a><a href="about.html">依據與來源</a><a href="settings.html">設定</a></nav>
+  </header>
+  <header class="page-head">
+    <span class="seal page-seal" aria-hidden="true">我</span>
+    <div><h1>我的命盤總覽</h1><p class="subtitle">八字・紫微・星盤・生命靈數・今年運勢，一頁看完</p></div>
+  </header>
+
+  <main>
+    <section class="card" id="profile-app"></section>
+    <section id="result" hidden></section>
+  </main>
+
+  <footer>命理是認識自己的角度，不能預測未來。健康、法律、財務的決定，請找專業人士。</footer>
+
+  <script src="js/lunar-data.js"></script>
+  <script src="js/hexagrams-1.js"></script>
+  <script src="js/hexagrams-2.js"></script>
+  <script src="js/divination.js"></script>
+  <script src="js/najia.js"></script>
+  <script src="js/birth.js"></script>
+  <script src="js/poster.js"></script>
+  <script src="js/bazi.js"></script>
+  <script src="js/ziwei-texts.js"></script>
+  <script src="js/ziwei.js"></script>
+  <script src="js/astro-texts.js"></script>
+  <script src="js/astro.js"></script>
+  <script src="js/numerology.js"></script>
+  <script src="js/almanac.js"></script>
+  <script src="js/taisui.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/share.js"></script>
+  <script src="js/flow.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

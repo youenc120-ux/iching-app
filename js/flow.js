@@ -53,6 +53,10 @@
       if (event.target.closest(".flow-step[data-auto-next] .choices button")) setTimeout(() => show(index + 1, true), 220);
     });
     show(0, false);
+    // 從首頁「想問什麼？」帶過來的問題：填好，直接到下一步選類別
+    const asked = new URLSearchParams(location.search).get("q");
+    const questionField = flow.querySelector("#question");
+    if (asked && questionField) { questionField.value = asked; show(1, false); }
 
     // 結果出現時只看結果
     if (result) {
@@ -111,5 +115,23 @@
   if (result) {
     new MutationObserver(fold).observe(result, { childList: true, subtree: true });
     fold(); // 有些頁面在這支程式載入前就已經畫好結果
+  }
+
+  // 塔羅：帶過來的問題直接送出；農民曆：帶過來的事情直接挑日子
+  const params = new URLSearchParams(location.search);
+  const tarotInput = document.querySelector("#ask-input");
+  if (params.get("q") && tarotInput) {
+    tarotInput.value = params.get("q");
+    setTimeout(() => document.querySelector("#composer").requestSubmit(), 500);
+  }
+  const pickEvent = document.querySelector("#pick-event");
+  if (params.get("event") && pickEvent) {
+    setTimeout(() => {
+      pickEvent.value = params.get("event");
+      if (pickEvent.value === params.get("event")) {
+        document.querySelector("#pick-go").click();
+        document.querySelector("#pick-card").scrollIntoView({ block: "start" });
+      }
+    }, 300);
   }
 })();

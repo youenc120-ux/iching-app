@@ -13,11 +13,12 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap">
   <link rel="stylesheet" href="style.css">
+  <script src="js/prefs.js"></script>
 </head>
 <body>
   <header class="topbar">
     <a class="brand" href="index.html" aria-label="觀象 首頁">觀象</a>
-    <nav class="nav" aria-label="功能"><a href="index.html">首頁</a><a href="almanac.html">農民曆</a><a href="taisui.html">犯太歲</a><a href="iching.html">卜卦</a><a href="qian.html">求籤</a><a href="tarot.html">塔羅</a><a href="bazi.html">八字</a><a href="ziwei.html">紫微斗數</a><a href="astro.html">星盤</a><a href="compat.html">合盤</a><a href="numerology.html">生命靈數</a><a href="name.html">姓名學</a><a href="palm.html">手相</a><a href="catalog.html">六十四卦</a><a href="about.html" class="current" aria-current="page">依據與來源</a></nav>
+    <nav class="nav" aria-label="功能"><a href="index.html">首頁</a><a href="profile.html">我的命盤</a><a href="almanac.html">農民曆</a><a href="taisui.html">犯太歲</a><a href="iching.html">卜卦</a><a href="qian.html">求籤</a><a href="tarot.html">塔羅</a><a href="bazi.html">八字</a><a href="ziwei.html">紫微斗數</a><a href="astro.html">星盤</a><a href="compat.html">合盤</a><a href="numerology.html">生命靈數</a><a href="name.html">姓名學</a><a href="palm.html">手相</a><a href="catalog.html">六十四卦</a><a href="about.html" class="current" aria-current="page">依據與來源</a><a href="settings.html">設定</a></nav>
   </header>
   <header class="page-head">
     <span class="seal page-seal" aria-hidden="true">據</span>
@@ -253,6 +254,8 @@
         <li>出生資料、占卜紀錄都只存在你裝置的瀏覽器裡，本站沒有伺服器在收集任何資料。</li>
         <li>標題用的明體字是從 Google Fonts 載入的，瀏覽器會向 Google 的字體伺服器發出請求。</li>
         <li>在出生地欄位按「搜尋」時，輸入的城市名稱會送到 Open-Meteo 的地名查詢服務，用來取得經緯度和時區；不搜尋就不會送出。</li>
+        <li>「設定」頁的備份檔是下載到你自己手機的檔案；匯入家人資料的 QR code 把出生資料放在連結的 # 後面，這部分不會傳到任何伺服器，但拿到這個連結或 QR code 的人都看得到這些資料，請只傳給家人。產生 QR code 時會從 jsDelivr 載入開源的 qrcode-generator 程式（MIT 授權），只用來畫圖。</li>
+        <li>手相的「自動判斷左右手與手型」第一次使用時，會從 Google 的伺服器下載 MediaPipe 手部辨識模型；照片本身只在你的手機上計算，不會上傳。</li>
       </ul>
     </section>
 

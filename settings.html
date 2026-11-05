@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="settings">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0d0b1e">
+  <meta name="description" content="觀象：易經卜卦、八字、紫微斗數、西洋星盤與合盤，排盤與解讀都在你的裝置上完成。">
+  <title>設定 · 觀象</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC&family=Noto+Sans+TC:wght@400;500;700&family=Noto+Serif+TC:wght@600;700&display=swap">
+  <link rel="stylesheet" href="style.css">
+  <script src="js/prefs.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html" aria-label="觀象 首頁">觀象</a>
+    <nav class="nav" aria-label="功能"><a href="index.html">首頁</a><a href="profile.html">我的命盤</a><a href="almanac.html">農民曆</a><a href="taisui.html">犯太歲</a><a href="iching.html">卜卦</a><a href="qian.html">求籤</a><a href="tarot.html">塔羅</a><a href="bazi.html">八字</a><a href="ziwei.html">紫微斗數</a><a href="astro.html">星盤</a><a href="compat.html">合盤</a><a href="numerology.html">生命靈數</a><a href="name.html">姓名學</a><a href="palm.html">手相</a><a href="catalog.html">六十四卦</a><a href="about.html">依據與來源</a><a href="settings.html" class="current" aria-current="page">設定</a></nav>
+  </header>
+  <header class="page-head">
+    <span class="seal page-seal" aria-hidden="true">設</span>
+    <div><h1>設定</h1><p class="subtitle">字體、主題、備份與換手機</p></div>
+  </header>
+
+  <main>
+    <section class="card" id="import-card" hidden></section>
+
+    <section class="card">
+      <h2>顯示</h2>
+      <label>字體大小</label>
+      <div class="tabs" id="pref-font" role="group" aria-label="字體大小"></div>
+      <label>主題</label>
+      <div class="tabs" id="pref-mode" role="group" aria-label="主題"></div>
+      <label class="check pref-elder"><input type="checkbox" id="pref-elder"> 長輩模式：字再大一號、行距加寬、按鈕加大、關掉動畫</label>
+      <p class="hint">設定只存在這支手機上，每一頁都會套用。</p>
+    </section>
+
+    <section class="card">
+      <h2>備份與換手機</h2>
+      <p>出生資料、占卜與求籤紀錄、每日塔羅都只存在這支手機的瀏覽器裡。換手機或清除瀏覽資料前，先下載備份檔；到新手機打開觀象、在這頁還原就好。</p>
+      <div class="actions">
+        <button class="primary" id="backup-download" type="button">下載備份檔</button>
+        <button id="backup-restore" type="button">從備份檔還原</button>
+        <input type="file" id="backup-file" accept="application/json,.json" hidden>
+      </div>
+      <p class="hint" id="backup-status" hidden></p>
+    </section>
+
+    <section class="card">
+      <h2>把家人的資料傳到另一支手機</h2>
+      <p class="hint">勾選要傳的人，產生 QR code，用另一支手機掃描就能匯入，不用重新輸入生日。</p>
+      <div id="share-people"></div>
+      <div class="actions"><button class="primary" id="share-make" type="button">產生 QR code</button></div>
+      <div id="share-qr"></div>
+    </section>
+  </main>
+
+  <footer>所有資料只存在你的手機上；備份檔與 QR code 由你自己保管與分享。</footer>
+
+  <script src="js/birth.js"></script>
+  <script src="js/settings.js"></script>
+  <script src="js/share.js"></script>
+  <script src="js/flow.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

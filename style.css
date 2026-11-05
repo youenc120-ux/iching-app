@@ -46,6 +46,8 @@
   --bar-muted: #8f88b5;
   --shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset, 0 18px 40px -24px rgba(0, 0, 0, 0.8);
   --lift: 0 20px 44px -18px rgba(0, 0, 0, 0.85);
+  --fg-rgb: 255 255 255;
+  --palm-fill: #241e49;
   color-scheme: dark;
 }
 
@@ -72,7 +74,7 @@ body {
   background-attachment: fixed;
   color: var(--ink);
   font-family: var(--sans);
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.8;
   -webkit-font-smoothing: antialiased;
   -webkit-tap-highlight-color: transparent;
@@ -80,7 +82,7 @@ body {
 ::selection { background: rgba(241, 208, 138, 0.35); color: #fff; }
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 input, textarea { caret-color: var(--accent); }
-html { scrollbar-color: rgba(255, 255, 255, 0.22) transparent; }
+html { scrollbar-color: rgb(var(--fg-rgb) / 0.22) transparent; }
 
 main, footer, .page-head { max-width: 760px; margin: 0 auto; padding: 0 16px; }
 
@@ -160,7 +162,7 @@ footer { padding: 28px 16px 40px; color: var(--muted); font-size: 0.8rem; line-h
   white-space: nowrap;
   transition: background 0.2s, color 0.2s;
 }
-.nav a:hover { color: var(--ink); background: rgba(255, 255, 255, 0.08); }
+.nav a:hover { color: var(--ink); background: rgb(var(--fg-rgb) / 0.08); }
 .nav a.current { background: var(--gold); color: var(--on-seal); font-weight: 700; }
 @media (min-width: 1100px) { .nav { justify-content: center; flex: 1; mask-image: none; -webkit-mask-image: none; } }
 
@@ -226,7 +228,7 @@ button {
   cursor: pointer;
   transition: transform 0.15s var(--ease), background 0.2s, border-color 0.2s, color 0.2s;
 }
-button:hover { border-color: rgba(255, 255, 255, 0.3); }
+button:hover { border-color: rgb(var(--fg-rgb) / 0.3); }
 button:active { transform: scale(0.97); }
 button:disabled { opacity: 0.45; cursor: default; transform: none; }
 button.primary {
@@ -256,7 +258,7 @@ a.link:hover { text-decoration: underline; }
 .tabs { display: flex; gap: 3px; margin: 20px 0 16px; padding: 3px; background: var(--surface-2); border: 1px solid var(--line); border-radius: var(--radius-sm); }
 .tab { flex: 1; padding: 8px 4px; border: 0; border-radius: 6px; background: transparent; color: var(--muted); }
 .tab:hover { color: var(--ink); }
-.tab.active { background: rgba(255, 255, 255, 0.12); color: var(--accent); font-weight: 700; }
+.tab.active { background: rgb(var(--fg-rgb) / 0.12); color: var(--accent); font-weight: 700; }
 
 /* 選項按鈕（問題類別、準不準）：選中的那個蓋上朱印 */
 .choices { display: flex; flex-wrap: wrap; gap: 6px; }
@@ -832,7 +834,7 @@ img.reversed { transform: rotate(180deg); }
 .yiji { display: flex; flex-wrap: wrap; gap: 6px; }
 .yiji span { padding: 2px 11px; border-radius: 999px; font-size: 0.88rem; }
 .yiji.yi span { background: var(--accent-soft); color: var(--accent); }
-.yiji.ji span { background: rgba(255, 255, 255, 0.07); color: var(--muted); }
+.yiji.ji span { background: rgb(var(--fg-rgb) / 0.07); color: var(--muted); }
 .hours-title { margin: 18px 0 8px; }
 .hours { display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
 .hour { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 8px 2px; border-radius: 6px; background: var(--surface-2); font-size: 0.78rem; color: var(--muted); }
@@ -1170,7 +1172,7 @@ h1.sr-only + main { padding-top: 16px; }
 
 /* ── 一步一頁 ── */
 .flow { position: relative; padding-top: 18px; }
-.flow-bar { height: 3px; margin: -2px 0 14px; border-radius: 999px; background: rgba(255, 255, 255, 0.1); overflow: hidden; }
+.flow-bar { height: 3px; margin: -2px 0 14px; border-radius: 999px; background: rgb(var(--fg-rgb) / 0.1); overflow: hidden; }
 .flow-bar i { display: block; height: 100%; background: var(--gold); border-radius: inherit; transition: width 0.45s var(--ease); }
 .flow-head { margin-bottom: 14px; }
 .flow-count { display: block; color: var(--muted); font-size: 0.8rem; letter-spacing: 0.08em; }
@@ -1230,7 +1232,7 @@ h1.sr-only + main { padding-top: 16px; }
 /* ── 手相 ── */
 :root[data-theme="palm"], .t-palm { --hue: #f2b8a0; }
 .palm-svg { display: block; width: 100%; height: auto; }
-.palm-hand > * { fill: #241e49; stroke: rgba(239, 234, 255, 0.42); stroke-width: 1.4; }
+.palm-hand > * { fill: var(--palm-fill); stroke: rgb(var(--fg-rgb) / 0.42); stroke-width: 1.4; }
 .palm-line { fill: none; stroke: var(--accent); stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; filter: drop-shadow(0 0 3px rgba(241, 208, 138, 0.45)); }
 .palm-line.dashed { stroke-dasharray: 5 4; }
 .palm-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
@@ -1347,3 +1349,77 @@ h1.sr-only + main { padding-top: 16px; }
 .ts-month-notes li.ts-note-bad::before { background: var(--rose); }
 .ts-month-notes li.ts-note-caution::before { background: var(--amber); }
 .ts-month .ts-month-tip { margin: 6px 0 0; font-size: 0.88rem; color: var(--ink); }
+
+
+/* ── 顯示設定：字體大小、淺色主題、長輩模式（js/prefs.js 設在 <html> 上）── */
+:root[data-font="l"] { font-size: 112.5%; }
+:root[data-font="xl"] { font-size: 125%; }
+
+:root[data-mode="light"] {
+  --wood: #2f7d52;
+  --fire: #c4452c;
+  --earth: #96661a;
+  --metal: #5f6878;
+  --water: #2c6cb8;
+  --amber: #9a5b0b;
+  --rose: #b8324f;
+  --bg: #f4f1fa;
+  --sky: radial-gradient(620px 420px at 85% -8%, rgba(160, 130, 230, 0.22), transparent 62%),
+         radial-gradient(520px 380px at -10% 30%, rgba(120, 150, 230, 0.16), transparent 62%);
+  --surface: rgba(255, 255, 255, 0.82);
+  --surface-2: rgba(34, 28, 58, 0.05);
+  --solid: #ffffff;
+  --ink: #221c3a;
+  --muted: #5a5379;
+  --line: rgba(34, 28, 58, 0.13);
+  --accent: #835309;
+  --accent-2: #6247b8;
+  --accent-soft: rgba(201, 149, 74, 0.16);
+  --bar-bg: rgba(244, 241, 250, 0.88);
+  --bar-ink: #221c3a;
+  --bar-muted: #6b6490;
+  --shadow: 0 1px 2px rgba(34, 28, 58, 0.06), 0 14px 30px -22px rgba(34, 28, 58, 0.35);
+  --lift: 0 16px 36px -18px rgba(34, 28, 58, 0.45);
+  --fg-rgb: 34 28 58;
+  --palm-fill: #ffffff;
+  color-scheme: light;
+}
+:root[data-mode="light"] .brand { color: #835309; }
+:root[data-mode="light"] .ts-star.good { color: var(--accent); }
+
+/* 長輩模式：字再大一號、行距鬆、次要文字也清楚、不要動畫 */
+:root[data-elder="1"] { font-size: 125%; }
+:root[data-elder="1"][data-font="xl"] { font-size: 137.5%; }
+:root[data-elder="1"] body { line-height: 1.95; }
+:root[data-elder="1"] { --muted: color-mix(in srgb, var(--ink) 82%, transparent); }
+:root[data-elder="1"] .hint, :root[data-elder="1"] .meta, :root[data-elder="1"] small { font-size: 0.95rem; }
+:root[data-elder="1"] button, :root[data-elder="1"] .nav a { min-height: 48px; }
+:root[data-elder="1"] *, :root[data-elder="1"] *::before, :root[data-elder="1"] *::after { animation: none !important; transition: none !important; }
+
+/* ── 設定 ── */
+:root[data-theme="settings"], .t-settings { --hue: #c9c2e8; }
+.pref-elder { margin: 16px 0 6px; font-size: 1rem; color: var(--ink); }
+.backup-qr { width: min(100%, 300px); margin: 12px auto; padding: 10px; border-radius: 14px; background: #fff; }
+.backup-qr svg { display: block; width: 100%; height: auto; }
+#share-people { display: grid; gap: 4px; margin-bottom: 10px; }
+:root[data-mode="light"] .seal { color: color-mix(in srgb, var(--hue) 45%, #221c3a); background: color-mix(in srgb, var(--hue) 28%, #fff); border-color: color-mix(in srgb, var(--hue) 60%, #221c3a 10%); }
+
+/* ── 首頁「想問什麼？」 ── */
+.ask-box { margin-top: 12px; }
+.ask-box label { font-family: var(--serif); font-size: 1.15rem; font-weight: 700; color: var(--ink); margin-bottom: 10px; }
+.ask-row { display: flex; gap: 8px; }
+.ask-row input { flex: 1; min-width: 0; min-height: 52px; border-radius: 16px; font-size: 1rem; }
+.ask-row button { flex: none; min-width: 4.5em; border-radius: 16px; }
+#ask-any-out { display: grid; gap: 8px; }
+#ask-any-out .hint { margin: 12px 0 2px; }
+.ask-route { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border-radius: 16px; border: 1px solid var(--line); background: var(--surface-2); color: var(--ink); text-decoration: none; }
+.ask-route b { font-size: 1rem; }
+.ask-route small { color: var(--muted); font-size: 0.84rem; line-height: 1.55; }
+.ask-route.best { border-color: var(--accent); background: var(--accent-soft); }
+.ask-route.best b { color: var(--accent); }
+
+/* ── 我的命盤總覽 ── */
+:root[data-theme="profile"], .t-profile { --hue: #f1d08a; }
+.profile-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 10px; }
+.profile-line { font-size: 1.08rem; line-height: 1.85; }
+.profile-links { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-bottom: 10px; }
