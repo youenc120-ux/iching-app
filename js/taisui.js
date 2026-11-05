@@ -10,6 +10,7 @@
 //   有完整出生資料時，再看八字的驛馬（奔波、出行）和羊刃（血光、開刀）是否被流年、流月沖到。
 
 const TS_STARS = ["太歲", "太陽", "喪門", "太陰", "五鬼", "死符", "歲破", "龍德", "白虎", "福德", "天狗", "病符"];
+// 有些流派把第五位（五鬼／官符）和第九位（白虎）的生肖對調，頁面上會註明
 const TS_STAR_TEXT = {
   太歲: { tone: "caution", text: "本命年，太歲當頭。變動、壓力和責任都比較多，容易覺得卡卡的；適合守成、把基礎打穩，不適合衝太快。" },
   太陽: { tone: "good", text: "吉星。男性貴人、長輩或上司的助力多，事業上容易被看見，適合爭取表現。" },
@@ -40,7 +41,8 @@ function tsPunish(a, b) {
 
 const TS_RELATION_TEXT = {
   值: "值太歲（本命年）：今年就是你的生肖年，民間說「太歲當頭坐，無喜恐有禍」，變動和壓力都比較大。",
-  沖: "沖太歲：和流年正面相沖，是犯太歲裡影響最大的一種，主變動、搬遷、破財、人際或感情的起伏。",
+  沖: "沖太歲（正沖）：和流年正面相沖，是犯太歲裡影響最大的一種，主變動、搬遷、破財、人際或感情的起伏。",
+  偏沖: "偏沖太歲：生肖和太歲在十二地支裡成九十度（台灣民間的算法，例如午年的兔和雞），影響比正沖輕，主是非、變動和人際摩擦。",
   刑: "刑太歲：主是非、官司文書、身體小傷和自己跟自己過不去的煩惱。",
   害: "害太歲：主小人暗中扯後腿、人際誤會，做事容易被拖延。",
   破: "破太歲：主破財、計畫被打亂、合作破局，比沖、刑輕一些。",
@@ -50,6 +52,7 @@ function tsRelations(born, year) {
   const list = [];
   if (born === year) list.push("值");
   if (TS_CLASH(born, year)) list.push("沖");
+  if ((born - year + 12) % 12 === 3 || (born - year + 12) % 12 === 9) list.push("偏沖");
   if (tsPunish(born, year)) list.push("刑");
   if (tsPair(TS_HARM_PAIRS, born, year)) list.push("害");
   if (tsPair(TS_BREAK_PAIRS, born, year)) list.push("破");
@@ -89,6 +92,7 @@ function taisuiReading(born, year, person) {
   const road = [];
   if (star === "白虎" || star === "天狗") road.push({ level: "high", text: `流年${star}入命：民間最常說要防車關、血光的就是這顆星。` });
   if (relations.includes("沖")) road.push({ level: "mid", text: "沖太歲：出門、搬遷、出差的變動多，交通相關的事要多一分小心。" });
+  if (relations.includes("值")) road.push({ level: "mid", text: "本命年（值太歲）：民間習慣提醒本命年的人注意交通與意外，像車子臨時故障、行程被打亂這類事也比較多。" });
   if (star === "喪門") road.push({ level: "low", text: "喪門星：主要是孝服和心情，不是車關；但出入醫院、喪事場合多時，記得照顧好自己。" });
 
   const months = tsMonths(year);
@@ -228,7 +232,8 @@ function taisuiTable(year) {
       el("div", "reading-part", [el("h5", null, "一句話"), el("p", null, oneLine(r))]),
       el("div", "reading-part", [el("h5", null, "具體建議"), el("p", null, advice(r).join("\n"))]),
       r.relations.length ? el("div", "reading-part", [el("h5", null, "犯太歲"), el("p", null, r.relations.map((x) => TS_RELATION_TEXT[x]).join("\n"))]) : null,
-      el("div", "reading-part", [el("h5", null, `流年星：${r.star}`), el("p", null, r.starInfo.text)]),
+      el("div", "reading-part", [el("h5", null, `流年星：${r.star}`), el("p", null, r.starInfo.text + (r.star === "白虎" || r.star === "五鬼" ? `
+注意：有些命理師把白虎和五鬼的位置對調排，所以今年屬${ZODIAC_ANIMALS[(r.born + (r.star === "白虎" ? -4 : 4) + 12) % 12]}的人也可能被說成逢${r.star}。本站採最常見的排法（歲前十二神從太歲順排）。` : ""))]),
       el("div", "reading-part", [el("h5", null, "車關與血光"), el("p", null, r.road.length ? r.road.map((x) => x.text).join("\n") : "今年的流年星和太歲關係都沒有指向車關。照常注意交通安全就好。")]),
       el("div", "reading-part", [el("h5", null, "要留意的月份"), el("p", null, r.months.length
         ? r.months.map((m) => `${BRANCHES[m.branch]}月（約 ${tsDate(m.start)}～${tsDate(m.end)}）：${m.why.join("；")}`).join("\n")
