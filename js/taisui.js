@@ -267,6 +267,8 @@ function taisuiTable(year) {
 
   function renderTable() {
     const rows = taisuiTable(state.year);
+    const yi = (((state.year - 4) % 60) + 60) % 60;
+    document.querySelector("#ts-table-title").textContent = `${state.year} ${STEMS[yi % 10]}${BRANCHES[yi % 12]}年十二生肖一覽`;
     table.replaceChildren(
       el("div", "ts-row ts-head", [el("span", null, "生肖"), el("span", null, "犯太歲"), el("span", null, "流年星"), el("span", null, "車關")]),
       ...rows.map((row) => el("div", `ts-row${row.born === state.born ? " current" : ""}`, [
