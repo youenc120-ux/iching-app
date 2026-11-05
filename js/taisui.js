@@ -63,24 +63,22 @@ function tsRelations(born, year) {
 const TS_HORSE = [2, 11, 8, 5]; // 申子辰→寅、巳酉丑→亥、寅午戌→申、亥卯未→巳，以地支 %4 查
 const TS_BLADE = { 0: 3, 2: 6, 4: 6, 6: 9, 8: 0 }; // 甲卯、丙午、戊午、庚酉、壬子
 
-// 某一年（立春到下一個立春）的十二個節氣月：每個月的地支與國曆起訖
-function tsMonths(year) {
-  const starts = [];
-  let prev = null;
-  for (let day = 0; day < 400; day++) {
-    // 看每天台灣時間晚上 11:59 的太陽位置：節氣當天不論幾點交節，都算新的月份（和農民曆印的日期一致）
-    const date = Date.UTC(year, 0, 20, 4) + day * 86400000;
-    const branch = (Math.floor(((solarLongitudeAt(date + 43140000) + 45) % 360) / 30) + 2) % 12;
-    if (prev !== null && branch !== prev) starts.push({ branch, start: date });
-    prev = branch;
+// 某個農曆年（year 為該年正月初一所在的西元年）的每個月：月份名稱、月建地支、國曆起訖；閏月也列出來
+function tsLunarMonths(year) {
+  const start = lunarYearInfo(year).start;
+  const months = [];
+  for (let k = 0; k < 400; k++) {
+    const d = new Date(Date.UTC(year, 0, 1 + start + k));
+    const l = lunarOf(d.getUTCFullYear(), d.getUTCMonth() + 1, d.getUTCDate());
+    if (l.year !== year) break;
+    const last = months[months.length - 1];
+    if (!last || last.month !== l.month || last.leap !== l.leap) months.push({ month: l.month, leap: l.leap, branch: (l.month + 1) % 12, start: d, end: d });
+    else last.end = d;
   }
-  const first = starts.findIndex((m) => m.branch === 2); // 立春起寅月
-  const list = starts.slice(first, first + 13);
-  return list.slice(0, 12).map((m, i) => ({ branch: m.branch, start: new Date(m.start), end: new Date(list[i + 1].start - 86400000) }));
+  return months.map((m) => ({ ...m, name: `${m.leap ? "閏" : ""}${TS_LUNAR_NAMES[m.month - 1]}月` }));
 }
+const TS_LUNAR_NAMES = ["正", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"];
 
-// 節氣月大約對應的農曆月份（寅月約為正月）
-const TS_LUNAR_MONTH = ["十一月", "十二月", "正月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月"];
 const tsDate = (d) => `${d.getUTCMonth() + 1}/${d.getUTCDate()}`;
 
 // ── 流年神煞（《三命通會》等書的通行查法）──
@@ -141,23 +139,25 @@ function taisuiReading(born, year, person) {
   const level = road.some((r) => r.level === "high") ? "high" : road.some((r) => r.level === "mid") ? "mid" : road.length ? "low" : "none";
 
   // 每個月：流月地支和生肖的關係、流月神煞、八字驛馬羊刃
-  const months = tsMonths(year).map((m) => {
+  // 每個月：用農曆月，月建（正月寅、二月卯……十一月子、十二月丑；閏月同前一個月）和生肖的沖刑害破、六合三合，
+  // 加上流月神煞與八字驛馬、羊刃。廟宇農民曆的生肖每月運勢也是這樣看（例如屬虎七月「本命逢沖」、四月「命刑」）。
+  const months = tsLunarMonths(year).map((m) => {
     const notes = [];
     let score = 0, car = false;
-    if (TS_CLASH(born, m.branch)) { notes.push({ tone: "bad", text: `月沖生肖（${ZODIAC_ANIMALS[born]}）` }); score -= 2; car = true; }
-    if (tsPunish(born, m.branch)) { notes.push({ tone: "caution", text: "月刑" }); score -= 1; }
-    if (tsPair(TS_HARM_PAIRS, born, m.branch)) { notes.push({ tone: "caution", text: "月害" }); score -= 1; }
-    if (tsPair(TS_HARMONY, born, m.branch)) { notes.push({ tone: "good", text: "六合" }); score += 2; }
-    if (born !== m.branch && born % 4 === m.branch % 4) { notes.push({ tone: "good", text: "三合" }); score += 1; }
-    for (const s of tsShensha(m.branch, born, person)) {
-      notes.push({ tone: s.tone, text: s.name });
-      score += s.tone === "good" ? 1 : s.tone === "bad" ? -2 : 0;
-      if (s.road) car = true;
-    }
-    for (const h of horses) if (TS_CLASH(h, m.branch)) { notes.push({ tone: "bad", text: "驛馬逢沖" }); score -= 2; car = true; }
-    if (blade != null && m.branch === blade) { notes.push({ tone: "bad", text: "羊刃" }); score -= 2; car = true; }
+    const add = (tone, tag, text, points, isCar) => { notes.push({ tone, tag, text }); score += points; if (isCar) car = true; };
+    if (born === m.branch) add("caution", "本命月", "本命月：月份和你的生肖同一個地支，事情容易反覆、心情起伏，凡事求穩。", -1);
+    if (TS_CLASH(born, m.branch)) add("bad", "本命逢沖", `本命逢沖：這個月和你的生肖（${ZODIAC_ANIMALS[born]}）相沖，變動多、容易跟人起衝突，出門開車騎車要特別小心，重要的決定能延就延。`, -2, true);
+    if (tsPunish(born, m.branch) && born !== m.branch) add("caution", "刑", "刑：容易有是非、文書糾紛或小傷，說話做事多留一步，簽東西看清楚。", -1);
+    if (tsPair(TS_HARM_PAIRS, born, m.branch)) add("caution", "害", "害：人際容易誤會、被人扯後腿，合作的事要先講清楚。", -1);
+    if (tsPair(TS_BREAK_PAIRS, born, m.branch)) add("caution", "破", "破：計畫容易被打亂、多出意外開銷，錢包看緊一點。", -1);
+    if (tsPair(TS_HARMONY, born, m.branch)) add("good", "六合", "六合：人和、貴人多，適合談事情、約會、簽約、求人幫忙。", 2);
+    if (born !== m.branch && born % 4 === m.branch % 4) add("good", "三合", "三合：氣場順，做事有人幫，適合推進計畫。", 1);
+    for (const sh of tsShensha(m.branch, born, person)) add(sh.tone, sh.name, sh.text, sh.tone === "good" ? 1 : sh.tone === "bad" ? -2 : 0, !!sh.road);
+    for (const h of horses) if (TS_CLASH(h, m.branch)) add("bad", "驛馬逢沖", `驛馬逢沖（${BRANCHES[h]}）：出門奔波多，民間說「馬逢沖，防車禍」，交通要特別小心。`, -2, true);
+    if (blade != null && m.branch === blade) add("bad", "羊刃", "羊刃當令：用刀用火、運動、交通都要小心，防血光意外。", -2, true);
     const grade = score >= 2 ? "good" : score <= -2 ? "bad" : "neutral";
-    return { ...m, notes, score, grade, car };
+    const tip = grade === "good" ? "比較順的月份，重要的事可以排在這個月。" : grade === "bad" ? "這個月保守一點，大事往後延，多照顧自己。" : notes.length ? "整體平穩，照上面的提醒注意就好。" : "沒有特別的沖合，平穩的一個月，照自己的步調走。";
+    return { ...m, notes, score, grade, car, tip };
   });
 
   return {
@@ -330,18 +330,22 @@ function tsTemple(year, person) {
 
     const months = el("section", "card ts-months-card no-fold", [
       el("h2", null, "每個月的運勢"),
-      el("p", "hint", "命理的月份以節氣分：寅月從立春那天開始，到驚蟄前一天，大約是農曆正月，其餘類推；日期是國曆，和農民曆印的節氣日一致。看的是流月和你生肖的六合、三合、沖刑害，以及流月神煞。"),
-      el("div", "ts-months", r.months.map((m) => el("div", `ts-month ${m.grade}${now >= m.start && now <= new Date(m.end.getTime() + 86400000) ? " now" : ""}`, [
-        el("div", "ts-month-head", [
-          el("b", null, `農曆${TS_LUNAR_MONTH[m.branch]}前後`),
-          el("small", "ts-month-branch", `${BRANCHES[m.branch]}月`),
-          now >= m.start && now <= new Date(m.end.getTime() + 86400000) ? el("span", "tone good", "本月") : null,
-          el("small", null, `${md(m.start)}～${md(m.end)}`),
-          el("span", `tone ${m.grade === "good" ? "good" : m.grade === "bad" ? "bad" : "neutral"}`, m.grade === "good" ? "順" : m.grade === "bad" ? "要注意" : "平"),
-          m.car ? el("span", "tone bad ts-car", "交通小心") : null,
-        ]),
-        el("p", null, m.notes.length ? m.notes.map((n) => n.text).join("・") : "沒有特別的吉凶"),
-      ]))),
+      el("p", "hint", "照農曆月份看（初一到月底），旁邊是對應的國曆日期。和廟宇農民曆的生肖每月運勢一樣，看的是當月月建和你生肖的沖、刑、害、破、六合、三合，再加上當月碰到的神煞。"),
+      el("div", "ts-months", r.months.map((m) => {
+        const current = now >= m.start && now < new Date(m.end.getTime() + 86400000);
+        return el("div", `ts-month ${m.grade}${current ? " now" : ""}`, [
+          el("div", "ts-month-head", [
+            el("b", null, m.name),
+            el("small", "ts-month-branch", `${BRANCHES[m.branch]}月`),
+            current ? el("span", "tone good", "本月") : null,
+            el("small", null, `國曆 ${md(m.start)}～${md(m.end)}`),
+            el("span", `tone ${m.grade === "good" ? "good" : m.grade === "bad" ? "bad" : "neutral"}`, m.grade === "good" ? "順" : m.grade === "bad" ? "要注意" : "平"),
+            m.car ? el("span", "tone bad ts-car", "交通小心") : null,
+          ]),
+          m.notes.length ? el("ul", "ts-month-notes", m.notes.map((n) => el("li", `ts-note-${n.tone}`, n.text))) : null,
+          el("p", "ts-month-tip", m.tip),
+        ]);
+      })),
     ]);
 
     const t = tsTemple(state.year, state.person ? { yearBranch: state.person.yearBranch, dayBranch: state.person.dayBranch } : { yearBranch: state.born, dayBranch: -1 });
